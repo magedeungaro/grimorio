@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Grimório">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
+<link rel="icon" href="icon-maskable-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#211836">
 <title>Grimório</title>
@@ -284,7 +284,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <button class="btn primary" id="btnOpen2" disabled>Carregando…</button>
       <div id="recent" hidden><div class="rc-title">Continuar de onde parou</div><ul></ul></div>
       <p class="fine">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
-      <p class="fine ver">versão 2026.10.29-214331</p>
+      <p class="fine ver">versão 2026.10.29-214557</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -1608,13 +1608,12 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
 refreshButtons();
 window.__grimorio = S;   // ajuda pra depurar no console
 
-// some com o splash: na 1ª abertura dá tempo da pena escrever; um toque pula
+// some com o splash depois da pena escrever uma linha; um toque pula
 {
   const sp = $('#splash');
   const hide = () => { sp.classList.add('out'); setTimeout(() => sp.remove(), 700); };
   sp.addEventListener('click', hide);
-  let quick = false; try { quick = !!sessionStorage.getItem('grimorio.seen'); sessionStorage.setItem('grimorio.seen', '1'); } catch {}
-  setTimeout(hide, Math.max(0, (quick ? 300 : 1800) - (performance.now() - splashStart)));
+  setTimeout(hide, Math.max(0, 1900 - (performance.now() - splashStart)));
 }
 </script>
 </body>
