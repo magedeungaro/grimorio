@@ -46,16 +46,54 @@ button{font:inherit;color:inherit}
 .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));font-weight:600;padding:0 14px}
 .btn.primary:hover{filter:brightness(1.08)}
 .group{display:flex;gap:2px;flex:none}
-.swatches{display:flex;gap:6px;padding:0 4px;flex:none}
-.sw{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.25);cursor:pointer;padding:0;flex:none}
-.sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
+.btn svg .liquid{fill:var(--potion,#7c3aed);stroke:none}
+#btnPotion svg{width:24px;height:24px}
+
+/* ---------- caldeirão de cores ---------- */
+#potionModal{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;
+  background:rgba(15,10,26,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:pmFade .18s ease-out}
+#potionModal[hidden]{display:none}
+@keyframes pmFade{from{opacity:0}to{opacity:1}}
+.pm-card{width:min(360px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:linear-gradient(180deg,#2a1f45,#1c1530);color:var(--text);
+  border:1px solid var(--bar-line);border-radius:24px;padding:18px 18px 16px;box-shadow:0 20px 60px rgba(0,0,0,.45);animation:pmPop .22s cubic-bezier(.2,1.3,.4,1)}
+@keyframes pmPop{from{transform:scale(.92) translateY(8px)}to{transform:none}}
+.pm-title{text-align:center;font-weight:700;color:var(--lilac);letter-spacing:.02em;margin-bottom:6px}
+.pm-title small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:2px}
+.cauldron{position:relative;width:100%;aspect-ratio:300/250;margin:4px 0 10px;touch-action:none;-webkit-user-select:none;user-select:none}
+.cauldron svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#wheel{position:absolute;left:12.67%;top:16.8%;width:74.67%;height:32%;border-radius:50%;cursor:crosshair;touch-action:none;
+  box-shadow:inset 0 6px 14px rgba(0,0,0,.35)}
+#wheelMark{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.4);pointer-events:none;background:var(--potion)}
+.bubbles{position:absolute;left:18%;top:18%;width:64%;height:28%;pointer-events:none}
+.bubbles i{position:absolute;bottom:20%;width:10px;height:10px;border-radius:50%;background:var(--potion);opacity:0;
+  box-shadow:inset -2px -2px 0 rgba(0,0,0,.18),inset 2px 2px 0 rgba(255,255,255,.45);animation:bubble 2.6s ease-in infinite}
+.bubbles i:nth-child(1){left:8%;animation-delay:0s}.bubbles i:nth-child(2){left:30%;width:7px;height:7px;animation-delay:.7s}
+.bubbles i:nth-child(3){left:55%;width:12px;height:12px;animation-delay:1.3s}.bubbles i:nth-child(4){left:78%;width:8px;height:8px;animation-delay:.35s}
+.bubbles i:nth-child(5){left:44%;width:6px;height:6px;animation-delay:1.9s}.bubbles i:nth-child(6){left:90%;width:9px;height:9px;animation-delay:2.2s}
+@keyframes bubble{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:.95}80%{opacity:.8}100%{transform:translateY(-70px) scale(1.1);opacity:0}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flicker 1.1s ease-in-out infinite alternate}
+.flame.f2{animation-duration:.8s;animation-delay:.2s}.flame.f3{animation-duration:1.3s;animation-delay:.4s}
+@keyframes flicker{0%{transform:scaleY(.82) skewX(-4deg)}100%{transform:scaleY(1.08) skewX(4deg)}}
+@media (prefers-reduced-motion:reduce){.bubbles i,.flame,#potionModal,.pm-card{animation:none}}
+.pm-row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.pm-row .lbl2{font-size:12.5px;color:var(--muted);width:72px;flex:none}
+#potionV{flex:1;height:22px;-webkit-appearance:none;appearance:none;border-radius:11px;background:var(--vgrad);border:1px solid rgba(255,255,255,.15)}
+#potionV::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--potion);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+#potionV::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--potion)}
+.pm-preview{width:38px;height:38px;border-radius:50%;background:var(--potion);flex:none;border:2px solid rgba(255,255,255,.3);box-shadow:inset -4px -5px 0 rgba(0,0,0,.15),inset 4px 4px 0 rgba(255,255,255,.3)}
+#potionHex{flex:1;min-width:0;height:38px;border-radius:10px;border:1px solid var(--bar-line);background:#140f22;color:var(--text);padding:0 10px;font:600 15px ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase}
+.pm-hist-label{font-size:12.5px;color:var(--muted);margin:12px 0 6px}
+.pm-hist{display:flex;flex-wrap:wrap;gap:8px}
+.vial{width:30px;height:38px;padding:0;border:none;background:none;cursor:pointer;flex:none}
+.vial svg{width:100%;height:100%;display:block}
+.vial.on svg .glass{stroke:#fff;stroke-width:2.2}
 .size{width:96px;accent-color:var(--accent);flex:none}
 .lbl{color:var(--muted);font-variant-numeric:tabular-nums;min-width:44px;text-align:center;flex:none;font-size:13px}
 .spacer{flex:1 0 8px}
 #btnSave{position:sticky;right:0;box-shadow:-10px 0 12px var(--bar-2)}
 @media (max-width:1100px){ #pageLbl{display:none} .brand .txt{display:none} .size{width:72px} }
 @media (max-width:520px){ .brand,.bar>.sep:first-of-type{display:none} }
-@media (max-width:820px){ .btn{min-width:36px;padding:0 7px} #btnOpen .txt,#btnSave .txt,#fingerLbl{display:none} #btnFinger.on{background:rgba(255,225,77,.22);border-color:rgba(255,225,77,.6)} .swatches{gap:4px} .sw{width:22px;height:22px} #zoomLbl{min-width:38px} }
+@media (max-width:820px){ .btn{min-width:36px;padding:0 7px} #btnOpen .txt,#btnSave .txt,#fingerLbl{display:none} #btnFinger.on{background:rgba(255,225,77,.22);border-color:rgba(255,225,77,.6)} #zoomLbl{min-width:38px} }
 
 /* ---------- visualizador ---------- */
 #viewer{position:fixed;inset:calc(var(--bar-h) + env(safe-area-inset-top)) 0 0 0;overflow:auto;touch-action:none;
@@ -99,7 +137,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
     <button class="btn icon" data-tool="eraser" title="Borracha (E)"><svg viewBox="0 0 24 24"><path d="M8.5 20L3.5 15a1.5 1.5 0 0 1 0-2.1L13 3.4a1.5 1.5 0 0 1 2.1 0l5.5 5.5a1.5 1.5 0 0 1 0 2.1L11.5 20z"/><path d="M8.5 20H21"/><path d="M7 9.5l7.5 7.5"/></svg></button>
   </div>
   <button class="btn" id="btnFinger" title="O que o dedo faz" hidden><svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 10.5V7a1.5 1.5 0 0 1 3 0v7a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L3.6 16a1.6 1.6 0 0 1 2.5-2L9 16.5V8.5a1.5 1.5 0 0 0-3 0"/></svg><span id="fingerLbl">rola</span></button>
-  <div class="swatches" id="swatches"></div>
+  <button class="btn icon" id="btnPotion" title="Cor (C)"><svg viewBox="0 0 24 24"><path class="liquid" d="M7.2 13.2h9.6l2 3.4a2.3 2.3 0 0 1-2 3.4H7.2a2.3 2.3 0 0 1-2-3.4z"/><path d="M9.3 3h5.4"/><path d="M10.3 3v5.4L5.3 16.6A2.4 2.4 0 0 0 7.4 20.3h9.2a2.4 2.4 0 0 0 2.1-3.7L13.7 8.4V3"/></svg></button>
   <input class="size" id="size" type="range" title="Espessura">
   <span class="sep"></span>
   <button class="btn icon" id="btnUndo" title="Desfazer (⌘Z)" disabled><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
@@ -127,6 +165,41 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
 </main>
 <input type="file" id="file" accept="application/pdf,.pdf" hidden>
 <div id="toast" role="status"></div>
+
+<div id="potionModal" hidden>
+  <div class="pm-card" role="dialog" aria-modal="true" aria-label="Escolher cor">
+    <div class="pm-title">✦ Prepare sua poção ✦<small id="potionFor">Caneta</small></div>
+    <div class="cauldron">
+      <svg viewBox="0 0 300 250" aria-hidden="true">
+        <defs>
+          <linearGradient id="cBody" x1="0" x2="1"><stop offset="0" stop-color="#1a1428"/><stop offset=".35" stop-color="#3a2f52"/><stop offset=".6" stop-color="#2a2140"/><stop offset="1" stop-color="#140f20"/></linearGradient>
+          <linearGradient id="fireG" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff6a3d"/><stop offset=".6" stop-color="#ffb341"/><stop offset="1" stop-color="#ffe680"/></linearGradient>
+          <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="var(--potion)" stop-opacity=".55"/><stop offset="1" stop-color="var(--potion)" stop-opacity="0"/></radialGradient>
+        </defs>
+        <ellipse cx="150" cy="70" rx="150" ry="70" fill="url(#glow)"/>
+        <g class="fire">
+          <path class="flame" d="M112 250c-10-14 2-22 0-34 10 8 16 18 10 34z" fill="url(#fireG)"/>
+          <path class="flame f2" d="M140 252c-14-18 4-30 6-46 12 14 22 30 10 46z" fill="url(#fireG)"/>
+          <path class="flame f3" d="M172 250c-8-12 4-20 4-32 10 10 14 20 6 32z" fill="url(#fireG)"/>
+        </g>
+        <path d="M66 205l-14 38h12l14-30zM234 205l14 38h-12l-14-30z" fill="#120d1e"/>
+        <path d="M22 84c-4 82 46 140 128 142 82-2 132-60 128-142z" fill="url(#cBody)"/>
+        <path d="M44 108c4 50 30 84 64 98" stroke="#fff" stroke-opacity=".1" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <path d="M22 100c-14 0-18 22-6 26M278 100c14 0 18 22 6 26" stroke="#3d3352" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <ellipse cx="150" cy="82" rx="122" ry="46" fill="#100b1b"/>
+        <ellipse cx="150" cy="80" rx="128" ry="50" fill="none" stroke="#4a3d66" stroke-width="11"/>
+        <ellipse cx="150" cy="77" rx="128" ry="50" fill="none" stroke="#6b5a92" stroke-width="2" stroke-opacity=".7"/>
+      </svg>
+      <canvas id="wheel" width="400" height="400"></canvas>
+      <div class="bubbles"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div id="wheelMark"></div>
+    </div>
+    <div class="pm-row"><span class="lbl2">Intensidade</span><input type="range" id="potionV" min="0.08" max="1" step="0.01"></div>
+    <div class="pm-row"><span class="pm-preview"></span><input id="potionHex" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Cor em hexadecimal"><button class="btn primary" id="potionOk">Pronto</button></div>
+    <div class="pm-hist-label">Poções recentes</div>
+    <div class="pm-hist" id="potionHist"></div>
+  </div>
+</div>
 
 <script>
 /* Se algo falhar, mostra o erro em vez de ficar "carregando" pra sempre. */
@@ -334,18 +407,112 @@ function setTool(t){
   document.querySelectorAll('#tools .btn').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
   document.body.classList.toggle('tool-eraser', t === 'eraser');
   document.body.classList.toggle('tool-text', t === 'text');
-  const sw = $('#swatches'); sw.innerHTML = '';
-  for (const c of TOOLS[t].colors){
-    const b = document.createElement('button'); b.className = 'sw' + (S.color[t] === c ? ' on' : '');
-    b.style.background = c; b.title = c; b.onclick = () => { S.color[t] = c; setTool(t); };
-    sw.appendChild(b);
-  }
+  $('#btnPotion').hidden = t === 'eraser';
+  paintPotion();
   const r = TOOLS[t].size, inp = $('#size');
   inp.hidden = !r;
   if (r){ inp.min = r.min; inp.max = r.max; inp.step = r.step; inp.value = r.val; }
 }
 $('#size').addEventListener('input', e => { const r = TOOLS[S.tool].size; if (r) r.val = +e.target.value; });
 document.querySelectorAll('#tools .btn').forEach(b => b.onclick = () => setTool(b.dataset.tool));
+
+/* ---------- caldeirão de cores ---------- */
+// Roda HSV: ângulo = matiz, raio = saturação; "intensidade" = brilho.
+// Caneta e lápis compartilham um histórico; marca-texto e grifo, outro.
+const kindOf = t => (t === 'hl' || t === 'text') ? 'hl' : 'ink';
+const hist = { ink:[], hl:[] };
+for (const k of ['ink', 'hl']){
+  let v = null; try { v = JSON.parse(localStorage.getItem('grimorio.potions.' + k)); } catch {}
+  hist[k] = Array.isArray(v) && v.length ? v.filter(c => /^#[0-9a-f]{6}$/i.test(c)).slice(0, 12) : (k === 'ink' ? PEN_COLORS.concat(PENCIL_COLORS[0]) : HL_COLORS).slice();
+}
+function hsv2hex(h, s, v){
+  const f = n => { const k = (n + h / 60) % 6; return v - v * s * Math.max(0, Math.min(k, 4 - k, 1)); };
+  return '#' + [f(5), f(3), f(1)].map(x => Math.round(x * 255).toString(16).padStart(2, '0')).join('');
+}
+function hex2hsv(hex){
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let h = 0;
+  if (d){ h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h = (h * 60 + 360) % 360; }
+  return { h, s: mx ? d / mx : 0, v: mx };
+}
+function paintPotion(){
+  const t = S.tool === 'eraser' ? 'pen' : S.tool;
+  document.documentElement.style.setProperty('--potion', S.color[t]);
+}
+const PM = { h:0, s:1, v:1, tool:'pen', start:null };
+const wheel = $('#wheel'), wctx = wheel.getContext('2d');
+function drawWheel(){
+  const W = wheel.width, R = W / 2, img = wctx.createImageData(W, W), d = img.data;
+  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++){
+    const dx = x + .5 - R, dy = y + .5 - R, dist = Math.hypot(dx, dy) / R;
+    if (dist > 1.01) continue;
+    const h = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360, s = Math.min(1, dist), v = PM.v;
+    const f = n => { const k = (n + h / 60) % 6; return v - v * s * Math.max(0, Math.min(k, 4 - k, 1)); };
+    const i = (y * W + x) * 4;
+    d[i] = f(5) * 255; d[i + 1] = f(3) * 255; d[i + 2] = f(1) * 255;
+    d[i + 3] = 255 * Math.max(0, Math.min(1, (1.01 - dist) * R / 1.5));
+  }
+  wctx.putImageData(img, 0, 0);
+  // um brilho de "líquido" por cima
+  const g = wctx.createRadialGradient(R * .7, R * .55, R * .05, R, R, R);
+  g.addColorStop(0, 'rgba(255,255,255,.22)'); g.addColorStop(.5, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(0,0,0,.18)');
+  wctx.fillStyle = g; wctx.beginPath(); wctx.arc(R, R, R, 0, Math.PI * 2); wctx.fill();
+}
+function syncPotion(fromHex){
+  const hex = hsv2hex(PM.h, PM.s, PM.v);
+  S.color[PM.tool] = hex; paintPotion();
+  const a = PM.h * Math.PI / 180, mark = $('#wheelMark');
+  mark.style.left = (12.67 + 74.67 * (.5 + Math.cos(a) * PM.s / 2)) + '%';
+  mark.style.top = (16.8 + 32 * (.5 + Math.sin(a) * PM.s / 2)) + '%';
+  document.documentElement.style.setProperty('--vgrad', `linear-gradient(90deg, ${hsv2hex(PM.h, PM.s, .08)}, ${hsv2hex(PM.h, PM.s, 1)})`);
+  if (!fromHex) $('#potionHex').value = hex.toUpperCase();
+  renderHist();
+}
+function renderHist(){
+  const box = $('#potionHist'); box.innerHTML = '';
+  for (const c of hist[kindOf(PM.tool)]){
+    const b = document.createElement('button'); b.className = 'vial' + (c === S.color[PM.tool] ? ' on' : ''); b.title = c;
+    b.innerHTML = `<svg viewBox="0 0 30 38"><rect x="11" y="1" width="8" height="6" rx="1.5" fill="#b08a5a"/><path class="glass" d="M12 7v6.5C6.5 15.5 4 19.5 4 24a11 11 0 0 0 22 0c0-4.5-2.5-8.5-8-10.5V7z" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.45)" stroke-width="1.5"/><path d="M5.2 23h19.6a10 10 0 0 1-19.6 0z" fill="${c}"/><circle cx="11" cy="27" r="1.6" fill="#fff" opacity=".5"/></svg>`;
+    b.onclick = () => { Object.assign(PM, hex2hsv(c)); drawWheel(); syncPotion(); closePotion(); };
+    box.appendChild(b);
+  }
+}
+function openPotion(){
+  if (S.tool === 'eraser') return;
+  PM.tool = S.tool; PM.start = S.color[PM.tool];
+  Object.assign(PM, hex2hsv(PM.start));
+  $('#potionFor').textContent = 'para ' + TOOLS[PM.tool].name.toLowerCase();
+  $('#potionV').value = PM.v;
+  $('#potionModal').hidden = false;
+  drawWheel(); syncPotion();
+}
+function closePotion(){
+  if ($('#potionModal').hidden) return;
+  $('#potionModal').hidden = true;
+  const c = S.color[PM.tool], k = kindOf(PM.tool);
+  if (c !== hist[k][0]){
+    hist[k] = [c, ...hist[k].filter(x => x !== c)].slice(0, 12);
+    try { localStorage.setItem('grimorio.potions.' + k, JSON.stringify(hist[k])); } catch {}
+  }
+}
+function pickAt(e){
+  const r = wheel.getBoundingClientRect();
+  const nx = (e.clientX - r.left) / r.width * 2 - 1, ny = (e.clientY - r.top) / r.height * 2 - 1;
+  PM.h = (Math.atan2(ny, nx) * 180 / Math.PI + 360) % 360; PM.s = Math.min(1, Math.hypot(nx, ny));
+  syncPotion();
+}
+wheel.addEventListener('pointerdown', e => { e.preventDefault(); try { wheel.setPointerCapture(e.pointerId); } catch {} pickAt(e); });
+wheel.addEventListener('pointermove', e => { if (e.buttons || e.pressure > 0) pickAt(e); });
+$('#potionV').addEventListener('input', e => { PM.v = +e.target.value; drawWheel(); syncPotion(); });
+$('#potionHex').addEventListener('input', e => {
+  let v = e.target.value.trim(); if (!v.startsWith('#')) v = '#' + v;
+  if (/^#[0-9a-f]{6}$/i.test(v)){ Object.assign(PM, hex2hsv(v.toLowerCase())); $('#potionV').value = PM.v; drawWheel(); syncPotion(true); }
+});
+$('#potionOk').onclick = closePotion;
+$('#potionModal').addEventListener('pointerdown', e => { if (e.target.id === 'potionModal') closePotion(); });
+$('#btnPotion').onclick = openPotion;
+
 setTool('pen');
 
 const isTouchDevice = navigator.maxTouchPoints > 0 || matchMedia('(pointer: coarse)').matches;
@@ -1036,13 +1203,16 @@ function redo(){
 $('#btnUndo').onclick = undo; $('#btnRedo').onclick = redo;
 
 addEventListener('keydown', e => {
-  if (e.target.closest?.('input')) return;
   const mod = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
+  if (!$('#potionModal').hidden && (k === 'escape' || (k === 'enter' && !mod))){ e.preventDefault(); closePotion(); return; }
+  if (e.target.closest?.('input')) return;
   if (mod && k === 'z'){ e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
   if (mod && k === 'y'){ e.preventDefault(); redo(); return; }
   if (mod && k === 's'){ e.preventDefault(); save(); return; }
   if (mod && k === 'o'){ e.preventDefault(); $('#btnOpen').click(); return; }
   if (mod) return;
+  if (!$('#potionModal').hidden) return;
+  if (k === 'c'){ openPotion(); return; }
   const keyTool = { p:'pen', l:'pencil', h:'hl', g:'text', e:'eraser' }[k];
   if (keyTool) setTool(keyTool);
   else if (k === '+' || k === '=') setZoom(S.zoom * 1.25); else if (k === '-') setZoom(S.zoom / 1.25);
