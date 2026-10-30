@@ -12,6 +12,9 @@ Leitor de PDF com caneta, feito pra iPad/Safari (e qualquer navegador). Tudo rod
 
 Atalhos: `P` pena · `L` lápis · `H` marca-texto · `G` grifo · `E` borracha · `Espaço` gaveta · `C` caldeirão de cores · `⌘Z` / `⇧⌘Z` · `⌘S` salvar
 
+## Sessões
+Cada traço é guardado na hora, no próprio aparelho (IndexedDB), junto com o PDF. Fechou o app? Na tela inicial aparece "Continuar de onde parou". Abrir de novo o mesmo arquivo original também traz as anotações de volta.
+
 ## Como as anotações são salvas
 Viram anotações nativas do PDF (`/Ink` e `/Highlight`), que aparecem em qualquer leitor
 (Acrobat, Preview, navegadores). Ao reabrir no Grimório, continuam editáveis, com a pressão preservada.

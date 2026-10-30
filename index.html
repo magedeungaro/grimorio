@@ -43,7 +43,7 @@ button{font:inherit;color:inherit}
 .btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .btn.icon{padding:0}
 .btn.on{background:rgba(139,92,246,.30);border-color:rgba(200,182,255,.45)}
-.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));font-weight:600;padding:0 14px}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:600;padding:0 14px}
 .btn.primary:hover{filter:brightness(1.08)}
 .group{display:flex;gap:2px;flex:none}
 .btn svg .liquid{fill:var(--potion,#7c3aed);stroke:none}
@@ -145,8 +145,8 @@ button{font:inherit;color:inherit}
 
 /* ---------- vazio ---------- */
 #empty[hidden]{display:none}
-#empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px}
-.card{max-width:420px;text-align:center;color:#3b2f5c;padding:32px 28px;border-radius:20px;background:rgba(255,255,255,.6);border:1.5px dashed #b7a6e6}
+#empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}
+.card{max-width:420px;width:100%;text-align:center;color:#3b2f5c;padding:32px 28px;border-radius:20px;background:rgba(255,255,255,.6);border:1.5px dashed #b7a6e6}
 @media (prefers-color-scheme:dark){.card{background:rgba(45,33,72,.55);color:var(--text);border-color:#5b4a8a}}
 .card h1{margin:6px 0 6px;font-size:22px}
 .card p{margin:0 0 18px;opacity:.8}
@@ -159,6 +159,17 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
 #upd{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:21;display:flex;align-items:center;gap:12px;
   background:#211836;color:#fff;padding:8px 8px 8px 16px;border-radius:14px;border:1px solid var(--bar-line);box-shadow:0 8px 30px rgba(0,0,0,.35);white-space:nowrap}
 #upd[hidden]{display:none}
+#recent{margin-top:20px;text-align:left}
+#recent[hidden]{display:none}
+.rc-title{font-size:12.5px;font-weight:600;opacity:.75;margin-bottom:8px;text-align:center}
+#recent ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#recent li{display:flex;align-items:stretch;border-radius:12px;background:rgba(139,92,246,.10);border:1px solid rgba(139,92,246,.25);overflow:hidden}
+.rc-open{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:9px 12px;border:none;background:none;cursor:pointer;color:inherit;font:inherit;text-align:left}
+.rc-open:hover{background:rgba(139,92,246,.12)}
+.rc-name{font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rc-meta{font-size:12px;opacity:.65}
+.rc-x{border:none;background:none;color:inherit;opacity:.45;padding:0 14px;cursor:pointer;font-size:13px}
+.rc-x:hover{opacity:.9}
 .card .ver{margin-top:4px;font-size:11px}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
@@ -191,8 +202,9 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <h1>Abra um PDF</h1>
       <p>Toque em <b>Abrir</b> ou arraste um arquivo pra cá.</p>
       <button class="btn primary" id="btnOpen2" disabled>Carregando…</button>
+      <div id="recent" hidden><div class="rc-title">Continuar de onde parou</div><ul></ul></div>
       <p class="fine">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
-      <p class="fine ver">versão 2026.10.29-212410</p>
+      <p class="fine ver">versão 2026.10.29-213103</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -621,8 +633,7 @@ function refreshButtons(){
 /* ---------- abrir ---------- */
 const fileInput = $('#file');
 $('#btnOpen').onclick = $('#btnOpen2').onclick = () => {
-  if (S.dirty && !confirm('Tem anotações não salvas. Abrir outro arquivo mesmo assim?')) return;
-  fileInput.click();
+  saveSession(); fileInput.click();
 };
 $('#btnOpen2').disabled = false; $('#btnOpen2').textContent = 'Abrir PDF';
 fileInput.onchange = async () => { const f = fileInput.files[0]; fileInput.value = ''; if (f) openFile(f); };
@@ -633,30 +644,125 @@ addEventListener('drop', e => {
   e.preventDefault(); document.body.classList.remove('dragging');
   const f = [...(e.dataTransfer?.files || [])].find(f => /pdf$/i.test(f.type) || /\.pdf$/i.test(f.name));
   if (!f) return toast('Isso não parece um PDF');
-  if (S.dirty && !confirm('Tem anotações não salvas. Abrir outro arquivo mesmo assim?')) return;
-  openFile(f);
+  saveSession(); openFile(f);
 });
 
 async function openFile(file){
   toast('Abrindo…', 60000);
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
+    const id = fileId(bytes);
     const { base, imported, editable } = await extractMarks(bytes);
-    const doc = await pdfjsLib.getDocument({ data: base.slice(), enableXfa:false }).promise;
-    if (S.doc) S.doc.loadingTask?.destroy?.();
-    S.doc = doc; S.baseBytes = base; S.editable = editable; S.fileName = file.name || 'documento.pdf';
-    S.undo = []; S.redo = []; S.dirty = false; S.zoom = 1;
-    await buildPages(imported);
-    $('#empty').hidden = true;
-    document.title = S.fileName.replace(/\.pdf$/i, '') + ' · Grimório';
-    const n = [...imported.values()].reduce((a, s) => a + s.length, 0);
-    toast(!editable ? 'PDF protegido: dá pra ler e rabiscar, mas não salvar.' : n ? `${n} anotaç${n > 1 ? 'ões' : 'ão'} carregada${n > 1 ? 's' : ''} pra edição` : 'Pronto pra rabiscar ✦');
+    // mesmo arquivo original de uma sessão anterior? traz as anotações de volta
+    const prev = await Store.getSession(id);
+    const marks = prev?.marks?.length ? new Map(prev.marks) : imported;
+    await loadDoc({ id, base, marks, editable, name:file.name || 'documento.pdf', restored:!!prev?.marks?.length, view:prev?.view });
   } catch (err){
     console.error(err);
     toast(err?.name === 'PasswordException' ? 'Esse PDF tem senha — ainda não sei abrir.' : 'Não consegui abrir esse PDF.');
   }
   refreshButtons();
 }
+async function openSession(id){
+  toast('Abrindo…', 60000);
+  try {
+    const sess = await Store.getSession(id), bytes = await Store.getFile(id);
+    if (!sess || !bytes) throw new Error('sessão incompleta');
+    await loadDoc({ id, base:bytes, marks:new Map(sess.marks || []), editable:sess.editable !== false, name:sess.name, restored:true, view:sess.view });
+  } catch (err){
+    console.error(err); toast('Não consegui reabrir essa sessão 😕'); renderRecent();
+  }
+  refreshButtons();
+}
+async function loadDoc({ id, base, marks, editable, name, restored, view }){
+  const doc = await pdfjsLib.getDocument({ data: base.slice(), enableXfa:false }).promise;
+  if (S.doc) S.doc.loadingTask?.destroy?.();
+  S.doc = doc; S.baseBytes = base; S.editable = editable; S.fileName = name; S.sessionId = id;
+  S.undo = []; S.redo = []; S.dirty = false; S.zoom = view?.zoom || 1;
+  await buildPages(marks);
+  if (view?.frac){ requestAnimationFrame(() => { viewer.scrollTop = view.frac * (viewer.scrollHeight - viewer.clientHeight); scheduleVisible(); }); }
+  $('#empty').hidden = true;
+  document.title = S.fileName.replace(/\.pdf$/i, '') + ' · Grimório';
+  const n = [...marks.values()].reduce((a, s) => a + s.length, 0);
+  toast(!editable ? 'PDF protegido: dá pra ler e rabiscar, mas não salvar.'
+    : restored ? (n ? `Sessão restaurada ✦ ${n} anotaç${n > 1 ? 'ões' : 'ão'}` : 'Sessão restaurada ✦')
+    : n ? `${n} anotaç${n > 1 ? 'ões' : 'ão'} carregada${n > 1 ? 's' : ''} pra edição` : 'Pronto pra rabiscar ✦');
+  await Store.putFile(id, base);   // guarda o PDF pra poder continuar depois
+  saveSession();
+}
+
+/* ---------- sessões: tudo fica no aparelho (IndexedDB) ---------- */
+// Identidade do arquivo: tamanho + amostras do conteúdo (rápido mesmo em PDF grande).
+function fileId(u8){
+  let h = 2166136261 >>> 0;
+  const step = Math.max(1, Math.floor(u8.length / 65536));
+  for (let i = 0; i < u8.length; i += step){ h ^= u8[i]; h = Math.imul(h, 16777619) >>> 0; }
+  for (let i = Math.max(0, u8.length - 4096); i < u8.length; i++){ h ^= u8[i]; h = Math.imul(h, 16777619) >>> 0; }
+  return 'f' + u8.length.toString(36) + '-' + h.toString(36);
+}
+const Store = (() => {
+  let dbP = null;
+  const open = () => dbP || (dbP = new Promise((ok, bad) => {
+    const r = indexedDB.open('grimorio', 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('sessions', { keyPath:'id' }); r.result.createObjectStore('files'); };
+    r.onsuccess = () => ok(r.result); r.onerror = () => bad(r.error);
+  }));
+  const tx = async (store, mode, fn) => {
+    const db = await open();
+    return new Promise((ok, bad) => { const t = db.transaction(store, mode), st = t.objectStore(store); const r = fn(st); t.oncomplete = () => ok(r?.result); t.onerror = () => bad(t.error); });
+  };
+  const safe = f => async (...a) => { try { return await f(...a); } catch (e){ console.warn('armazenamento indisponível', e); return null; } };
+  return {
+    getSession: safe(id => tx('sessions', 'readonly', st => st.get(id))),
+    putSession: safe(s => tx('sessions', 'readwrite', st => st.put(s))),
+    list: safe(async () => ((await tx('sessions', 'readonly', st => st.getAll())) || []).sort((a, b) => b.updated - a.updated)),
+    getFile: safe(id => tx('files', 'readonly', st => st.get(id))),
+    putFile: safe(async (id, bytes) => { if (!(await tx('files', 'readonly', st => st.getKey(id)))) await tx('files', 'readwrite', st => st.put(bytes, id)); }),
+    remove: safe(async id => { await tx('sessions', 'readwrite', st => st.delete(id)); await tx('files', 'readwrite', st => st.delete(id)); }),
+  };
+})();
+const MAX_SESSIONS = 8;
+let saveT = null;
+function scheduleSave(){ clearTimeout(saveT); saveT = setTimeout(saveSession, 500); }
+async function saveSession(){
+  clearTimeout(saveT); saveT = null;
+  if (!S.doc || !S.sessionId) return;
+  const marks = [];
+  S.pages.forEach((pg, i) => { if (pg.strokes.length) marks.push([i, pg.strokes.map(({ _sm, ...m }) => m)]); });
+  const frac = viewer.scrollHeight > viewer.clientHeight ? viewer.scrollTop / (viewer.scrollHeight - viewer.clientHeight) : 0;
+  await Store.putSession({ id:S.sessionId, name:S.fileName, pages:S.pages.length, editable:S.editable,
+    count:marks.reduce((a, [, m]) => a + m.length, 0), marks, updated:Date.now(), view:{ zoom:S.zoom, frac } });
+  // poda as mais antigas
+  const all = await Store.list();
+  if (all && all.length > MAX_SESSIONS) for (const old of all.slice(MAX_SESSIONS)) await Store.remove(old.id);
+}
+// fechando / trocando de app: salva já
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveSession(); });
+addEventListener('pagehide', () => saveSession());
+let viewSaveT;
+viewer.addEventListener('scroll', () => { clearTimeout(viewSaveT); viewSaveT = setTimeout(() => S.doc && saveSession(), 1500); }, { passive:true });
+navigator.storage?.persist?.().catch(() => {});
+
+function ago(t){
+  const m = Math.round((Date.now() - t) / 60000);
+  if (m < 1) return 'agora'; if (m < 60) return `há ${m} min`;
+  const h = Math.round(m / 60); if (h < 24) return `há ${h} h`;
+  const d = Math.round(h / 24); return d === 1 ? 'ontem' : `há ${d} dias`;
+}
+async function renderRecent(){
+  const box = $('#recent'), list = (await Store.list()) || [];
+  box.hidden = !list.length; box.querySelector('ul').innerHTML = '';
+  for (const it of list){
+    const li = document.createElement('li');
+    li.innerHTML = `<button class="rc-open"><span class="rc-name"></span><span class="rc-meta"></span></button><button class="rc-x" title="Esquecer">✕</button>`;
+    li.querySelector('.rc-name').textContent = it.name.replace(/\.pdf$/i, '');
+    li.querySelector('.rc-meta').textContent = `${it.count || 0} anotaç${it.count === 1 ? 'ão' : 'ões'} · ${ago(it.updated)}`;
+    li.querySelector('.rc-open').onclick = () => openSession(it.id);
+    li.querySelector('.rc-x').onclick = async () => { await Store.remove(it.id); renderRecent(); };
+    box.querySelector('ul').appendChild(li);
+  }
+}
+renderRecent();
 
 /* Tira /Ink e /Highlight do arquivo (viram marcações editáveis) e devolve o PDF "limpo". */
 async function extractMarks(bytes){
@@ -835,7 +941,7 @@ function setZoom(z, anchor, cx, cy){
   z = Math.max(.4, Math.min(5, z));
   if (!S.doc) return;
   if (!anchor){ const vr = viewer.getBoundingClientRect(); cx = vr.left + vr.width / 2; cy = vr.top + vr.height / 2; anchor = anchorAt(cx, cy); }
-  S.zoom = z; layout();
+  S.zoom = z; layout(); if (S.doc) scheduleSave();
   if (anchor){
     const r = anchor.pg.el.getBoundingClientRect();
     viewer.scrollLeft += r.left + anchor.fx * r.width - cx;
@@ -1122,7 +1228,7 @@ function endStroke(){
   } else if (a.stroke.pts.length){
     commit(a.pg, a.stroke); clearLive();
   }
-  refreshButtons();
+  refreshButtons(); scheduleSave();
 }
 function cancelStroke(){ if (active?.kind === 'erase') return endStroke(); clearLive(); active = null; }
 
@@ -1264,13 +1370,13 @@ function undo(){
   const a = S.undo.pop(); if (!a) return;
   if (a.type === 'add'){ const i = a.pg.strokes.lastIndexOf(a.stroke); if (i >= 0) a.pg.strokes.splice(i, 1); drawInk(a.pg); }
   else { for (const it of [...a.items].reverse()) it.pg.strokes.splice(it.index, 0, it.stroke); new Set(a.items.map(i => i.pg)).forEach(drawInk); }
-  S.redo.push(a); S.dirty = true; refreshButtons();
+  S.redo.push(a); S.dirty = true; refreshButtons(); scheduleSave();
 }
 function redo(){
   const a = S.redo.pop(); if (!a) return;
   if (a.type === 'add'){ a.pg.strokes.push(a.stroke); drawInk(a.pg); }
   else { for (const it of a.items){ const i = it.pg.strokes.indexOf(it.stroke); if (i >= 0) it.pg.strokes.splice(i, 1); } new Set(a.items.map(i => i.pg)).forEach(drawInk); }
-  S.undo.push(a); S.dirty = true; refreshButtons();
+  S.undo.push(a); S.dirty = true; refreshButtons(); scheduleSave();
 }
 $('#btnUndo').onclick = undo; $('#btnRedo').onclick = redo;
 
@@ -1291,7 +1397,7 @@ addEventListener('keydown', e => {
   if (keyTool) setTool(keyTool);
   else if (k === '+' || k === '=') setZoom(S.zoom * 1.25); else if (k === '-') setZoom(S.zoom / 1.25);
 });
-addEventListener('beforeunload', e => { if (S.dirty){ e.preventDefault(); e.returnValue = ''; } });
+addEventListener('beforeunload', () => saveSession());
 
 /* ---------- salvar: marcações → anotações nativas (/Ink e /Highlight) ---------- */
 const f2 = n => (Math.round(n * 100) / 100).toString();
@@ -1408,8 +1514,7 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
     $('#upd').hidden = false;
   });
   $('#updGo').onclick = () => {
-    if (S.dirty && !confirm('Tem anotações não salvas. Atualizar agora vai descartá-las. Continuar?')) return;
-    S.dirty = false; reloading = true; location.reload();
+    reloading = true; saveSession().finally(() => location.reload());
   };
 }
 
