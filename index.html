@@ -156,6 +156,10 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
 
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;
   background:#211836;color:#fff;padding:10px 16px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.3);transition:.2s;z-index:20;max-width:calc(100vw - 32px);text-align:center}
+#upd{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:21;display:flex;align-items:center;gap:12px;
+  background:#211836;color:#fff;padding:8px 8px 8px 16px;border-radius:14px;border:1px solid var(--bar-line);box-shadow:0 8px 30px rgba(0,0,0,.35);white-space:nowrap}
+#upd[hidden]{display:none}
+.card .ver{margin-top:4px;font-size:11px}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
@@ -188,12 +192,14 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p>Toque em <b>Abrir</b> ou arraste um arquivo pra cá.</p>
       <button class="btn primary" id="btnOpen2" disabled>Carregando…</button>
       <p class="fine">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
+      <p class="fine ver">versão 2026.10.29-2121</p>
     </div>
   </div>
   <div id="pages"></div>
 </main>
 <input type="file" id="file" accept="application/pdf,.pdf" hidden>
 <div id="toast" role="status"></div>
+<div id="upd" hidden>✦ Versão nova do Grimório <button class="btn primary" id="updGo">Atualizar</button></div>
 
 <div id="drawer" aria-hidden="true">
   <div class="dr-box">
@@ -1385,7 +1391,26 @@ $('#btnSave').onclick = save;
 // Instalado como app: abre PDFs passados pelo sistema ("Abrir com…")
 if ('launchQueue' in window) launchQueue.setConsumer(async p => { if (p.files?.length) openFile(await p.files[0].getFile()); });
 // Offline: só os arquivos do app ficam guardados, nunca os PDFs
-if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+// Atualização: confere ao abrir e sempre que o app volta pra frente da tela.
+// Sem PDF aberto, recarrega sozinho; com PDF aberto, pergunta (pra não perder nada).
+if ('serviceWorker' in navigator && location.protocol === 'https:'){
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js', { updateViaCache:'none' }).then(reg => {
+    const check = () => reg.update().catch(() => {});
+    check();
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+  }).catch(() => {});
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloading) return;
+    if (!S.doc){ reloading = true; location.reload(); return; }
+    $('#upd').hidden = false;
+  });
+  $('#updGo').onclick = () => {
+    if (S.dirty && !confirm('Tem anotações não salvas. Atualizar agora vai descartá-las. Continuar?')) return;
+    S.dirty = false; reloading = true; location.reload();
+  };
+}
 
 refreshButtons();
 window.__grimorio = S;   // ajuda pra depurar no console
