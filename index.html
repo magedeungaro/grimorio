@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <!-- Nada sai daqui: sem rede. Só blob: (bibliotecas embutidas e o PDF aberto). -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' blob:; worker-src blob: 'self'; manifest-src 'self'; style-src 'unsafe-inline'; img-src blob: data: 'self'; font-src blob: data:; connect-src blob: data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
@@ -64,7 +64,7 @@ button{font:inherit;color:inherit}
 #drawer.open .dr-box::before,#drawer.open .dr-box::after{opacity:.8}
 @keyframes twinkle{0%,100%{transform:scale(.6);opacity:.2}50%{transform:scale(1.15);opacity:.95}}
 .dr-title{text-align:center;color:var(--lilac);font-weight:700;font-size:13px;letter-spacing:.06em;margin-bottom:10px}
-.dr-items{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.dr-items{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 8px}
 .dr-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;border:none;background:none;color:var(--text);cursor:pointer;font:inherit}
 .dr-item .slot{width:100%;aspect-ratio:1;max-width:66px;border-radius:14px;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(180deg,#160f25,#1e1630);box-shadow:inset 0 3px 8px rgba(0,0,0,.6),inset 0 -1px 0 rgba(255,255,255,.06);
@@ -176,6 +176,34 @@ button{font:inherit;color:inherit}
 .tool-text .page{cursor:text}
 .page canvas.ink,.page canvas.live{mix-blend-mode:multiply}
 .size[hidden]{display:none}
+.tool-box .page{cursor:text}
+/* caixas de texto e notas: elementos por cima da página */
+.ov-layer{position:absolute;inset:0;pointer-events:none;z-index:2}
+.ov-item{position:absolute}
+.ov-note{width:26px;height:26px;transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));touch-action:none}
+.ov-note svg{width:100%;height:100%;display:block;overflow:visible}
+.ov-note.editing{filter:drop-shadow(0 0 3px #8b5cf6) drop-shadow(0 0 6px #8b5cf6)}
+.tool-eraser .ov-note{pointer-events:none}
+.ov-box{font-family:Helvetica,Arial,sans-serif;line-height:1.25;white-space:pre-wrap;overflow-wrap:break-word;touch-action:none}
+.bx-txt{min-height:1.25em}
+.tool-box .ov-box{pointer-events:auto;cursor:move;outline:1px dashed rgba(124,58,237,.55);outline-offset:1px}
+.ov-box.editing{pointer-events:auto;cursor:auto;outline:1.5px solid #7c3aed;background:rgba(255,255,255,.6)}
+.ov-box textarea{display:block;width:100%;margin:0;padding:0;border:0;outline:0;background:transparent;color:inherit;font:inherit;line-height:inherit;resize:none;overflow:hidden;
+  white-space:pre-wrap;overflow-wrap:break-word;-webkit-user-select:text;user-select:text;touch-action:auto}
+.ov-box textarea::placeholder{color:#8a80a8}
+.bx-rz{position:absolute;right:-8px;top:50%;width:12px;height:22px;margin-top:-11px;border-radius:6px;background:#7c3aed;border:2px solid #fff;cursor:ew-resize;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.bx-del{position:absolute;right:-12px;top:-28px;width:24px;height:24px;border-radius:50%;border:2px solid #fff;background:#7c3aed;color:#fff;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.bx-del svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+#noteCard{position:fixed;z-index:24;width:min(320px,calc(100vw - 16px));background:linear-gradient(180deg,#33264f,#241a3b);border:1px solid #4a3d66;border-radius:16px;
+  padding:10px 12px 12px;box-shadow:0 14px 36px rgba(0,0,0,.45);color:var(--text)}
+#noteCard[hidden]{display:none}
+.nc-head{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:var(--lilac);margin-bottom:8px;letter-spacing:.03em}
+.nc-dot{width:14px;height:14px;border-radius:4px;background:var(--nc,#ffd54a);border:1px solid rgba(255,255,255,.45)}
+.nc-head .btn{margin-left:auto;height:32px;min-width:32px}
+#ncText{display:block;width:100%;min-height:96px;max-height:40vh;resize:vertical;border-radius:10px;border:1px solid #4a3d66;background:#160f25;color:var(--text);
+  font:16px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:8px 10px;-webkit-user-select:text;user-select:text;outline:none}
+#ncText:focus{border-color:var(--accent)}
+.nc-row{display:flex;justify-content:flex-end;margin-top:8px}
 
 /* ---------- vazio ---------- */
 #empty[hidden]{display:none}
@@ -284,7 +312,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <button class="btn primary" id="btnOpen2" disabled>Carregando…</button>
       <div id="recent" hidden><div class="rc-title">Continuar de onde parou</div><ul></ul></div>
       <p class="fine">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
-      <p class="fine ver">versão 2026.10.29-214833</p>
+      <p class="fine ver">versão 2026.10.30-124359</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -301,11 +329,19 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <button class="dr-item" data-tool="pencil" title="Lápis (L)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M16 3.5l4.5 4.5L8.5 20H4v-4.5z"/><path d="M13.5 6l4.5 4.5"/><path d="M4 15.5L8.5 20"/><path d="M5.6 17.4l1 1" stroke-width="2.6"/></svg></span><span class="nm">Lápis</span></button>
       <button class="dr-item" data-tool="hl" title="Marca-texto (H)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M14 4l6 6-7.5 7.5h-4L6 15v-3.5z"/><path d="M6 15l-3 3v2h5l1.5-2.5"/></svg></span><span class="nm">Marca-texto</span></button>
       <button class="dr-item" data-tool="text" title="Grifo (G)"><span class="slot"><svg viewBox="0 0 24 24"><rect x="3" y="14.5" width="18" height="6" rx="1.2" fill="currentColor" opacity=".35" stroke="none"/><path d="M7 4.5h10"/><path d="M12 4.5v12"/></svg></span><span class="nm">Grifo</span></button>
+      <button class="dr-item" data-tool="box" title="Caixa de texto (T)"><span class="slot"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" stroke-dasharray="3 2.6"/><path d="M8 9h8M12 9v7.5"/></svg></span><span class="nm">Texto</span></button>
+      <button class="dr-item" data-tool="note" title="Nota / comentário (N)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M4 4.5h16v11.5h-8.5L7 20v-4H4z"/><path d="M8 8.5h8M8 12h5"/></svg></span><span class="nm">Nota</span></button>
       <button class="dr-item" data-tool="eraser" title="Borracha (E)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M8.5 20L3.5 15a1.5 1.5 0 0 1 0-2.1L13 3.4a1.5 1.5 0 0 1 2.1 0l5.5 5.5a1.5 1.5 0 0 1 0 2.1L11.5 20z"/><path d="M8.5 20H21"/><path d="M7 9.5l7.5 7.5"/></svg></span><span class="nm">Borracha</span></button>
     </div>
-    <div class="dr-size" id="sizeRow"><span class="lbl2">Espessura</span><input class="size" id="size" type="range"><span class="dot-wrap"><span id="sizeDot"></span></span></div>
+    <div class="dr-size" id="sizeRow"><span class="lbl2" id="sizeLbl">Espessura</span><input class="size" id="size" type="range"><span class="dot-wrap"><span id="sizeDot"></span></span></div>
   </div>
   <div class="dr-knob"></div>
+</div>
+
+<div id="noteCard" hidden role="dialog" aria-label="Comentário">
+  <div class="nc-head"><span class="nc-dot"></span>✦ Comentário<button class="btn icon" id="ncDel" title="Apagar nota"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button></div>
+  <textarea id="ncText" placeholder="Escreva seu comentário…"></textarea>
+  <div class="nc-row"><button class="btn primary" id="ncOk">Pronto</button></div>
 </div>
 
 <div id="potionModal" hidden>
@@ -525,12 +561,14 @@ if (!pdfjsLib || !window.PDFLib) throw new Error('bibliotecas não carregaram');
   }
   document.getElementById('lib-pdfjs-worker').textContent = '';
 }
-const { PDFDocument, PDFName, PDFDict, PDFArray, PDFNumber, PDFString, PDFHexString } = window.PDFLib;
+const { PDFDocument, PDFName, PDFDict, PDFArray, PDFNumber, PDFString, PDFHexString, StandardFonts } = window.PDFLib;
 
 /* ---------- estado ---------- */
 // Cada marcação é um objeto em pg.strokes:
 //   traço:  { kind:'ink',  tool:'pen'|'pencil'|'hl', color, alpha, pts:[[x,y,w],…] }
 //   grifo:  { kind:'text', tool:'text', color, alpha, rects:[[x0,y0,x1,y1],…], text }
+//   caixa:  { kind:'box',  tool:'box',  color, alpha:1, at:[x,topo], w, fs, text }
+//   nota:   { kind:'note', tool:'note', color, alpha:1, at:[x,y] (centro do ícone), text }
 // Tudo em coordenadas do PDF (pontos), então zoom/rotação não importam.
 const PEN_COLORS    = ['#1d1630', '#7c3aed', '#2563eb', '#dc2626', '#059669'];
 const PENCIL_COLORS = ['#45434d', '#7c3aed', '#2563eb', '#dc2626', '#059669'];
@@ -540,12 +578,14 @@ const TOOLS = {
   pencil: { name:'Lápis',       colors:PENCIL_COLORS, alpha:.9, size:{ min:.4, max:4,  step:.1, val:1.1 } },
   hl:     { name:'Marca-texto', colors:HL_COLORS,     alpha:.55, size:{ min:4,  max:24, step:1,  val:12 } },
   text:   { name:'Grifo',       colors:HL_COLORS,     alpha:.55, size:null },
+  box:    { name:'Texto',       colors:PEN_COLORS,    alpha:1,   size:{ min:7,  max:36, step:1,  val:13 } },
+  note:   { name:'Nota',        colors:HL_COLORS,     alpha:1,   size:null },
   eraser: { name:'Borracha',    colors:[],            alpha:1,   size:{ min:6,  max:44, step:1,  val:16 } },
 };
 const INK_KEY = 'GrimorioInk';
 
 const S = {
-  tool:'pen', color:{ pen:PEN_COLORS[1], pencil:PENCIL_COLORS[0], hl:HL_COLORS[0], text:HL_COLORS[0] }, fingerDraws:false,
+  tool:'pen', color:{ pen:PEN_COLORS[1], pencil:PENCIL_COLORS[0], hl:HL_COLORS[0], text:HL_COLORS[0], box:PEN_COLORS[0], note:'#ffd54a' }, fingerDraws:false,
   zoom:1, fit:1, doc:null, baseBytes:null, fileName:'documento.pdf', editable:true,
   pages:[], undo:[], redo:[], dirty:false,
 };
@@ -558,6 +598,8 @@ function setTool(t){
   $('#btnTool').title = TOOLS[t].name + ' — abrir a gaveta';
   document.body.classList.toggle('tool-eraser', t === 'eraser');
   document.body.classList.toggle('tool-text', t === 'text');
+  document.body.classList.toggle('tool-box', t === 'box');
+  $('#sizeLbl').textContent = t === 'box' ? 'Tamanho' : 'Espessura';
   $('#btnPotion').hidden = t === 'eraser';
   paintPotion();
   const r = TOOLS[t].size, inp = $('#size');
@@ -567,12 +609,15 @@ function setTool(t){
 }
 function sizeDot(){
   const r = TOOLS[S.tool].size; if (!r) return;
-  const px = S.tool === 'eraser' ? r.val * .7 : Math.max(3, r.val * (S.tool === 'hl' ? 1.3 : 4));
+  const px = S.tool === 'eraser' ? r.val * .7 : S.tool === 'box' ? r.val * 1.1 : Math.max(3, r.val * (S.tool === 'hl' ? 1.3 : 4));
   const d = $('#sizeDot'); d.style.width = d.style.height = Math.min(32, px) + 'px';
   d.style.background = S.tool === 'eraser' ? 'transparent' : ''; d.style.border = S.tool === 'eraser' ? '2px dashed var(--lilac)' : '';
   d.style.opacity = S.tool === 'hl' ? .6 : 1;
 }
-$('#size').addEventListener('input', e => { const r = TOOLS[S.tool].size; if (r) r.val = +e.target.value; sizeDot(); });
+$('#size').addEventListener('input', e => {
+  const r = TOOLS[S.tool].size; if (r) r.val = +e.target.value; sizeDot();
+  if (S.tool === 'box' && editing?.st.kind === 'box'){ editing.st.fs = r.val; placeOverlay(editing.pg, editing.st); }
+});
 const drawerEl = $('#drawer');
 function openDrawer(open = !drawerEl.classList.contains('open')){
   drawerEl.classList.toggle('open', open); drawerEl.setAttribute('aria-hidden', !open);
@@ -590,7 +635,7 @@ document.querySelectorAll('#tools .dr-item').forEach(b => b.onclick = () => { se
 /* ---------- caldeirão de cores ---------- */
 // Roda HSV: ângulo = matiz, raio = saturação; "intensidade" = brilho.
 // Caneta e lápis compartilham um histórico; marca-texto e grifo, outro.
-const kindOf = t => (t === 'hl' || t === 'text') ? 'hl' : 'ink';
+const kindOf = t => (t === 'hl' || t === 'text' || t === 'note') ? 'hl' : 'ink';
 const hist = { ink:[], hl:[] };
 for (const k of ['ink', 'hl']){
   let v = null; try { v = JSON.parse(localStorage.getItem('grimorio.potions.' + k)); } catch {}
@@ -633,6 +678,7 @@ function drawWheel(){
 function syncPotion(fromHex){
   const hex = hsv2hex(PM.h, PM.s, PM.v);
   S.color[PM.tool] = hex; paintPotion();
+  if (editing && editing.st.tool === PM.tool){ editing.st.color = hex; placeOverlay(editing.pg, editing.st); $('#noteCard').style.setProperty('--nc', hex); }
   const a = PM.h * Math.PI / 180, mark = $('#wheelMark');
   mark.style.left = (12.67 + 74.67 * (.5 + Math.cos(a) * PM.s / 2)) + '%';
   mark.style.top = (16.8 + 32 * (.5 + Math.sin(a) * PM.s / 2)) + '%';
@@ -720,6 +766,7 @@ function refreshButtons(){
 /* ---------- abrir ---------- */
 const fileInput = $('#file');
 $('#btnOpen').onclick = $('#btnOpen2').onclick = () => {
+  if (editing) finishEdit();
   saveSession(); fileInput.click();
 };
 $('#btnOpen2').disabled = false; $('#btnOpen2').textContent = 'Abrir PDF';
@@ -815,7 +862,7 @@ async function saveSession(){
   clearTimeout(saveT); saveT = null;
   if (!S.doc || !S.sessionId) return;
   const marks = [];
-  S.pages.forEach((pg, i) => { if (pg.strokes.length) marks.push([i, pg.strokes.map(({ _sm, ...m }) => m)]); });
+  S.pages.forEach((pg, i) => { if (pg.strokes.length) marks.push([i, pg.strokes.map(m => Object.fromEntries(Object.entries(m).filter(([k]) => k[0] !== '_')))]); });
   const frac = viewer.scrollHeight > viewer.clientHeight ? viewer.scrollTop / (viewer.scrollHeight - viewer.clientHeight) : 0;
   await Store.putSession({ id:S.sessionId, name:S.fileName, pages:S.pages.length, editable:S.editable,
     count:marks.reduce((a, [, m]) => a + m.length, 0), marks, updated:Date.now(), view:{ zoom:S.zoom, frac } });
@@ -824,7 +871,7 @@ async function saveSession(){
   if (all && all.length > MAX_SESSIONS) for (const old of all.slice(MAX_SESSIONS)) await Store.remove(old.id);
 }
 // fechando / trocando de app: salva já
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveSession(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden'){ if (editing) finishEdit(); saveSession(); } });
 addEventListener('pagehide', () => saveSession());
 let viewSaveT;
 viewer.addEventListener('scroll', () => { clearTimeout(viewSaveT); viewSaveT = setTimeout(() => S.doc && saveSession(), 1500); }, { passive:true });
@@ -858,20 +905,26 @@ async function extractMarks(bytes){
     const doc = await PDFDocument.load(bytes, { updateMetadata:false });
     if (doc.isEncrypted) return { base: bytes, imported, editable:false };
     let changed = false;
-    const INK = PDFName.of('Ink'), HIL = PDFName.of('Highlight'), SUB = PDFName.of('Subtype');
+    const INK = PDFName.of('Ink'), HIL = PDFName.of('Highlight'), FT = PDFName.of('FreeText'), TXT = PDFName.of('Text'), SUB = PDFName.of('Subtype');
     doc.getPages().forEach((page, i) => {
       const annots = page.node.lookup(PDFName.of('Annots'));
       if (!(annots instanceof PDFArray)) return;
-      const keep = [], marks = [];
+      const keep = [], marks = [], popups = new Set();
       for (let j = 0; j < annots.size(); j++){
         const ref = annots.get(j), d = doc.context.lookup(ref);
         if (d instanceof PDFDict){
           const sub = d.get(SUB);
-          const got = sub === INK ? inkToStrokes(doc, d) : sub === HIL ? highlightToMark(doc, d) : [];
-          if (got.length){ marks.push(...got); continue; }
+          const got = sub === INK ? inkToStrokes(doc, d) : sub === HIL ? highlightToMark(doc, d)
+                    : sub === FT ? boxFromFreeText(doc, d) : sub === TXT ? noteFromText(doc, d) : [];
+          if (got.length){
+            marks.push(...got);
+            const pop = d.get(PDFName.of('Popup')); if (pop) popups.add(String(pop));   // o balão do comentário vai junto
+            continue;
+          }
         }
         keep.push(ref);
       }
+      if (popups.size) for (let k = keep.length - 1; k >= 0; k--) if (popups.has(String(keep[k]))) keep.splice(k, 1);
       if (marks.length){ imported.set(i, marks); page.node.set(PDFName.of('Annots'), doc.context.obj(keep)); changed = true; }
     });
     return { base: changed ? await doc.save() : bytes, imported, editable:true };
@@ -937,6 +990,33 @@ function highlightToMark(doc, d){
   return [{ kind:'text', tool:'text', color:annotColor(doc, d, '#ffe14d'), alpha, rects, text:annotText(doc, d, 'Contents') }];
 }
 
+function rectOf(doc, d){
+  const R = doc.context.lookup(d.get(PDFName.of('Rect')));
+  if (!(R instanceof PDFArray) || R.size() !== 4) return null;
+  const v = [0, 1, 2, 3].map(i => num(doc, R.get(i), 0));
+  return [Math.min(v[0], v[2]), Math.min(v[1], v[3]), Math.max(v[0], v[2]), Math.max(v[1], v[3])];
+}
+function boxFromFreeText(doc, d){
+  const ours = annotName(doc, d, 'GrimorioTool') === 'box';
+  // balões com seta (callout) de outros apps ficam como estão
+  if (!ours && (d.get(PDFName.of('CL')) || /Callout/i.test(annotName(doc, d, 'IT')))) return [];
+  const text = annotText(doc, d, 'Contents').replace(/\r\n?/g, '\n'), R = rectOf(doc, d);
+  if (!text.trim() || !R) return [];
+  const da = annotText(doc, d, 'DA');
+  const fs = Math.max(4, Math.min(72, +(da.match(/([\d.]+)\s+Tf/)?.[1]) || 12));
+  const m = da.match(/([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+rg/);
+  const color = m ? '#' + m.slice(1, 4).map(v => Math.round(Math.min(1, +v) * 255).toString(16).padStart(2, '0')).join('') : '#000000';
+  const meta = annotText(doc, d, 'GrimorioBox').split('|');
+  const w = meta[0] === 'v1' && +meta[1] > 0 ? +meta[1] : Math.max(30, R[2] - R[0]);
+  return [{ kind:'box', tool:'box', color, alpha:1, at:[R[0], R[3]], w, fs, text }];
+}
+function noteFromText(doc, d){
+  if (d.get(PDFName.of('IRT')) || d.get(PDFName.of('State'))) return [];   // respostas e status de revisão ficam como estão
+  const R = rectOf(doc, d); if (!R) return [];
+  return [{ kind:'note', tool:'note', color:annotColor(doc, d, '#ffd54a'), alpha:1, at:[(R[0] + R[2]) / 2, (R[1] + R[3]) / 2],
+            text:annotText(doc, d, 'Contents').replace(/\r\n?/g, '\n') }];
+}
+
 /* ---------- páginas ---------- */
 async function buildPages(imported){
   pagesEl.innerHTML = ''; S.pages = [];
@@ -965,6 +1045,7 @@ function layout(){
     pg.el.style.height = Math.floor(pg.vp.height) + 'px';
     pg.gen++;
     if (pg.task){ pg.task.cancel(); pg.task = null; }
+    renderOverlays(pg);
   }
   refreshButtons();
 }
@@ -1149,10 +1230,12 @@ function paintShape(ctx, pg, st){
 }
 let scratch = null;
 function drawInk(pg){
+  renderOverlays(pg);
   const c = pg.inkCanvas; if (!c) return;
   const ctx = c.getContext('2d');
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height);
   for (const st of pg.strokes){
+    if (isOv(st)) continue;
     if (st.alpha >= 1 && st.tool !== 'pencil'){
       ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, 0); paintShape(ctx, pg, st);
       continue;
@@ -1230,12 +1313,143 @@ function textSelection(items, A, B){
   return { rects, text:parts.join(' ').replace(/\s+/g, ' ').trim() };
 }
 
+
+/* ---------- caixas de texto e notas (comentários) ---------- */
+// Ficam como elementos HTML por cima da página (texto nítido em qualquer zoom e
+// editável no lugar). Ao salvar viram /FreeText e /Text nativos.
+const isOv = st => st.kind === 'box' || st.kind === 'note';
+const BOX_PAD = 2;   // pt
+const NOTE_SVG = '<svg viewBox="0 0 20 20"><path d="M1.5 14V1.5h17V14H8l-4 5 .5-5z" fill="currentColor" stroke="#3b2766" stroke-width="1" stroke-linejoin="round"/><path d="M5 5.5h10M5 9h10M5 12h7" stroke="#3b2766" stroke-width="1" stroke-linecap="round" opacity=".7"/></svg>';
+let editing = null;   // { pg, st, isNew, before }
+const snap = st => ({ text:st.text, at:[...st.at], w:st.w, fs:st.fs, color:st.color });
+
+function renderOverlays(pg){
+  if (!pg.vp) return;
+  const list = pg.strokes.filter(isOv);
+  if (editing?.pg === pg && !list.includes(editing.st)) list.push(editing.st);
+  if (!list.length && !pg.ov) return;
+  if (!pg.ov){ pg.ov = document.createElement('div'); pg.ov.className = 'ov-layer'; pg.el.appendChild(pg.ov); }
+  for (const el of [...pg.ov.children]) if (!list.includes(el._st)) el.remove();
+  for (const st of list) placeOverlay(pg, st);
+}
+function fitTa(el){ const ta = el.querySelector('textarea'); if (ta){ ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; } }
+function placeOverlay(pg, st){
+  let el = st._el;
+  if (!el){
+    el = st._el = document.createElement('div'); el._st = st; el.className = 'ov-item ov-' + st.kind;
+    el.innerHTML = st.kind === 'note' ? NOTE_SVG : '<div class="bx-txt"></div>';
+  }
+  if (el.parentNode !== pg.ov) pg.ov.appendChild(el);
+  el._pg = pg;
+  const s = pg.vp.scale, [vx, vy] = pg.vp.convertToViewportPoint(st.at[0], st.at[1]);
+  el.style.left = vx + 'px'; el.style.top = vy + 'px'; el.style.color = st.color;
+  if (st.kind === 'box'){
+    el.style.width = st.w * s + 'px'; el.style.fontSize = st.fs * s + 'px'; el.style.padding = BOX_PAD * s + 'px';
+    const t = el.querySelector('.bx-txt'); if (t) t.textContent = st.text;
+    fitTa(el);
+    if (el.offsetHeight) st._h = el.offsetHeight / s;
+  } else {
+    el.title = st.text || 'Nota';
+    if (editing?.st === st) positionNoteCard();
+  }
+}
+
+function beginEdit(pg, st, isNew){
+  if (editing) finishEdit();
+  editing = { pg, st, isNew, before:snap(st) };
+  renderOverlays(pg);
+  const el = st._el; el.classList.add('editing');
+  if (st.kind === 'box'){
+    const ta = document.createElement('textarea');
+    ta.value = st.text; ta.placeholder = 'Escreva aqui…'; ta.rows = 1;
+    el.querySelector('.bx-txt').replaceWith(ta);
+    el.insertAdjacentHTML('beforeend', '<div class="bx-rz" title="Arraste pra mudar a largura"></div><button class="bx-del" title="Apagar caixa"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>');
+    const t0 = performance.now();
+    el.querySelector('.bx-del').onclick = () => { if (performance.now() - t0 < 500) return; st.text = ''; finishEdit(); };   // o clique do próprio toque que criou não apaga
+    ta.oninput = () => { st.text = ta.value; fitTa(el); st._h = el.offsetHeight / pg.vp.scale; };
+    fitTa(el);
+    ta.focus({ preventScroll:true });
+    if (!isNew) ta.setSelectionRange(ta.value.length, ta.value.length);
+  } else {
+    const card = $('#noteCard'), ta = $('#ncText');
+    ta.value = st.text; card.style.setProperty('--nc', st.color);
+    card.hidden = false; positionNoteCard();
+    if (isNew || !st.text) ta.focus({ preventScroll:true });
+  }
+}
+function positionNoteCard(){
+  const card = $('#noteCard'); if (card.hidden || !editing) return;
+  const r = editing.st._el.getBoundingClientRect(), w = card.offsetWidth, h = card.offsetHeight;
+  const top0 = $('#viewer').getBoundingClientRect().top + 8;
+  let top = r.bottom + 8;
+  if (top + h > innerHeight - 8) top = Math.max(top0, r.top - 8 - h);
+  card.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + 'px';
+  card.style.top = top + 'px';
+}
+$('#ncText').addEventListener('input', e => { if (editing?.st.kind === 'note'){ editing.st.text = e.target.value; editing.st._el.title = e.target.value; } });
+$('#ncOk').onclick = () => finishEdit();
+$('#ncDel').onclick = () => { if (editing){ editing.st.text = ''; finishEdit(); } };
+viewer.addEventListener('scroll', () => positionNoteCard(), { passive:true });
+
+function finishEdit(){
+  const ed = editing; if (!ed) return;
+  editing = null;
+  const { pg, st } = ed, el = st._el;
+  if (st.kind === 'box'){
+    const ta = el.querySelector('textarea');
+    if (ta){ st.text = ta.value; const d = document.createElement('div'); d.className = 'bx-txt'; ta.replaceWith(d); ta.blur(); }
+    el.querySelector('.bx-rz')?.remove(); el.querySelector('.bx-del')?.remove();
+  } else { $('#ncText').blur(); $('#noteCard').hidden = true; }
+  el.classList.remove('editing');
+  st.text = st.text.replace(/\s+$/, '');
+  const empty = !st.text.trim();
+  if (ed.isNew){
+    if (empty){ el.remove(); return; }
+    commit(pg, st);
+  } else if (empty && !(st.kind === 'note' && !ed.before.text)){
+    const i = pg.strokes.indexOf(st);
+    if (i >= 0){ pg.strokes.splice(i, 1); S.undo.push({ type:'erase', items:[{ pg, stroke:st, index:i }] }); S.redo = []; S.dirty = true; drawInk(pg); }
+  } else {
+    const after = snap(st);
+    if (JSON.stringify(after) !== JSON.stringify(ed.before)){ S.undo.push({ type:'edit', pg, stroke:st, before:ed.before, after }); S.redo = []; S.dirty = true; }
+    renderOverlays(pg);
+  }
+  refreshButtons(); scheduleSave();
+}
+function placeNew(pg, cx, cy){
+  if (editing){ finishEdit(); return; }
+  const [x, y] = toPdf(pg, cx, cy), view = pg.pdfPage.view;
+  if (S.tool === 'box'){
+    const fs = TOOLS.box.size.val, w = Math.max(60, Math.min(220, view[2] - x - 4));
+    beginEdit(pg, { kind:'box', tool:'box', color:S.color.box, alpha:1, at:[x, y + fs * .65], w, fs, text:'' }, true);
+  } else beginEdit(pg, { kind:'note', tool:'note', color:S.color.note, alpha:1, at:[x, y], text:'' }, true);
+}
+// tocar fora da caixa/nota que está sendo editada: termina a edição (e esse toque não risca nada)
+addEventListener('pointerdown', e => {
+  if (!editing) return;
+  if (e.target.closest('#noteCard,#potionModal,#drawer,#btnTool,#btnPotion') || editing.st._el?.contains(e.target)) return;
+  finishEdit();
+  if (e.target.closest('#viewer')){ e.stopPropagation(); e.preventDefault(); }
+}, true);
+function moveOv(e){
+  const a = active, dx = e.clientX - a.sx, dy = e.clientY - a.sy;
+  if (a.kind === 'rz'){ a.st.w = Math.max(30, a.w0 + dx / a.pg.vp.scale); placeOverlay(a.pg, a.st); return; }
+  if (!a.moved && Math.hypot(dx, dy) < 8) return;
+  if (!a.canDrag) return;
+  a.moved = true;
+  const [x0, y0] = toPdf(a.pg, a.sx, a.sy), [x1, y1] = toPdf(a.pg, e.clientX, e.clientY);
+  a.st.at = [a.before.at[0] + x1 - x0, a.before.at[1] + y1 - y0];
+  placeOverlay(a.pg, a.st);
+}
+
 /* ---------- entrada: caneta, mouse, dedo ---------- */
 const touches = new Map();     // pointerId → {x,y}
 const ignored = new Set();     // toques ignorados (palma enquanto a caneta escreve)
 let active = null;             // traço/borracha/grifo em andamento
 let gest = null;               // gesto de dedo em andamento
 let lastPenAt = 0;
+let tapCand = null;             // toque de dedo que pode virar caixa/nota nova
+const placing = () => S.tool === 'box' || S.tool === 'note';
 
 function toPdf(pg, cx, cy){
   const r = pg.el.getBoundingClientRect();
@@ -1306,6 +1520,13 @@ function commit(pg, mark){
 function endStroke(){
   const a = active; active = null;
   if (!a) return;
+  if (a.kind === 'ov'){
+    if (!a.moved){ if (editing?.st !== a.st) beginEdit(a.pg, a.st, false); }
+    else if (editing?.st !== a.st){ S.undo.push({ type:'edit', pg:a.pg, stroke:a.st, before:a.before, after:snap(a.st) }); S.redo = []; S.dirty = true; }
+    refreshButtons(); scheduleSave(); return;
+  }
+  if (a.kind === 'rz') return;
+  if (a.kind === 'place'){ if (a.ok) placeNew(a.pg, a.x, a.y); return; }
   if (a.kind === 'erase'){
     clearLive();
     if (a.removed.length){ S.undo.push({ type:'erase', items:a.removed }); S.redo = []; S.dirty = true; }
@@ -1317,7 +1538,7 @@ function endStroke(){
   }
   refreshButtons(); scheduleSave();
 }
-function cancelStroke(){ if (active?.kind === 'erase') return endStroke(); clearLive(); active = null; }
+function cancelStroke(){ if (active?.kind === 'erase' || active?.kind === 'ov' || active?.kind === 'rz') return endStroke(); clearLive(); active = null; }
 
 function eraseAt(e){
   const a = active, pg = a.pg, [x, y] = toPdf(pg, e.clientX, e.clientY);
@@ -1334,6 +1555,11 @@ function eraseAt(e){
   }
 }
 function markHit(st, x, y, rad){
+  if (st.kind === 'note') return Math.hypot(x - st.at[0], y - st.at[1]) <= rad + 9;
+  if (st.kind === 'box'){
+    const h = st._h || st.fs * 1.25 + 2 * BOX_PAD;
+    return x >= st.at[0] - rad && x <= st.at[0] + st.w + rad && y <= st.at[1] + rad && y >= st.at[1] - h - rad;
+  }
   if (st.kind === 'text') return st.rects.some(([x0, y0, x1, y1]) => x >= x0 - rad && x <= x1 + rad && y >= y0 - rad && y <= y1 + rad);
   const P = st.pts;
   for (let i = 0; i < P.length; i++){
@@ -1389,12 +1615,28 @@ function fling(){
 
 viewer.addEventListener('pointerdown', e => {
   if (!S.doc) return;
+  const ovEl = S.tool !== 'eraser' && e.target.closest('.ov-item');
+  if (ovEl){   // tocou numa caixa/nota: abre, arrasta ou muda a largura
+    if (e.target.closest('textarea,.bx-del') || active || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    const st = ovEl._st, pg = ovEl._pg;
+    active = e.target.closest('.bx-rz')
+      ? { kind:'rz', id:e.pointerId, type:e.pointerType, pg, st, sx:e.clientX, sy:e.clientY, w0:st.w }
+      : { kind:'ov', id:e.pointerId, type:e.pointerType, pg, st, sx:e.clientX, sy:e.clientY, moved:false, before:snap(st),
+          canDrag: st.kind === 'note' || S.tool === 'box' };
+    if (e.pointerType === 'pen') lastPenAt = performance.now();
+    e.preventDefault(); try { viewer.setPointerCapture(e.pointerId); } catch {}
+    return;
+  }
   if (e.pointerType === 'touch'){
     touches.set(e.pointerId, { x:e.clientX, y:e.clientY });
     if (active?.type === 'pen' || performance.now() - lastPenAt < 250){ ignored.add(e.pointerId); return; }  // palma
     stopMomentum();
     const free = [...touches.keys()].filter(id => !ignored.has(id));
-    if (S.fingerDraws && free.length === 1 && !active){
+    tapCand = null;
+    if (placing()){
+      const pgEl = e.target.closest('.page');
+      if (pgEl && free.length === 1 && !active){ tapCand = { id:e.pointerId, x:e.clientX, y:e.clientY, t:performance.now(), pg:pgEl._pg }; e.preventDefault(); }   // sem mousedown "de compatibilidade" roubando o foco do campo
+    } else if (S.fingerDraws && free.length === 1 && !active){
       const pgEl = e.target.closest('.page');
       if (pgEl){ if (pgEl._pg.inkCanvas){ startStroke(e, pgEl._pg); return; } renderPage(pgEl._pg); }
     }
@@ -1412,6 +1654,7 @@ viewer.addEventListener('pointerdown', e => {
   const pgEl = e.target.closest('.page'); if (!pgEl) return;
   e.preventDefault();
   try { viewer.setPointerCapture(e.pointerId); } catch {}
+  if (placing()){ active = { kind:'place', id:e.pointerId, type:e.pointerType, pg:pgEl._pg, x:e.clientX, y:e.clientY, ok:true }; return; }
   startStroke(e, pgEl._pg);
 });
 
@@ -1424,6 +1667,8 @@ viewer.addEventListener('pointermove', e => {
   }
   if (!active || active.id !== e.pointerId) return;
   if (e.pointerType === 'pen') lastPenAt = performance.now();
+  if (active.kind === 'ov' || active.kind === 'rz') return moveOv(e);
+  if (active.kind === 'place'){ if (Math.hypot(e.clientX - active.x, e.clientY - active.y) > 10) active.ok = false; return; }
   const evs = e.getCoalescedEvents?.() || [];
   if (active.kind === 'text') return moveText(e);
   for (const ev of (evs.length ? evs : [e])){ if (active.kind === 'erase') eraseAt(ev); else addPoint(ev); }
@@ -1433,6 +1678,13 @@ function pointerEnd(e){
   if (e.pointerType === 'touch'){
     const wasGesture = gest?.ids.includes(e.pointerId);
     touches.delete(e.pointerId); ignored.delete(e.pointerId);
+    if (tapCand?.id === e.pointerId){
+      const c = tapCand; tapCand = null;
+      if (e.type === 'pointerup' && !touches.size && Math.hypot(e.clientX - c.x, e.clientY - c.y) < 10 && performance.now() - c.t < 600){
+        if (gest){ if (gest.mode === 'pinch') endPreview(); gest = null; }
+        placeNew(c.pg, c.x, c.y); return;
+      }
+    }
     if (active?.id === e.pointerId){ if (active.kind === 'draw' && e.type !== 'pointercancel') addPoint(e, true); endStroke(); return; }
     if (wasGesture){
       if (gest.mode === 'pan' && touches.size === 0) fling();
@@ -1454,14 +1706,18 @@ viewer.addEventListener('contextmenu', e => e.preventDefault());
 
 /* ---------- desfazer / refazer ---------- */
 function undo(){
+  if (editing) finishEdit();
   const a = S.undo.pop(); if (!a) return;
-  if (a.type === 'add'){ const i = a.pg.strokes.lastIndexOf(a.stroke); if (i >= 0) a.pg.strokes.splice(i, 1); drawInk(a.pg); }
+  if (a.type === 'edit'){ Object.assign(a.stroke, structuredClone(a.before)); renderOverlays(a.pg); }
+  else if (a.type === 'add'){ const i = a.pg.strokes.lastIndexOf(a.stroke); if (i >= 0) a.pg.strokes.splice(i, 1); drawInk(a.pg); }
   else { for (const it of [...a.items].reverse()) it.pg.strokes.splice(it.index, 0, it.stroke); new Set(a.items.map(i => i.pg)).forEach(drawInk); }
   S.redo.push(a); S.dirty = true; refreshButtons(); scheduleSave();
 }
 function redo(){
+  if (editing) finishEdit();
   const a = S.redo.pop(); if (!a) return;
-  if (a.type === 'add'){ a.pg.strokes.push(a.stroke); drawInk(a.pg); }
+  if (a.type === 'edit'){ Object.assign(a.stroke, structuredClone(a.after)); renderOverlays(a.pg); }
+  else if (a.type === 'add'){ a.pg.strokes.push(a.stroke); drawInk(a.pg); }
   else { for (const it of a.items){ const i = it.pg.strokes.indexOf(it.stroke); if (i >= 0) it.pg.strokes.splice(i, 1); } new Set(a.items.map(i => i.pg)).forEach(drawInk); }
   S.undo.push(a); S.dirty = true; refreshButtons(); scheduleSave();
 }
@@ -1470,7 +1726,9 @@ $('#btnUndo').onclick = undo; $('#btnRedo').onclick = redo;
 addEventListener('keydown', e => {
   const mod = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
   if (!$('#potionModal').hidden && (k === 'escape' || (k === 'enter' && !mod))){ e.preventDefault(); closePotion(); return; }
-  if (e.target.closest?.('input')) return;
+  if (editing && k === 'escape'){ e.preventDefault(); finishEdit(); return; }
+  if (editing && !mod) return;   // escrevendo: letras não trocam de ferramenta
+  if (e.target.closest?.('input,textarea')) return;
   if (mod && k === 'z'){ e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
   if (mod && k === 'y'){ e.preventDefault(); redo(); return; }
   if (mod && k === 's'){ e.preventDefault(); save(); return; }
@@ -1480,7 +1738,7 @@ addEventListener('keydown', e => {
   if (k === 'c'){ openPotion(); return; }
   if (k === ' ' && S.doc){ e.preventDefault(); openDrawer(); return; }
   if (k === 'escape'){ openDrawer(false); return; }
-  const keyTool = { p:'pen', l:'pencil', h:'hl', g:'text', e:'eraser' }[k];
+  const keyTool = { p:'pen', l:'pencil', h:'hl', g:'text', t:'box', n:'note', e:'eraser' }[k];
   if (keyTool) setTool(keyTool);
   else if (k === '+' || k === '=') setZoom(S.zoom * 1.25); else if (k === '-') setZoom(S.zoom / 1.25);
 });
@@ -1558,17 +1816,70 @@ function addHighlight(doc, page, st, idx){
   });
   page.node.addAnnot(ctx.register(annot));
 }
+
+// Quebra de linha igual à da tela (palavra inteira; palavra gigante quebra no meio).
+function wrapLines(text, measure, maxW){
+  const out = [];
+  for (const para of text.split('\n')){
+    let line = '';
+    for (const tok of para.split(/(\s+)/).filter(Boolean)){
+      if (measure(line + tok) <= maxW){ line += tok; continue; }
+      if (/^\s+$/.test(tok)){ out.push(line); line = ''; continue; }
+      if (line.trim()){ out.push(line.replace(/\s+$/, '')); line = ''; }
+      if (measure(tok) <= maxW){ line = tok; continue; }
+      for (const ch of tok){ if (line && measure(line + ch) > maxW){ out.push(line); line = ch; } else line += ch; }
+    }
+    out.push(line.replace(/\s+$/, ''));
+  }
+  return out;
+}
+function addBox(doc, page, st, idx, font, charset){
+  const ctx = doc.context, fs = st.fs, lh = fs * 1.25;
+  const clean = t => [...t.replace(/\t/g, ' ')].map(c => charset.has(c.codePointAt(0)) ? c : '?').join('');
+  const lines = wrapLines(st.text, t => font.widthOfTextAtSize(clean(t), fs), st.w - 2 * BOX_PAD);
+  const [x, y] = st.at, h = lines.length * lh + 2 * BOX_PAD;
+  const rect = [x, y - h, x + st.w, y].map(v => +f2(v));
+  const [r, g, b] = hexToRgb(st.color), col = `${f2(r)} ${f2(g)} ${f2(b)} rg`;
+  let body = `BT /F0 ${f2(fs)} Tf ${col}\n`;
+  lines.forEach((ln, i) => { if (ln) body += `1 0 0 1 ${f2(x + BOX_PAD)} ${f2(y - BOX_PAD - fs * .97 - i * lh)} Tm ${font.encodeText(clean(ln)).toString()} Tj\n`; });
+  body += 'ET\n';
+  const ap = ctx.register(ctx.flateStream(body, { Type:'XObject', Subtype:'Form', FormType:1, BBox:rect, Resources:{ Font:{ F0:font.ref } } }));
+  const fields = commonFields(st, page, idx); delete fields.C;   // em /FreeText, C seria cor de fundo
+  page.node.addAnnot(ctx.register(ctx.obj({
+    ...fields, Subtype:'FreeText', Rect:rect, Contents:PDFHexString.fromText(st.text),
+    DA:PDFString.of(`/Helv ${f2(fs)} Tf ${col}`), Q:0, BS:{ Type:'Border', W:0 }, AP:{ N:ap },
+    GrimorioBox:PDFString.of(`v1|${f2(st.w)}`),
+  })));
+}
+function addNote(doc, page, st, idx){
+  const ctx = doc.context, [x, y] = st.at, rect = [x - 10, y - 10, x + 10, y + 10].map(v => +f2(v));
+  const [r, g, b] = hexToRgb(st.color), P = (dx, dy) => `${f2(x + dx)} ${f2(y + dy)}`;
+  const body = `q ${f2(r)} ${f2(g)} ${f2(b)} rg 0.23 0.15 0.4 RG 1 w 1 j\n` +
+    `${P(-8.5, -4)} m ${P(-8.5, 8.5)} l ${P(8.5, 8.5)} l ${P(8.5, -4)} l ${P(-2, -4)} l ${P(-6, -9)} l ${P(-5.5, -4)} l h B\n` +
+    `${P(-5, 4.5)} m ${P(5, 4.5)} l ${P(-5, 1)} m ${P(5, 1)} l ${P(-5, -2)} m ${P(2, -2)} l S Q\n`;
+  const ap = ctx.register(ctx.flateStream(body, { Type:'XObject', Subtype:'Form', FormType:1, BBox:rect, Resources:{} }));
+  page.node.addAnnot(ctx.register(ctx.obj({
+    ...commonFields(st, page, idx), F:28, Subtype:'Text', Rect:rect, Name:'Comment', Open:false,
+    Contents:PDFHexString.fromText(st.text), T:PDFHexString.fromText('Grimório'), AP:{ N:ap },
+  })));
+}
 function pdfDate(){ const d = new Date(), z = n => String(n).padStart(2, '0'); return `D:${d.getUTCFullYear()}${z(d.getUTCMonth() + 1)}${z(d.getUTCDate())}${z(d.getUTCHours())}${z(d.getUTCMinutes())}${z(d.getUTCSeconds())}Z`; }
 
 let saving = false;
 async function save(){
+  if (editing) finishEdit();
   if (!S.doc || !S.editable || saving) return;
   saving = true; toast('Salvando…', 60000);
   try {
     const doc = await PDFDocument.load(S.baseBytes, { updateMetadata:false });
-    const pages = doc.getPages(); let idx = 0;
+    const pages = doc.getPages(); let idx = 0, font = null, charset = null;
     for (const pg of S.pages) for (const st of pg.strokes){
-      (st.kind === 'text' ? addHighlight : addInk)(doc, pages[pg.i - 1], st, idx++);
+      const page = pages[pg.i - 1];
+      if (st.kind === 'box'){
+        if (!font){ font = await doc.embedFont(StandardFonts.Helvetica); charset = new Set(font.getCharacterSet()); }
+        addBox(doc, page, st, idx++, font, charset);
+      } else if (st.kind === 'note') addNote(doc, page, st, idx++);
+      else (st.kind === 'text' ? addHighlight : addInk)(doc, page, st, idx++);
     }
     const out = await doc.save();
     const blob = new Blob([out], { type:'application/pdf' }), url = URL.createObjectURL(blob);
