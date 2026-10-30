@@ -192,7 +192,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p>Toque em <b>Abrir</b> ou arraste um arquivo pra cá.</p>
       <button class="btn primary" id="btnOpen2" disabled>Carregando…</button>
       <p class="fine">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
-      <p class="fine ver">versão 2026.10.29-2121</p>
+      <p class="fine ver">versão 2026.10.29-212410</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -1393,8 +1393,8 @@ if ('launchQueue' in window) launchQueue.setConsumer(async p => { if (p.files?.l
 // Offline: só os arquivos do app ficam guardados, nunca os PDFs
 // Atualização: confere ao abrir e sempre que o app volta pra frente da tela.
 // Sem PDF aberto, recarrega sozinho; com PDF aberto, pergunta (pra não perder nada).
-if ('serviceWorker' in navigator && location.protocol === 'https:'){
-  const hadController = !!navigator.serviceWorker.controller;
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+  let controlled = !!navigator.serviceWorker.controller;
   navigator.serviceWorker.register('sw.js', { updateViaCache:'none' }).then(reg => {
     const check = () => reg.update().catch(() => {});
     check();
@@ -1402,7 +1402,8 @@ if ('serviceWorker' in navigator && location.protocol === 'https:'){
   }).catch(() => {});
   let reloading = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!hadController || reloading) return;
+    if (!controlled){ controlled = true; return; }   // 1ª instalação: só assumiu a página
+    if (reloading) return;
     if (!S.doc){ reloading = true; location.reload(); return; }
     $('#upd').hidden = false;
   });
