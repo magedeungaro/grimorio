@@ -10,6 +10,7 @@ Leitor de PDF com caneta, feito pra iPad/Safari (e qualquer navegador). Tudo rod
 - **Texto**: caixa de texto direto na página · **Nota**: marcador com balão de comentário
 - **Laço**: contorna desenhos pra selecionar, mover, redimensionar pelos cantos, girar ou apagar de uma vez
 - **Carimbos**: grimório com símbolos místicos, céu, runas nórdicas e os 12 signos (alguns coloridos, outros na cor do caldeirão)
+- **Cadernos**: materialize um caderno em branco (pautado, pontilhado, quadriculado, liso ou pergaminho), com capa colorida e "＋ Nova página" no fim
 - **Borracha** (apaga traço por traço), desfazer/refazer
 - **Marca-páginas**: fita colorida no canto de cada página, com nome; painel **Marcadores** com as fitas e o sumário do PDF
 - Dedo rola e dá zoom com pinça; botão pra alternar pro "dedo desenha"
