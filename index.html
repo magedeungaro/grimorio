@@ -25,6 +25,8 @@
 }
 @media (prefers-color-scheme:dark){ :root{ --bg:#161122; --page-shadow:0 1px 3px rgba(0,0,0,.5),0 8px 28px rgba(0,0,0,.35);} }
 *{box-sizing:border-box}
+html{overscroll-behavior:none}
+body{position:fixed;inset:0;overscroll-behavior:none}
 html,body{margin:0;height:100%;background:var(--bg);font:14px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--text);overflow:hidden;touch-action:manipulation}
 button{font:inherit;color:inherit}
 
@@ -33,6 +35,8 @@ button{font:inherit;color:inherit}
   background:linear-gradient(180deg,var(--bar),var(--bar-2));border-bottom:1px solid var(--bar-line);
   display:flex;align-items:center;gap:6px;overflow-x:auto;overflow-y:hidden;white-space:nowrap;z-index:10;scrollbar-width:none;-webkit-user-select:none;user-select:none}
 .bar::-webkit-scrollbar{display:none}
+.bar{touch-action:pan-x;overscroll-behavior:contain}   /* arrastar a barra pra cima/baixo não leva a página junto (iPad) */
+#drawer,#drivePanel,#bmPanel,#noteCard,#bmCard,#potionModal{overscroll-behavior:contain}
 .brand{font-weight:700;letter-spacing:.02em;margin-right:6px;display:flex;align-items:center;gap:6px;color:var(--lilac)}
 .brand svg{width:18px;height:18px}
 .sep{width:1px;height:28px;background:var(--bar-line);margin:0 4px;flex:none}
@@ -72,7 +76,7 @@ button{font:inherit;color:inherit}
 #drawer.open .dr-box::before,#drawer.open .dr-box::after{opacity:.8}
 @keyframes twinkle{0%,100%{transform:scale(.6);opacity:.2}50%{transform:scale(1.15);opacity:.95}}
 .dr-title{text-align:center;color:var(--lilac);font-weight:700;font-size:13px;letter-spacing:.06em;margin-bottom:10px}
-.dr-items{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 8px}
+.dr-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:10px 8px}
 .dr-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;border:none;background:none;color:var(--text);cursor:pointer;font:inherit}
 .dr-item .slot{width:100%;aspect-ratio:1;max-width:66px;border-radius:14px;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(180deg,#160f25,#1e1630);box-shadow:inset 0 3px 8px rgba(0,0,0,.6),inset 0 -1px 0 rgba(255,255,255,.06);
@@ -88,7 +92,7 @@ button{font:inherit;color:inherit}
 .dr-size .lbl2{font-size:12.5px;color:var(--muted)}
 .dr-size .size{flex:1;width:auto}
 .dot-wrap{width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex:none}
-#sizeDot{display:block;border-radius:50%;background:var(--potion)}
+#sizeDot{display:block;border-radius:50%;background:var(--potion);box-shadow:0 0 0 1.5px rgba(255,255,255,.35)}
 .dr-knob{width:46px;height:12px;margin:-1px auto 0;border-radius:0 0 12px 12px;background:linear-gradient(180deg,#d8b46a,#9a7434);box-shadow:0 3px 6px rgba(0,0,0,.4)}
 @media (prefers-reduced-motion:reduce){#drawer{transition:opacity .15s}.dr-box::before,.dr-box::after{animation:none}}
 #btnPotion svg{width:24px;height:24px}
@@ -186,6 +190,19 @@ button{font:inherit;color:inherit}
 .page canvas.ink,.page canvas.live{mix-blend-mode:multiply}
 .size[hidden]{display:none}
 .tool-box .page{cursor:text}
+.tool-stamp .page{cursor:copy}
+.dr-stamps{margin-top:14px;padding-top:12px;border-top:1px dashed #4a3d66;max-height:min(46vh,420px);overflow-y:auto;overscroll-behavior:contain}
+.dr-stamps[hidden]{display:none}
+.dr-stamps .lbl2{font-size:12.5px;color:var(--muted);display:block;margin-bottom:8px}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px}
+.st-sec{grid-column:1/-1;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 0 -2px}
+.st-sec:first-child{margin-top:0}
+.st-btn{aspect-ratio:1;border-radius:12px;border:none;padding:7px;cursor:pointer;color:#efeaff;
+  background:linear-gradient(180deg,#160f25,#1e1630);box-shadow:inset 0 2px 6px rgba(0,0,0,.55)}
+.st-btn svg{width:100%;height:100%;display:block;overflow:visible}
+.st-btn.color{background:linear-gradient(180deg,#f3eefc,#ddd3f3);box-shadow:inset 0 2px 5px rgba(45,31,79,.35)}
+.st-btn.color.on{background:radial-gradient(circle at 50% 60%,#fff,#d8ccf3 75%);box-shadow:0 0 0 2px #c8b6ff,0 0 14px rgba(139,92,246,.6)}
+.st-btn.on{background:radial-gradient(circle at 50% 60%,rgba(139,92,246,.55),rgba(30,22,48,.9) 72%);box-shadow:0 0 0 1.5px rgba(200,182,255,.6),0 0 14px rgba(139,92,246,.45)}
 /* caixas de texto e notas: elementos por cima da página */
 .ov-layer{position:absolute;inset:0;pointer-events:none;z-index:2}
 .ov-item{position:absolute}
@@ -198,6 +215,12 @@ button{font:inherit;color:inherit}
 .sel-box{position:absolute;border:1.5px dashed #7c3aed;background:rgba(139,92,246,.07);border-radius:4px;pointer-events:auto;cursor:move;touch-action:none;box-shadow:0 0 0 1px rgba(255,255,255,.6)}
 .sel-bar{position:absolute;left:50%;top:-44px;transform:translateX(-50%);display:flex;gap:4px;padding:4px;border-radius:12px;background:#211836;box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:auto}
 .sel-bar.below{top:auto;bottom:-44px}
+.sel-rot{position:absolute;left:50%;bottom:-40px;width:26px;height:26px;margin-left:-13px;border-radius:50%;background:#fff;border:2px solid #7c3aed;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);cursor:grab;touch-action:none;display:flex;align-items:center;justify-content:center;color:#7c3aed}
+.sel-rot::before{content:"";position:absolute;left:50%;top:-15px;width:1.5px;height:13px;background:#7c3aed;margin-left:-.75px}
+.sel-rot::after{content:"";position:absolute;inset:-12px}
+.sel-rot svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.sel-bar.below{bottom:-92px}
 .sel-h{position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid #7c3aed;box-shadow:0 1px 3px rgba(0,0,0,.3);touch-action:none}
 .sel-h::after{content:"";position:absolute;inset:-12px}
 .sel-h.tl{left:-9px;top:-9px;cursor:nwse-resize}.sel-h.br{right:-9px;bottom:-9px;cursor:nwse-resize}
@@ -383,7 +406,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <div id="recent" hidden><div class="rc-title">Continuar de onde parou</div><ul></ul></div>
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
-      <p class="fine ver">versão 2026.10.30-234701</p>
+      <p class="fine ver">versão 2026.10.31-002503</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -402,9 +425,11 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <button class="dr-item" data-tool="text" title="Grifo (G)"><span class="slot"><svg viewBox="0 0 24 24"><rect x="3" y="14.5" width="18" height="6" rx="1.2" fill="currentColor" opacity=".35" stroke="none"/><path d="M7 4.5h10"/><path d="M12 4.5v12"/></svg></span><span class="nm">Grifo</span></button>
       <button class="dr-item" data-tool="box" title="Caixa de texto (T)"><span class="slot"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" stroke-dasharray="3 2.6"/><path d="M8 9h8M12 9v7.5"/></svg></span><span class="nm">Texto</span></button>
       <button class="dr-item" data-tool="note" title="Nota / comentário (N)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M4.5 4h15a2.5 2.5 0 0 1 2.5 2.5v8.5a2.5 2.5 0 0 1-2.5 2.5h-8l-4.5 3.6v-3.6h-2.5A2.5 2.5 0 0 1 2 15V6.5A2.5 2.5 0 0 1 4.5 4z"/><path d="M12 7l1.05 2.75L15.8 10.8l-2.75 1.05L12 14.6l-1.05-2.75L8.2 10.8l2.75-1.05z" fill="currentColor" stroke="none"/></svg></span><span class="nm">Nota</span></button>
+      <button class="dr-item" data-tool="stamp" title="Carimbo (K)"><span class="slot"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 3.2l5.2 15.9L3.6 9.3h16.8L6.8 19.1z"/></svg></span><span class="nm">Carimbo</span></button>
       <button class="dr-item" data-tool="lasso" title="Laço: selecionar e mover (V)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M12 4c-4.6 0-8 2.3-8 5.4 0 3 3.2 5.2 7.4 5.4" stroke-dasharray="2.6 2.4"/><path d="M14.6 14.5c3.2-.7 5.4-2.7 5.4-5.1C20 6.3 16.6 4 12 4"/><path d="M11.4 14.8c-1 1.2-.6 3.2 1 3.6 1.3.3 1.6 1.5.9 2.6"/><path d="M14 10.5l5.5 5.5-2.4.4 1.4 2.8-1.3.6-1.4-2.8-1.8 1.5z" fill="currentColor" stroke-width="1"/></svg></span><span class="nm">Laço</span></button>
       <button class="dr-item" data-tool="eraser" title="Borracha (E)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M8.5 20L3.5 15a1.5 1.5 0 0 1 0-2.1L13 3.4a1.5 1.5 0 0 1 2.1 0l5.5 5.5a1.5 1.5 0 0 1 0 2.1L11.5 20z"/><path d="M8.5 20H21"/><path d="M7 9.5l7.5 7.5"/></svg></span><span class="nm">Borracha</span></button>
     </div>
+    <div class="dr-stamps" id="stampRow" hidden><span class="lbl2">✦ Grimório de carimbos</span><div class="st-grid" id="stampGrid"></div></div>
     <div class="dr-size" id="sizeRow"><span class="lbl2" id="sizeLbl">Espessura</span><input class="size" id="size" type="range"><span class="dot-wrap"><span id="sizeDot"></span></span></div>
   </div>
   <div class="dr-knob"></div>
@@ -685,13 +710,14 @@ const TOOLS = {
   text:   { name:'Grifo',       colors:HL_COLORS,     alpha:.55, size:null },
   box:    { name:'Texto',       colors:PEN_COLORS,    alpha:1,   size:{ min:7,  max:36, step:1,  val:13 } },
   note:   { name:'Nota',        colors:HL_COLORS,     alpha:1,   size:null },
+  stamp:  { name:'Carimbo',     colors:PEN_COLORS,    alpha:1,   size:{ min:16, max:200, step:2, val:48 } },
   lasso:  { name:'Laço',        colors:[],            alpha:1,   size:null },
   eraser: { name:'Borracha',    colors:[],            alpha:1,   size:{ min:6,  max:44, step:1,  val:16 } },
 };
 const INK_KEY = 'GrimorioInk';
 
 const S = {
-  tool:'pen', color:{ pen:PEN_COLORS[1], pencil:PENCIL_COLORS[0], hl:HL_COLORS[0], text:HL_COLORS[0], box:PEN_COLORS[0], note:'#c4a7ff', ribbon:'#8b5cf6' }, fingerDraws:false,
+  tool:'pen', color:{ pen:PEN_COLORS[1], pencil:PENCIL_COLORS[0], hl:HL_COLORS[0], text:HL_COLORS[0], box:PEN_COLORS[0], note:'#c4a7ff', ribbon:'#8b5cf6', stamp:'#1d1630' }, fingerDraws:false,
   zoom:1, fit:1, doc:null, baseBytes:null, fileName:'documento.pdf', editable:true,
   pages:[], undo:[], redo:[], dirty:false,
 };
@@ -707,7 +733,9 @@ function setTool(t){
   document.body.classList.toggle('tool-box', t === 'box');
   document.body.classList.toggle('tool-lasso', t === 'lasso');
   if (t !== 'lasso' && typeof clearSel === 'function') clearSel();
-  $('#sizeLbl').textContent = t === 'box' ? 'Tamanho' : 'Espessura';
+  $('#sizeLbl').textContent = (t === 'box' || t === 'stamp') ? 'Tamanho' : 'Espessura';
+  document.body.classList.toggle('tool-stamp', t === 'stamp');
+  $('#stampRow').hidden = t !== 'stamp';
   $('#btnPotion').hidden = t === 'eraser' || t === 'lasso';
   paintPotion();
   const r = TOOLS[t].size, inp = $('#size');
@@ -717,7 +745,7 @@ function setTool(t){
 }
 function sizeDot(){
   const r = TOOLS[S.tool].size; if (!r) return;
-  const px = S.tool === 'eraser' ? r.val * .7 : S.tool === 'box' ? r.val * 1.1 : Math.max(3, r.val * (S.tool === 'hl' ? 1.3 : 4));
+  const px = S.tool === 'eraser' ? r.val * .7 : S.tool === 'box' ? r.val * 1.1 : S.tool === 'stamp' ? r.val * .4 : Math.max(3, r.val * (S.tool === 'hl' ? 1.3 : 4));
   const d = $('#sizeDot'); d.style.width = d.style.height = Math.min(32, px) + 'px';
   d.style.background = S.tool === 'eraser' ? 'transparent' : ''; d.style.border = S.tool === 'eraser' ? '2px dashed var(--lilac)' : '';
   d.style.opacity = S.tool === 'hl' ? .6 : 1;
@@ -738,7 +766,8 @@ addEventListener('pointerdown', e => {
     if (e.target.closest('#viewer')){ e.stopPropagation(); e.preventDefault(); }   // fechar a gaveta não risca a página
   }
 }, true);
-document.querySelectorAll('#tools .dr-item').forEach(b => b.onclick = () => { setTool(b.dataset.tool); setTimeout(() => openDrawer(false), 220); });
+// a gaveta fecha ao escolher a ferramenta, menos no carimbo (aí ainda falta escolher qual)
+document.querySelectorAll('#tools .dr-item').forEach(b => b.onclick = () => { setTool(b.dataset.tool); if (b.dataset.tool !== 'stamp') setTimeout(() => openDrawer(false), 220); });
 
 /* ---------- caldeirão de cores ---------- */
 // Roda HSV: ângulo = matiz, raio = saturação; "intensidade" = brilho.
@@ -1034,7 +1063,7 @@ async function extractMarks(bytes){
     const doc = await PDFDocument.load(bytes, { updateMetadata:false });
     if (doc.isEncrypted) return { base: bytes, imported, editable:false };
     let changed = false;
-    const INK = PDFName.of('Ink'), HIL = PDFName.of('Highlight'), FT = PDFName.of('FreeText'), TXT = PDFName.of('Text'), SUB = PDFName.of('Subtype');
+    const STP = PDFName.of('Stamp'), INK = PDFName.of('Ink'), HIL = PDFName.of('Highlight'), FT = PDFName.of('FreeText'), TXT = PDFName.of('Text'), SUB = PDFName.of('Subtype');
     doc.getPages().forEach((page, i) => {
       const annots = page.node.lookup(PDFName.of('Annots'));
       if (!(annots instanceof PDFArray)) return;
@@ -1044,7 +1073,7 @@ async function extractMarks(bytes){
         if (d instanceof PDFDict){
           const sub = d.get(SUB);
           const got = sub === INK ? inkToStrokes(doc, d) : sub === HIL ? highlightToMark(doc, d)
-                    : sub === FT ? boxFromFreeText(doc, d) : sub === TXT ? noteFromText(doc, d) : [];
+                    : sub === FT ? boxFromFreeText(doc, d) : sub === TXT ? noteFromText(doc, d) : sub === STP ? stampFromAnnot(doc, d) : [];
           if (got.length){
             marks.push(...got);
             const pop = d.get(PDFName.of('Popup')); if (pop) popups.add(String(pop));   // o balão do comentário vai junto
@@ -1373,6 +1402,7 @@ function drawInk(pg){
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height);
   for (const st of pg.strokes){
     if (isOv(st)) continue;
+    if (st.kind === 'stamp'){ drawStamp(ctx, pg, st); continue; }
     if (st.alpha >= 1 && st.tool !== 'pencil'){
       ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, 0); paintShape(ctx, pg, st);
       continue;
@@ -1565,6 +1595,10 @@ function finishEdit(){
 function placeNew(pg, cx, cy){
   if (editing){ finishEdit(); return; }
   const [x, y] = toPdf(pg, cx, cy), view = pg.pdfPage.view;
+  if (S.tool === 'stamp'){
+    commit(pg, { kind:'stamp', tool:'stamp', id:S.stamp, color:S.color.stamp, alpha:1, at:[x, y], size:TOOLS.stamp.size.val });
+    refreshButtons(); scheduleSave(); return;
+  }
   if (S.tool === 'box'){
     const fs = TOOLS.box.size.val, w = Math.max(60, Math.min(220, view[2] - x - 4));
     beginEdit(pg, { kind:'box', tool:'box', color:S.color.box, alpha:1, at:[x, y + fs * .65], w, fs, text:'' }, true);
@@ -1590,6 +1624,217 @@ function moveOv(e){
 
 
 
+
+
+/* ---------- carimbos ----------
+   Cada carimbo é desenhado numa caixa 100×100 com caminhos só de M/L/C/Z — a mesma
+   lista vira Path2D na tela e operadores de PDF (vetorial) ao salvar como /Stamp.
+   Partes: fill (cor do carimbo, ou "paper" = branco) e/ou stroke (largura). */
+const R1 = n => Math.round(n * 10) / 10;
+function ellipseD(cx, cy, rx, ry){
+  const kx = rx * .5523, ky = ry * .5523, f = (...v) => v.map(R1).join(' ');
+  return `M${f(cx + rx, cy)} C${f(cx + rx, cy + ky, cx + kx, cy + ry, cx, cy + ry)} C${f(cx - kx, cy + ry, cx - rx, cy + ky, cx - rx, cy)} `
+       + `C${f(cx - rx, cy - ky, cx - kx, cy - ry, cx, cy - ry)} C${f(cx + kx, cy - ry, cx + rx, cy - ky, cx + rx, cy)} Z`;
+}
+const circD = (cx, cy, r) => ellipseD(cx, cy, r, r);
+function arcD(cx, cy, r, a0, a1){   // graus (y pra baixo); continua do ponto atual com curvas C
+  const n = Math.max(1, Math.ceil(Math.abs(a1 - a0) / 90)), da = (a1 - a0) / n * Math.PI / 180; let out = '';
+  for (let i = 0; i < n; i++){
+    const t0 = a0 * Math.PI / 180 + i * da, t1 = t0 + da, k = 4 / 3 * Math.tan(da / 4);
+    const x0 = cx + r * Math.cos(t0), y0 = cy + r * Math.sin(t0), x3 = cx + r * Math.cos(t1), y3 = cy + r * Math.sin(t1);
+    out += ` C${R1(x0 - k * r * Math.sin(t0))} ${R1(y0 + k * r * Math.cos(t0))} ${R1(x3 + k * r * Math.sin(t1))} ${R1(y3 - k * r * Math.cos(t1))} ${R1(x3)} ${R1(y3)}`;
+  }
+  return out;
+}
+// crescente: círculo (cx, r) menos um círculo igual deslocado `off` pro lado das pontas (dir = -1 pontas à esquerda)
+function crescentD(cx, cy, r, off, dir){
+  const ix = cx + dir * off / 2, h = Math.sqrt(r * r - (off / 2) ** 2), a = Math.atan2(h, dir * (ix - cx) || 1e-9) * 180 / Math.PI;
+  const m = (x, y) => [dir < 0 ? x : 100 - x, y];
+  if (dir < 0){
+    const A = Math.atan2(-h, ix - cx) * 180 / Math.PI, B = Math.atan2(-h, ix - (cx - off)) * 180 / Math.PI;
+    return `M${R1(ix)} ${R1(cy - h)}` + arcD(cx, cy, r, A, -A) + arcD(cx - off, cy, r, -B, B) + ' Z';
+  }
+  return null;
+}
+const mirrorD = d => d.replace(/(-?\d*\.?\d+) (-?\d*\.?\d+)/g, (_, x, y) => `${R1(100 - +x)} ${y}`);
+const polyD = (pts, close) => pts.map(([x, y], i) => `${i ? 'L' : 'M'}${R1(x)} ${R1(y)}`).join(' ') + (close ? ' Z' : '');
+const star4D = (cx, cy, r) => { const q = r * .28; return polyD([[cx, cy - r], [cx + q, cy - q], [cx + r, cy], [cx + q, cy + q], [cx, cy + r], [cx - q, cy + q], [cx - r, cy], [cx - q, cy - q]], true); };
+function spiralParts(cw){
+  const pts = [], N = 200, turns = 3;
+  for (let i = 0; i <= N; i++){ const t = i / N, a = t * turns * 2 * Math.PI, r = 3 + 37 * t; pts.push([50 + (cw ? 1 : -1) * r * Math.cos(a), 50 + r * Math.sin(a)]); }
+  const [x1, y1] = pts[N], [x0, y0] = pts[N - 4], ang = Math.atan2(y1 - y0, x1 - x0), L = 12, sp = .55;
+  const head = polyD([[x1 - L * Math.cos(ang - sp), y1 - L * Math.sin(ang - sp)], [x1, y1], [x1 - L * Math.cos(ang + sp), y1 - L * Math.sin(ang + sp)]]);
+  return [{ d:polyD(pts), stroke:5 }, { d:head, stroke:5 }];
+}
+function triskeleParts(){
+  const parts = [];
+  for (let k = 0; k < 3; k++){
+    const th = (-90 + 120 * k) * Math.PI / 180, cx = 50 + 21 * Math.cos(th), cy = 50 + 21 * Math.sin(th), pts = [];
+    for (let i = 0; i <= 90; i++){ const t = i / 90, phi = th + Math.PI + t * 2.3 * Math.PI, r = 21 * (1 - t) + 3 * t; pts.push([cx + r * Math.cos(phi), cy + r * Math.sin(phi)]); }
+    parts.push({ d:polyD(pts), stroke:6 });
+  }
+  return parts;
+}
+const PENT = [0, 2, 4, 1, 3].map(k => { const a = (-90 + 72 * k) * Math.PI / 180; return [50 + 41 * Math.cos(a), 50 + 41 * Math.sin(a)]; });
+const STAMPS = [
+  { id:'pentagram', cat:'Místicos', name:'Pentagrama', parts:[{ d:circD(50, 50, 45), stroke:5 }, { d:polyD(PENT, true), stroke:5 }] },
+  { id:'sigil', cat:'Místicos', hidden:true, name:'Sigilo', parts:[
+    { d:circD(50, 50, 44), stroke:3.5 },
+    { d:'M50 30 L50 82', stroke:4.5 },
+    { d:'M36 16 C40 30 60 30 64 16', stroke:4.5 },
+    { d:'M28 50 L72 50', stroke:4.5 }, { d:circD(24, 50, 4.5), stroke:3.5 }, { d:circD(76, 50, 4.5), stroke:3.5 },
+    { d:'M50 66 L66 78', stroke:4.5 }, { d:circD(69, 80.5, 3.5), fill:true },
+    { d:'M50 82 L38 72', stroke:4.5 }, { d:star4D(50, 40, 6), fill:true } ] },
+  { id:'cat', cat:'Místicos', fixed:true, name:'Gato preto', parts:[
+    { d:'M34 26 L36 6 L47 17 Z M66 26 L64 6 L53 17 Z', fill:true, c:'#1d1630' },
+    { d:'M37 22 L38.5 12 L44 18 Z M63 22 L61.5 12 L56 18 Z', fill:true, c:'#f9a8d4' },
+    { d:ellipseD(50, 30, 17, 15), fill:true, c:'#1d1630' },
+    { d:'M37 42 C27 58 25 80 30 94 L70 94 C75 80 73 58 63 42 Z', fill:true, c:'#1d1630' },
+    { d:'M66 90 C86 89 94 72 86 58 C84 54 79 56 81 60 C87 71 80 82 64 83 Z', fill:true, c:'#1d1630' },
+    { d:ellipseD(43.5, 29, 3.6, 4.2), fill:true, c:'#facc15' }, { d:ellipseD(56.5, 29, 3.6, 4.2), fill:true, c:'#facc15' },
+    { d:ellipseD(43.5, 29, 1.1, 3.4), fill:true, c:'#1d1630' }, { d:ellipseD(56.5, 29, 1.1, 3.4), fill:true, c:'#1d1630' },
+    { d:'M48 35.5 L52 35.5 L50 38 Z', fill:true, c:'#f9a8d4' } ] },
+  { id:'pumpkin', cat:'Místicos', fixed:true, name:'Abóbora', parts:[
+    { d:'M46 31 C46 22 50 15 59 13 L61 18 C55 20 53 25 54 31 Z', fill:true, c:'#4d7c0f' },
+    { d:'M56 22 C64 16 74 18 78 24 C70 26 62 26 56 22 Z', fill:true, c:'#65a30d' },
+    { d:ellipseD(50, 60, 41, 31), fill:true, c:'#f97316' },
+    { d:'M31 36 C22 50 22 72 33 86 M69 36 C78 50 78 72 67 86 M50 30 L50 34 M50 84 L50 90', stroke:2.5, c:'#c2410c' },
+    { d:'M33 54 L44 54 L38.5 43 Z M56 54 L67 54 L61.5 43 Z', fill:true, c:'#fde047' },
+    { d:'M30 65 L37 71 L43.5 65 L50 71 L56.5 65 L63 71 L70 65 C66 80 34 80 30 65 Z', fill:true, c:'#fde047' } ] },
+  { id:'hat', cat:'Místicos', fixed:true, name:'Chapéu de bruxa', parts:[
+    { d:ellipseD(50, 83, 46, 9), fill:true, c:'#2e1065' },
+    { d:'M27 82 C33 62 38 44 44 28 C48 16 58 8 72 11 C63 14 59 21 58 31 C59 50 65 66 73 82 Z', fill:true, c:'#3b0764' },
+    { d:'M44 30 C47 20 54 14 62 13', stroke:2.5, c:'#6d28d9' },
+    { d:'M30 72 C44 76 57 76 70 72 L71.5 78 C57 82 44 82 28.5 78 Z', fill:true, c:'#a78bfa' },
+    { d:'M45 71 L55 71 L55 80 L45 80 Z', stroke:2.8, c:'#facc15' },
+    { d:star4D(36, 50, 4), fill:true, c:'#facc15' }, { d:star4D(52, 42, 3), fill:true, c:'#facc15' } ] },
+  { id:'candle', cat:'Místicos', fixed:true, name:'Vela', parts:[
+    { d:'M50 4 C60 16 64 24 60 32 C57 39 43 39 40 32 C36 24 40 16 50 4 Z', fill:true, c:'#c084fc' },
+    { d:'M50 14 C55 21 56.5 26.5 54.5 30.5 C53 33.5 47 33.5 45.5 30.5 C43.5 26.5 45 21 50 14 Z', fill:true, c:'#ede9fe' },
+    { d:'M50 35 L50 41', stroke:3, c:'#1d1630' },
+    { d:'M37 41 L63 41 L63 90 L37 90 Z', fill:true, c:'#1d1630' },
+    { d:'M37 41 C40 46 43 46 44 52 C45 56 48 56 48 50 C48 46 52 45 54 49 L54 44 C57 46 60 45 63 41 Z', fill:true, c:'#3b3355' },
+    { d:'M42 55 L45 55 L45 84 L42 84 Z', fill:true, c:'#4c4470' },
+    { d:ellipseD(50, 91, 23, 5.5), fill:true, c:'#ca8a04' },
+    { d:'M30 91 C36 88 64 88 70 91', stroke:1.8, c:'#fde68a' } ] },
+  { id:'orb', cat:'Místicos', fixed:true, name:'Bola de cristal', parts:[
+    { d:circD(50, 43, 31), fill:true, c:'#c4b5fd' },
+    { d:circD(54, 47, 22), fill:true, c:'#a78bfa' },
+    { d:circD(50, 43, 31), stroke:3.5, c:'#4c1d95' },
+    { d:'M33 37 C35 28 41 22 49 20', stroke:4, c:'#ffffff' },
+    { d:star4D(56, 48, 10), fill:true, c:'#ffffff' }, { d:star4D(42, 56, 4.5), fill:true, c:'#ede9fe' },
+    { d:'M32 75 L37 69 L63 69 L68 75 Z', fill:true, c:'#ca8a04' },
+    { d:'M22 76 L78 76 L78 86 L22 86 Z', fill:true, c:'#a16207' },
+    { d:'M26 79 L74 79', stroke:1.6, c:'#fde68a' } ] },
+  { id:'triskele', cat:'Místicos', name:'Triskle', parts:triskeleParts() },
+  { id:'algiz', cat:'Runas', name:'Runa Algiz ᛉ', parts:[{ d:'M50 90 L50 10 M50 44 L24 14 M50 44 L76 14', stroke:8 }] },
+  { id:'fehu', cat:'Runas', name:'Runa Fehu ᚠ', parts:[{ d:'M36 92 L36 8 M36 30 L68 12 M36 54 L70 34', stroke:8 }] },
+  { id:'ansuz', cat:'Runas', name:'Runa Ansuz ᚨ', parts:[{ d:'M34 92 L34 8 L68 30 M34 32 L68 54', stroke:8 }] },
+  { id:'othala', cat:'Runas', name:'Runa Othala ᛟ', parts:[{ d:'M50 8 L75 40 L36 90 M50 8 L25 40 L64 90', stroke:8 }] },
+  { id:'mannaz', cat:'Runas', name:'Runa Mannaz ᛗ', parts:[{ d:'M24 92 L24 8 L76 46 M76 92 L76 8 L24 46', stroke:8 }] },
+  { id:'gebo', cat:'Runas', name:'Runa Gebo ᚷ', parts:[{ d:'M22 10 L78 90 M78 10 L22 90', stroke:8 }] },
+  { id:'ehwaz', cat:'Runas', name:'Runa Ehwaz ᛖ', parts:[{ d:'M24 92 L24 8 L50 36 L76 8 L76 92', stroke:8 }] },
+  { id:'star', cat:'Céu', fixed:true, name:'Estrela', parts:(() => { const d = polyD(Array.from({ length:10 }, (_, k) => { const a = (-90 + 36 * k) * Math.PI / 180, r = k % 2 ? 18 : 45; return [50 + r * Math.cos(a), 52 + r * Math.sin(a)]; }), true);
+    return [{ d, fill:true, c:'#facc15' }, { d, stroke:3, c:'#ca8a04' }, { d:'M50 18 L54 42', stroke:2.5, c:'#fef9c3' }]; })() },
+  { id:'sparkles', cat:'Céu', fixed:true, name:'Estrelinhas', parts:[
+    { d:star4D(40, 58, 28), fill:true, c:'#facc15' }, { d:star4D(40, 58, 28), stroke:2.2, c:'#ca8a04' },
+    { d:star4D(73, 25, 15), fill:true, c:'#c084fc' }, { d:star4D(73, 25, 15), stroke:2, c:'#7e22ce' },
+    { d:star4D(78, 76, 9), fill:true, c:'#f9a8d4' }, { d:star4D(78, 76, 9), stroke:1.8, c:'#db2777' } ] },
+  { id:'moon', cat:'Céu', fixed:true, name:'Lua crescente', parts:(() => { const d = 'M56 8 C32 9 12 28 12 52 C12 76 32 94 56 94 C64 94 72 92 78 88 C58 84 44 70 44 51 C44 32 58 17 78 13 C72 10 64 8 56 8 Z';
+    return [{ d, fill:true, c:'#fde68a' }, { d, stroke:3, c:'#d97706' }, { d:circD(26, 40, 3.5), fill:true, c:'#fcd34d' }, { d:circD(30, 66, 5), fill:true, c:'#fcd34d' }, { d:circD(22, 56, 2.5), fill:true, c:'#fcd34d' }]; })() },
+  { id:'triplemoon', cat:'Céu', fixed:true, name:'Lua tríplice', parts:(() => {
+    const r = 15.5, L = crescentD(17.5, 50, r, 9.5, -1), R = mirrorD(L), C = circD(50, 50, r);
+    return [{ d:L, fill:true, c:'#ddd6fe' }, { d:R, fill:true, c:'#ddd6fe' }, { d:C, fill:true, c:'#f5f3ff' },
+            { d:L, stroke:2.5, c:'#6d28d9' }, { d:R, stroke:2.5, c:'#6d28d9' }, { d:C, stroke:2.5, c:'#6d28d9' }]; })() },
+  { id:'aries', cat:'Zodíaco', name:'Áries ♈', parts:[{ d:'M50 92 L50 40 M50 40 C50 18 38 9 27 11 C16 13 12 26 19 34 M50 40 C50 18 62 9 73 11 C84 13 88 26 81 34', stroke:7 }] },
+  { id:'taurus', cat:'Zodíaco', name:'Touro ♉', parts:[{ d:circD(50, 64, 22), stroke:7 }, { d:'M16 14 C22 32 34 40 50 40 C66 40 78 32 84 14', stroke:7 }] },
+  { id:'gemini', cat:'Zodíaco', name:'Gêmeos ♊', parts:[{ d:'M22 14 C40 21 60 21 78 14 M22 86 C40 79 60 79 78 86 M38 19 L38 81 M62 19 L62 81', stroke:7 }] },
+  { id:'cancer', cat:'Zodíaco', name:'Câncer ♋', parts:[{ d:circD(30, 38, 10), stroke:7 }, { d:'M30 28 C46 18 70 18 88 32', stroke:7 }, { d:circD(70, 62, 10), stroke:7 }, { d:'M70 72 C54 82 30 82 12 68', stroke:7 }] },
+  { id:'leo', cat:'Zodíaco', name:'Leão ♌', parts:[{ d:circD(28, 64, 13), stroke:7 }, { d:'M37 54 C29 38 34 16 54 16 C72 16 78 32 71 46 C64 58 62 70 70 80 C76 88 86 86 89 78', stroke:7 }] },
+  { id:'virgo', cat:'Zodíaco', name:'Virgem ♍', parts:[{ d:'M12 82 L12 36 C12 24 29 24 29 36 L29 82 M29 36 C29 24 46 24 46 36 L46 72 C46 86 62 90 70 78 C78 64 64 52 57 64 L45 92', stroke:6.5 }] },
+  { id:'libra', cat:'Zodíaco', name:'Libra ♎', parts:[{ d:'M12 82 L88 82 M12 66 L33 66 C28 42 40 26 50 26 C60 26 72 42 67 66 L88 66', stroke:7 }] },
+  { id:'scorpio', cat:'Zodíaco', name:'Escorpião ♏', parts:[{ d:'M10 82 L10 36 C10 24 27 24 27 36 L27 82 M27 36 C27 24 44 24 44 36 L44 72 C44 84 56 86 66 80 L82 70 M70 64 L83 69 L77 82', stroke:6.5 }] },
+  { id:'sagittarius', cat:'Zodíaco', name:'Sagitário ♐', parts:[{ d:'M16 84 L84 16 M54 16 L84 16 L84 46 M28 46 L54 72', stroke:7 }] },
+  { id:'capricorn', cat:'Zodíaco', name:'Capricórnio ♑', parts:[{ d:'M10 26 C18 24 22 34 24 48 L28 72 C32 48 37 28 50 28 C61 28 63 42 61 58 C59 74 63 88 75 88 C87 88 92 74 84 65 C76 56 62 62 61 76', stroke:6.5 }] },
+  { id:'aquarius', cat:'Zodíaco', name:'Aquário ♒', parts:[{ d:'M14 42 L28 30 L43 42 L57 30 L72 42 L86 30 M14 72 L28 60 L43 72 L57 60 L72 72 L86 60', stroke:7 }] },
+  { id:'pisces', cat:'Zodíaco', name:'Peixes ♓', parts:[{ d:'M22 12 C42 30 42 70 22 88 M78 12 C58 30 58 70 78 88 M28 50 L72 50', stroke:7 }] },
+  { id:'banish', cat:'Místicos', name:'Banir (espiral anti-horária)', parts:spiralParts(false) },
+  { id:'invite', cat:'Místicos', name:'Convidar (espiral horária)', parts:spiralParts(true) },
+];
+const STAMP = Object.fromEntries(STAMPS.map(t => [t.id, t]));
+const STAMP_CATS = ['Místicos', 'Céu', 'Runas', 'Zodíaco'];
+S.stamp = (() => { try { const v = localStorage.getItem('grimorio.stamp'); return STAMP[v] ? v : 'pentagram'; } catch { return 'pentagram'; } })();
+const pathCache = new Map();
+const path2d = d => pathCache.get(d) || (pathCache.set(d, new Path2D(d)), pathCache.get(d));
+function drawStamp(ctx, pg, st){
+  const def = STAMP[st.id]; if (!def) return;
+  const [vx, vy] = pg.vp.convertToViewportPoint(st.at[0], st.at[1]), k = st.size * pg.vp.scale / 100, d = pg.dpr;
+  ctx.save();
+  ctx.setTransform(d, 0, 0, d, 0, 0); ctx.translate(vx, vy);
+  if (st.rot) ctx.rotate(-st.rot);   // ângulo no espaço do PDF (anti-horário); na tela o y é invertido
+  ctx.scale(k, k); ctx.translate(-50, -50);
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (const part of def.parts){
+    const pth = path2d(part.d), col = part.c || (part.paper ? '#ffffff' : st.color);
+    if (part.fill){ ctx.fillStyle = col; ctx.fill(pth); }
+    if (part.stroke){ ctx.strokeStyle = col; ctx.lineWidth = part.stroke; ctx.stroke(pth); }
+  }
+  ctx.restore();
+}
+function stampSvg(def){
+  const col = pt => pt.c || (pt.paper ? '#160f25' : 'currentColor');
+  return '<svg viewBox="0 0 100 100">' + def.parts.map(pt => `<path d="${pt.d}" fill="${pt.fill ? col(pt) : 'none'}"`
+    + (pt.stroke ? ` stroke="${col(pt)}" stroke-width="${pt.stroke}" stroke-linecap="round" stroke-linejoin="round"` : '') + '/>').join('') + '</svg>';
+}
+function renderStampGrid(){
+  const g = $('#stampGrid'); g.innerHTML = '';
+  let cat = null;
+  for (const def of STAMPS.filter(t => !t.hidden).sort((a, b) => STAMP_CATS.indexOf(a.cat) - STAMP_CATS.indexOf(b.cat))){
+    if (def.cat !== cat){ cat = def.cat; const h = document.createElement('div'); h.className = 'st-sec'; h.textContent = cat; g.appendChild(h); }
+    const b = document.createElement('button'); b.className = 'st-btn' + (def.fixed ? ' color' : '') + (def.id === S.stamp ? ' on' : ''); b.title = def.name + (def.fixed ? ' (colorido)' : ''); b.innerHTML = stampSvg(def);
+    b.onclick = () => { S.stamp = def.id; try { localStorage.setItem('grimorio.stamp', def.id); } catch {} renderStampGrid(); toast(def.name + ' ✦ toque na página pra carimbar'); setTimeout(() => openDrawer(false), 260); };
+    g.appendChild(b);
+  }
+}
+renderStampGrid();
+// PDF: os mesmos caminhos viram operadores (caixa 100×100 → retângulo do carimbo, y invertido)
+function pathToPdf(d){
+  const tk = d.match(/[MLCZ]|-?\d*\.?\d+(?:e-?\d+)?/gi) || [], out = []; let i = 0, cmd = '';
+  while (i < tk.length){
+    if (/[MLCZ]/i.test(tk[i])) cmd = tk[i++].toUpperCase();
+    if (cmd === 'Z'){ out.push('h'); cmd = ''; continue; }
+    const n = cmd === 'C' ? 6 : 2, v = tk.slice(i, i + n); i += n;
+    if (v.length < n) break;
+    out.push(v.join(' ') + (cmd === 'M' ? ' m' : cmd === 'L' ? ' l' : ' c'));
+    if (cmd === 'M') cmd = 'L';
+  }
+  return out.join(' ');
+}
+function addStamp(doc, page, st, idx){
+  const def = STAMP[st.id]; if (!def) return;
+  const ctx = doc.context, [x, y] = st.at, k = st.size / 100, rot = st.rot || 0, cs = Math.cos(rot), sn = Math.sin(rot);
+  const h = st.size / 2 * (Math.abs(cs) + Math.abs(sn));
+  const rect = [x - h, y - h, x + h, y + h].map(v => +f2(v));
+  const [r, g, b] = hexToRgb(st.color).map(f2);
+  const m = [cs * k, sn * k, sn * k, -cs * k, x - 50 * k * (cs + sn), y + 50 * k * (cs - sn)].map(v => (Math.round(v * 1e4) / 1e4).toString());
+  let body = `q 1 J 1 j ${m.join(' ')} cm\n`;
+  for (const part of def.parts){
+    const c = part.c ? hexToRgb(part.c).map(f2).join(' ') : part.paper ? '1 1 1' : `${r} ${g} ${b}`;
+    body += `${c} rg ${c} RG ${part.stroke ? part.stroke + ' w ' : ''}${pathToPdf(part.d)} ${part.fill && part.stroke ? 'B' : part.fill ? 'f' : 'S'}\n`;
+  }
+  body += 'Q\n';
+  const ap = ctx.register(ctx.flateStream(body, { Type:'XObject', Subtype:'Form', FormType:1, BBox:rect, Resources:{} }));
+  page.node.addAnnot(ctx.register(ctx.obj({
+    ...commonFields(st, page, idx), Subtype:'Stamp', Rect:rect, Name:'GrimorioCarimbo',
+    Contents:PDFHexString.fromText(def.name), AP:{ N:ap }, GrimorioStamp:PDFString.of(st.id), GrimorioSize:+f2(st.size), GrimorioRot:+(rot.toFixed(5)),
+  })));
+}
+function stampFromAnnot(doc, d){
+  const id = annotText(doc, d, 'GrimorioStamp'); if (!STAMP[id]) return [];
+  const R = rectOf(doc, d); if (!R) return [];
+  const size = num(doc, d.get(PDFName.of('GrimorioSize')), R[2] - R[0]), rot = num(doc, d.get(PDFName.of('GrimorioRot')), 0);
+  return [{ kind:'stamp', tool:'stamp', id, color:annotColor(doc, d, '#1d1630'), alpha:1, at:[(R[0] + R[2]) / 2, (R[1] + R[3]) / 2], size:Math.max(6, size), ...(rot ? { rot } : {}) }];
+}
 
 /* ---------- marca-páginas (fita) e sumário ----------
    Uma fita por página, com nome e cor. Ao salvar viram itens do /Outlines do PDF
@@ -1826,6 +2071,7 @@ function translateMark(st, dx, dy){
   if (st.at){ st.at = [st.at[0] + dx, st.at[1] + dy]; }
 }
 function markBounds(st){
+  if (st.kind === 'stamp'){ const r = st.rot || 0, h = st.size / 2 * (Math.abs(Math.cos(r)) + Math.abs(Math.sin(r))); return [st.at[0] - h, st.at[1] - h, st.at[0] + h, st.at[1] + h]; }
   if (st.kind === 'note') return [st.at[0] - 10, st.at[1] - 10, st.at[0] + 10, st.at[1] + 10];
   if (st.kind === 'box'){ const h = st._h || st.fs * 1.25 + 2 * BOX_PAD; return [st.at[0], st.at[1] - h, st.at[0] + st.w, st.at[1]]; }
   if (st._bb) return st._bb;
@@ -1848,27 +2094,36 @@ function inPoly(poly, x, y){
   return inside;
 }
 function caught(poly, st){
+  if (st.kind === 'stamp') return inPoly(poly, st.at[0], st.at[1]);
   if (st.kind === 'note') return inPoly(poly, st.at[0], st.at[1]);
   if (st.kind === 'box'){ const b = markBounds(st); return inPoly(poly, (b[0] + b[2]) / 2, (b[1] + b[3]) / 2); }
   let n = 0; for (const [x, y] of st.pts) if (inPoly(poly, x, y)) n++;
   return n >= Math.max(1, st.pts.length * .5);   // metade do traço dentro do laço
 }
-const snapMark = st => ({ pts:st.pts?.map(q => [...q]), at:st.at && [...st.at], w:st.w, fs:st.fs });
+const snapMark = st => ({ pts:st.pts?.map(q => [...q]), at:st.at && [...st.at], w:st.w, fs:st.fs, size:st.size, rot:st.rot });
 function restoreMark(st, sn){
   if (sn.pts) st.pts = sn.pts.map(q => [...q]);
   if (sn.at) st.at = [...sn.at];
   if (sn.w != null) st.w = sn.w;
   if (sn.fs != null) st.fs = sn.fs;
+  if (sn.size != null) st.size = sn.size;
+  if (st.kind === 'stamp') st.rot = sn.rot || 0;
   delete st._sm; delete st._bb;
 }
 // escala a partir do canto oposto (ax, ay); a espessura e o tamanho da letra acompanham
 function scaleFrom(st, sn, ax, ay, k){
   if (sn.pts){ st.pts = sn.pts.map(([x, y, w]) => [ax + (x - ax) * k, ay + (y - ay) * k, Math.max(.2, w * k)]); delete st._sm; delete st._bb; }
   if (sn.at) st.at = [ax + (sn.at[0] - ax) * k, ay + (sn.at[1] - ay) * k];
+  if (st.kind === 'stamp') st.size = Math.max(6, Math.min(600, sn.size * k));
   if (st.kind === 'box'){ st.w = Math.max(20, sn.w * k); st.fs = Math.max(3, Math.min(120, sn.fs * k)); }
 }
 function startSelDrag(e){
   const pg = sel.pg, [x, y] = toPdf(pg, e.clientX, e.clientY), h = e.target.closest('.sel-h');
+  if (e.target.closest('.sel-rot')){
+    const b = selBounds(), cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
+    active = { kind:'rotate', id:e.pointerId, type:e.pointerType, pg, cx, cy, a0:Math.atan2(y - cy, x - cx), before:sel.items.map(snapMark), ang:0 };
+    return;
+  }
   if (h){
     const b = selBounds(), C = [[b[0], b[1]], [b[2], b[1]], [b[2], b[3]], [b[0], b[3]]];
     const r = h.getBoundingClientRect(), [hx, hy] = toPdf(pg, r.left + r.width / 2, r.top + r.height / 2);
@@ -1876,6 +2131,15 @@ function startSelDrag(e){
     const [ax, ay] = C[(i + 2) % 4];
     active = { kind:'scale', id:e.pointerId, type:e.pointerType, pg, ax, ay, d0:Math.max(1e-3, Math.hypot(x - ax, y - ay)), before:sel.items.map(snapMark), k:1 };
   } else active = { kind:'move', id:e.pointerId, type:e.pointerType, pg, x0:x, y0:y, dx:0, dy:0 };
+}
+function rotateFrom(st, sn, cx, cy, a){
+  const c = Math.cos(a), s2 = Math.sin(a), R = (x, y) => [cx + (x - cx) * c - (y - cy) * s2, cy + (x - cx) * s2 + (y - cy) * c];
+  if (sn.pts){ st.pts = sn.pts.map(([x, y, w]) => [...R(x, y), w]); delete st._sm; delete st._bb; }
+  if (st.kind === 'box' && sn.at){   // caixa: gira o centro, o texto continua na horizontal
+    const h = st._h || st.fs * 1.25 + 2 * BOX_PAD, [mx, my] = R(sn.at[0] + sn.w / 2, sn.at[1] - h / 2);
+    st.at = [mx - sn.w / 2, my + h / 2];
+  } else if (sn.at) st.at = R(sn.at[0], sn.at[1]);
+  if (st.kind === 'stamp') st.rot = ((sn.rot || 0) + a) % (2 * Math.PI);
 }
 function clearSel(){
   if (!sel) return;
@@ -1889,7 +2153,8 @@ function renderSelection(){
   if (!el){
     el = pg.selEl = document.createElement('div'); el.className = 'sel-box';
     el.innerHTML = '<div class="sel-bar"><button data-act="del" title="Apagar seleção"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Apagar</button><button data-act="off" title="Desmarcar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'
-      + '<i class="sel-h tl"></i><i class="sel-h tr"></i><i class="sel-h bl"></i><i class="sel-h br"></i>';
+      + '<i class="sel-h tl"></i><i class="sel-h tr"></i><i class="sel-h bl"></i><i class="sel-h br"></i>'
+      + '<i class="sel-rot" title="Girar"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg></i>';
     el.querySelector('[data-act=del]').onclick = deleteSel;
     el.querySelector('[data-act=off]').onclick = clearSel;
   }
@@ -1923,6 +2188,15 @@ function startLasso(e, pg){
 }
 function moveLasso(e){
   const a = active, pg = a.pg, [x, y] = toPdf(pg, e.clientX, e.clientY);
+  if (a.kind === 'rotate'){
+    let ang = Math.atan2(y - a.cy, x - a.cx) - a.a0;
+    const step = Math.PI / 4, near = Math.round(ang / step) * step;
+    if (Math.abs(ang - near) < 4 * Math.PI / 180) ang = near;   // gruda em 0°, 45°, 90°…
+    a.ang = ang;
+    sel.items.forEach((st, i) => rotateFrom(st, a.before[i], a.cx, a.cy, ang));
+    if (!a.raf) a.raf = requestAnimationFrame(() => { a.raf = 0; drawInk(pg); renderSelection(); });
+    return;
+  }
   if (a.kind === 'scale'){
     a.k = Math.max(.1, Math.min(10, Math.hypot(x - a.ax, y - a.ay) / a.d0));
     sel.items.forEach((st, i) => scaleFrom(st, a.before[i], a.ax, a.ay, a.k));
@@ -1948,6 +2222,12 @@ function moveLasso(e){
   ctx.setLineDash([5, 4]); ctx.lineWidth = 1.6; ctx.strokeStyle = '#7c3aed'; ctx.stroke(); ctx.setLineDash([]);
 }
 function endLasso(a){
+  if (a.kind === 'rotate'){
+    if (a.raf){ cancelAnimationFrame(a.raf); a.raf = 0; }
+    drawInk(a.pg); renderSelection();
+    if (Math.abs(a.ang) > 1e-4){ S.undo.push({ type:'scale', pg:a.pg, items:[...sel.items], before:a.before, after:sel.items.map(snapMark) }); S.redo = []; S.dirty = true; refreshButtons(); scheduleSave(); }
+    return;
+  }
   if (a.kind === 'scale'){
     if (a.raf){ cancelAnimationFrame(a.raf); a.raf = 0; }
     drawInk(a.pg); renderSelection();
@@ -1976,7 +2256,7 @@ let active = null;             // traço/borracha/grifo em andamento
 let gest = null;               // gesto de dedo em andamento
 let lastPenAt = 0;
 let tapCand = null;             // toque de dedo que pode virar caixa/nota nova
-const placing = () => S.tool === 'box' || S.tool === 'note';
+const placing = () => S.tool === 'box' || S.tool === 'note' || S.tool === 'stamp';
 
 function toPdf(pg, cx, cy){
   const r = pg.el.getBoundingClientRect();
@@ -2048,7 +2328,7 @@ function commit(pg, mark){
 function endStroke(){
   const a = active; active = null;
   if (!a) return;
-  if (a.kind === 'lasso' || a.kind === 'move' || a.kind === 'scale'){ endLasso(a); return; }
+  if (['lasso', 'move', 'scale', 'rotate'].includes(a.kind)){ endLasso(a); return; }
   if (a.kind === 'ov'){
     if (!a.moved){ if (editing?.st !== a.st) beginEdit(a.pg, a.st, false); }
     else if (editing?.st !== a.st){ S.undo.push({ type:'edit', pg:a.pg, stroke:a.st, before:a.before, after:snap(a.st) }); S.redo = []; S.dirty = true; }
@@ -2069,7 +2349,7 @@ function endStroke(){
   }
   refreshButtons(); scheduleSave();
 }
-function cancelStroke(){ if (['erase', 'ov', 'rz', 'lasso', 'move', 'scale'].includes(active?.kind)) return endStroke(); clearLive(); active = null; }
+function cancelStroke(){ if (['erase', 'ov', 'rz', 'lasso', 'move', 'scale', 'rotate'].includes(active?.kind)) return endStroke(); clearLive(); active = null; }
 
 function eraseAt(e){
   const a = active, pg = a.pg, [x, y] = toPdf(pg, e.clientX, e.clientY);
@@ -2094,6 +2374,7 @@ function eraseFrame(a){
   ctx.beginPath(); ctx.arc(vx, vy, TOOLS.eraser.size.val / 2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 }
 function markHit(st, x, y, rad){
+  if (st.kind === 'stamp'){ const b = markBounds(st); return x >= b[0] - rad && x <= b[2] + rad && y >= b[1] - rad && y <= b[3] + rad; }
   if (st.kind === 'note') return Math.hypot(x - st.at[0], y - st.at[1]) <= rad + 9;
   if (st.kind === 'box'){
     const h = st._h || st.fs * 1.25 + 2 * BOX_PAD;
@@ -2215,7 +2496,7 @@ viewer.addEventListener('pointermove', e => {
   if (!active || active.id !== e.pointerId) return;
   if (e.pointerType === 'pen') lastPenAt = performance.now();
   if (active.kind === 'ov' || active.kind === 'rz') return moveOv(e);
-  if (active.kind === 'lasso' || active.kind === 'move' || active.kind === 'scale') return moveLasso(e);
+  if (['lasso', 'move', 'scale', 'rotate'].includes(active.kind)) return moveLasso(e);
   if (active.kind === 'place'){ if (Math.hypot(e.clientX - active.x, e.clientY - active.y) > 10) active.ok = false; return; }
   const evs = e.getCoalescedEvents?.() || [];
   if (active.kind === 'text') return moveText(e);
@@ -2295,7 +2576,7 @@ addEventListener('keydown', e => {
   if (k === 'escape'){ openDrawer(false); clearSel(); closeBmCard(); bmPanel(false); return; }
   if (k === 'b' && S.doc){ bmPanel(); return; }
   if ((k === 'delete' || k === 'backspace') && sel){ e.preventDefault(); deleteSel(); return; }
-  const keyTool = { p:'pen', l:'pencil', h:'hl', g:'text', t:'box', n:'note', v:'lasso', e:'eraser' }[k];
+  const keyTool = { p:'pen', l:'pencil', h:'hl', g:'text', t:'box', n:'note', k:'stamp', v:'lasso', e:'eraser' }[k];
   if (keyTool) setTool(keyTool);
   else if (k === '+' || k === '=') setZoom(S.zoom * 1.25); else if (k === '-') setZoom(S.zoom / 1.25);
 });
@@ -2451,6 +2732,7 @@ async function buildPdf(){
         if (!font){ font = await doc.embedFont(StandardFonts.Helvetica); charset = new Set(font.getCharacterSet()); }
         addBox(doc, page, st, idx++, font, charset);
       } else if (st.kind === 'note') addNote(doc, page, st, idx++);
+      else if (st.kind === 'stamp') addStamp(doc, page, st, idx++);
       else (st.kind === 'text' ? addHighlight : addInk)(doc, page, st, idx++);
       }
     }
@@ -2660,6 +2942,20 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
 
 refreshButtons();
 window.__grimorio = S;   // ajuda pra depurar no console
+
+// iPad/iPhone: a página toda nunca deve rolar — só o visualizador. Se algo empurrar
+// (arrasto na barra, teclado), volta pro lugar (menos durante a digitação).
+{
+  const typing = () => !!document.activeElement?.closest?.('input,textarea,[contenteditable]');
+  const settle = () => { if (!typing() && (scrollX || scrollY || document.documentElement.scrollTop || document.body.scrollTop)){ scrollTo(0, 0); document.documentElement.scrollTop = document.body.scrollTop = 0; } };
+  addEventListener('scroll', settle, { passive:true });
+  document.addEventListener('focusout', () => setTimeout(settle, 60));
+  visualViewport?.addEventListener('resize', () => setTimeout(settle, 60));
+  visualViewport?.addEventListener('scroll', () => setTimeout(settle, 60));
+  // o Safari restaura a rolagem ao recarregar: aqui não tem o que restaurar
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  settle(); addEventListener('pageshow', settle); addEventListener('load', settle);
+}
 
 // some com o splash depois da pena escrever uma linha; um toque pula
 {

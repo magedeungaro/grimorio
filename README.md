@@ -8,12 +8,13 @@ Leitor de PDF com caneta, feito pra iPad/Safari (e qualquer navegador). Tudo rod
 - **Pena** e **lápis** sensíveis à pressão (Apple Pencil, S Pen, mesa digitalizadora)
 - **Marca-texto** livre e **grifo** que gruda no texto selecionável
 - **Texto**: caixa de texto direto na página · **Nota**: marcador com balão de comentário
-- **Laço**: contorna desenhos pra selecionar, mover, redimensionar pelos cantos ou apagar de uma vez
+- **Laço**: contorna desenhos pra selecionar, mover, redimensionar pelos cantos, girar ou apagar de uma vez
+- **Carimbos**: grimório com símbolos místicos, céu, runas nórdicas e os 12 signos (alguns coloridos, outros na cor do caldeirão)
 - **Borracha** (apaga traço por traço), desfazer/refazer
 - **Marca-páginas**: fita colorida no canto de cada página, com nome; painel **Marcadores** com as fitas e o sumário do PDF
 - Dedo rola e dá zoom com pinça; botão pra alternar pro "dedo desenha"
 
-Atalhos: `P` pena · `L` lápis · `H` marca-texto · `G` grifo · `T` texto · `N` nota · `V` laço · `E` borracha · `B` marcadores · `Espaço` gaveta · `C` caldeirão de cores · `⌘Z` / `⇧⌘Z` · `⌘S` salvar
+Atalhos: `P` pena · `L` lápis · `H` marca-texto · `G` grifo · `T` texto · `N` nota · `K` carimbo · `V` laço · `E` borracha · `B` marcadores · `Espaço` gaveta · `C` caldeirão de cores · `⌘Z` / `⇧⌘Z` · `⌘S` salvar
 
 ## Sessões
 Cada traço é guardado na hora, no próprio aparelho (IndexedDB), junto com o PDF. Fechou o app? Na tela inicial aparece "Continuar de onde parou". Abrir de novo o mesmo arquivo original também traz as anotações de volta.
