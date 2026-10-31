@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <!-- Nada sai daqui: sem rede. Só blob: (bibliotecas embutidas e o PDF aberto). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' blob:; worker-src blob: 'self'; manifest-src 'self'; style-src 'unsafe-inline'; img-src blob: data: 'self'; font-src blob: data:; connect-src blob: data:; base-uri 'none'; form-action 'none'">
-<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' blob: https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; worker-src blob: 'self'; manifest-src 'self'; style-src 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; img-src blob: data: 'self' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com https://*.googleusercontent.com; font-src blob: data: https://fonts.gstatic.com; connect-src blob: data: https://www.googleapis.com https://content.googleapis.com https://accounts.google.com https://*.googleusercontent.com; frame-src https://docs.google.com https://drive.google.com https://accounts.google.com https://content.googleapis.com; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -40,6 +40,14 @@ button{font:inherit;color:inherit}
 .btn:hover{background:rgba(200,182,255,.10)}
 .btn:active{background:rgba(200,182,255,.18)}
 .btn[disabled]{opacity:.35;pointer-events:none}
+.btn[hidden]{display:none}
+#btnSave .ic-orb{display:none}
+#btnSave.to-drive .ic-dl{display:none}
+#btnSave.to-drive .ic-orb{display:block}
+#btnSave.to-drive .up{animation:orbUp 2.4s ease-in-out infinite}
+@keyframes orbUp{0%,100%{transform:translateY(.6px);opacity:.75}50%{transform:translateY(-.8px);opacity:1}}
+@media (prefers-reduced-motion:reduce){#btnSave.to-drive .up{animation:none}}
+.dp-sub{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
 .btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .btn.icon{padding:0}
 .btn.on{background:rgba(139,92,246,.30);border-color:rgba(200,182,255,.45)}
@@ -232,6 +240,25 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
 .rc-meta{font-size:12px;opacity:.65}
 .rc-x{border:none;background:none;color:inherit;opacity:.45;padding:0 14px;cursor:pointer;font-size:13px}
 .rc-x:hover{opacity:.9}
+#drivePanel{position:fixed;z-index:26;top:calc(var(--bar-h) + env(safe-area-inset-top) + 6px);left:max(8px,env(safe-area-inset-left));width:min(320px,calc(100vw - 16px));
+  background:linear-gradient(180deg,#33264f,#241a3b);border:1px solid #4a3d66;border-radius:18px;padding:14px;box-shadow:0 18px 40px rgba(0,0,0,.45);color:var(--text);
+  display:flex;flex-direction:column;gap:8px}
+#drivePanel[hidden]{display:none}
+.dp-title{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--lilac);letter-spacing:.03em}
+.dp-title svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.dp-info{margin:0 0 4px;font-size:13px;line-height:1.4;color:var(--muted)}
+.dp-file{font-size:12.5px;padding:8px 10px;border-radius:10px;background:rgba(139,92,246,.18);border:1px solid rgba(200,182,255,.3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dp-btn{width:100%;justify-content:flex-start;background:rgba(255,255,255,.05)}
+.dp-btn.primary{justify-content:center;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+.dp-btn[hidden]{display:none}
+.dp-link{border:none;background:none;color:var(--muted);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;align-self:center;padding:4px}
+.dp-link[hidden]{display:none}
+.card-actions{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap}
+#btnDrive2{border:1.5px solid #b7a6e6;background:rgba(139,92,246,.08);color:inherit;font-weight:600}
+#btnDrive2:hover{background:rgba(139,92,246,.16)}
+.orb .spark{animation:orbSpark 2.6s ease-in-out infinite;transform-origin:13.6px 10.5px}
+@keyframes orbSpark{0%,100%{opacity:.55;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+@media (prefers-reduced-motion:reduce){.orb .spark{animation:none}}
 .card .ver{margin-top:4px;font-size:11px}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
@@ -287,6 +314,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
 <header class="bar">
   <div class="brand"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg><span class="txt">Grimório</span></div>
   <button class="btn" id="btnOpen" title="Abrir PDF"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="txt">Abrir</span></button>
+  <button class="btn icon" id="btnDrive" title="Bola de cristal: Google Drive" hidden><svg viewBox="0 0 24 24" class="orb"><circle cx="12" cy="9.6" r="6.6"/><path d="M8.3 15.3L6.6 19.6h10.8l-1.7-4.3"/><path d="M4.8 19.6h14.4"/><path d="M8.6 7.4a4.2 4.2 0 0 1 2.6-1.9" opacity=".7"/><path class="spark" d="M13.6 8.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z" fill="currentColor" stroke="none"/></svg></button>
   <span class="sep"></span>
   <button class="btn icon" id="btnTool" title="Gaveta de ferramentas (Espaço)" aria-expanded="false"><span id="toolIcon"><svg viewBox="0 0 24 24"><path d="M20.5 3.2C13 3.8 8.2 8.6 7.4 15.6c6.6-.6 11.6-5.2 13.1-12.4z"/><path d="M20.5 3.2L4 20.5"/><path d="M16.2 7.8l-3.4-.2M13.9 10.6l-3.6-.1M11.6 13.4l-3-.2"/></svg></span><svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg></button>
   <button class="btn" id="btnFinger" title="O que o dedo faz" hidden><svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 10.5V7a1.5 1.5 0 0 1 3 0v7a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L3.6 16a1.6 1.6 0 0 1 2.5-2L9 16.5V8.5a1.5 1.5 0 0 0-3 0"/></svg><span id="fingerLbl">rola</span></button>
@@ -300,7 +328,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
   <button class="btn icon" id="zoomIn" title="Aumentar zoom"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
   <span class="lbl" id="pageLbl"></span>
   <span class="spacer"></span>
-  <button class="btn primary" id="btnSave" title="Salvar PDF anotado" disabled><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg><span class="txt">Salvar PDF</span></button>
+  <button class="btn primary" id="btnSave" title="Salvar PDF anotado" disabled><svg viewBox="0 0 24 24" class="ic-dl"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg><svg viewBox="0 0 24 24" class="ic-orb"><circle cx="12" cy="9.6" r="6.6"/><path d="M8.3 15.3L6.6 19.6h10.8l-1.7-4.3"/><path d="M4.8 19.6h14.4"/><path class="up" d="M12 12.6V6.8M9.6 9.1L12 6.7l2.4 2.4"/></svg><span class="txt">Salvar PDF</span></button>
 </header>
 
 <main id="viewer">
@@ -309,10 +337,10 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <svg class="star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
       <h1>Abra um PDF</h1>
       <p>Toque em <b>Abrir</b> ou arraste um arquivo pra cá.</p>
-      <button class="btn primary" id="btnOpen2" disabled>Carregando…</button>
+      <div class="card-actions"><button class="btn primary" id="btnOpen2" disabled>Carregando…</button><button class="btn" id="btnDrive2" hidden><svg viewBox="0 0 24 24" class="orb"><circle cx="12" cy="9.6" r="6.6"/><path d="M8.3 15.3L6.6 19.6h10.8l-1.7-4.3"/><path d="M4.8 19.6h14.4"/><path d="M8.6 7.4a4.2 4.2 0 0 1 2.6-1.9" opacity=".7"/><path class="spark" d="M13.6 8.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z" fill="currentColor" stroke="none"/></svg>Do Google Drive</button></div>
       <div id="recent" hidden><div class="rc-title">Continuar de onde parou</div><ul></ul></div>
-      <p class="fine">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
-      <p class="fine ver">versão 2026.10.30-124359</p>
+      <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
+      <p class="fine ver">versão 2026.10.30-211038</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -336,6 +364,18 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
     <div class="dr-size" id="sizeRow"><span class="lbl2" id="sizeLbl">Espessura</span><input class="size" id="size" type="range"><span class="dot-wrap"><span id="sizeDot"></span></span></div>
   </div>
   <div class="dr-knob"></div>
+</div>
+
+<div id="drivePanel" hidden role="dialog" aria-label="Bola de cristal">
+  <div class="dp-title"><svg viewBox="0 0 24 24" class="orb"><circle cx="12" cy="9.6" r="6.6"/><path d="M8.3 15.3L6.6 19.6h10.8l-1.7-4.3"/><path d="M4.8 19.6h14.4"/><path d="M8.6 7.4a4.2 4.2 0 0 1 2.6-1.9" opacity=".7"/><path class="spark" d="M13.6 8.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z" fill="currentColor" stroke="none"/></svg>Bola de cristal</div>
+  <p class="dp-info" id="dpInfo">Conecte o Grimório a outros mundos e abra e salve PDFs direto neles. O Grimório só enxerga os arquivos que você escolher ou que ele mesmo criar.</p>
+  <div class="dp-sub">Google Drive</div>
+  <div class="dp-file" id="dpFile" hidden></div>
+  <button class="btn primary dp-btn" id="dpConnect">Conectar ao Google Drive</button>
+  <button class="btn dp-btn" id="dpOpen">Abrir PDF do Drive</button>
+  <button class="btn dp-btn" id="dpSave">Salvar no Drive</button>
+  <button class="btn dp-btn" id="dpDownload">Baixar uma cópia no aparelho</button>
+  <button class="dp-link" id="dpOff">Desconectar</button>
 </div>
 
 <div id="noteCard" hidden role="dialog" aria-label="Comentário">
@@ -530,6 +570,7 @@ startxref
 
 const $ = s => document.querySelector(s);
 const viewer = $('#viewer'), pagesEl = $('#pages');
+const DRIVE = {"clientId": "842930867463-algpt1gpnmkfd6280psob90ck8tcse7r.apps.googleusercontent.com", "apiKey": "AIzaSyClpaijHr62rQOdGitrArtGGZUSJ5lT4IM", "appId": "842930867463"};   // configuração do Google Drive (só no beta; no oficial é null)
 
 /* ---------- bibliotecas (embutidas como scripts comuns) ---------- */
 const splashStart = performance.now();
@@ -760,6 +801,10 @@ function toast(msg, ms = 2600){ const t = $('#toast'); t.textContent = msg; t.cl
 function refreshButtons(){
   $('#btnUndo').disabled = !S.undo.length; $('#btnRedo').disabled = !S.redo.length;
   $('#btnSave').disabled = !S.doc || !S.editable;
+  const toDrive = !!(DRIVE && S.driveFile);
+  $('#btnSave .txt').textContent = toDrive ? 'Salvar no Drive' : 'Salvar PDF';
+  $('#btnSave').classList.toggle('to-drive', toDrive);
+  $('#btnSave').title = toDrive ? 'Salvar de volta no Google Drive (⌘S)' : 'Salvar PDF anotado (⌘S)';
   $('#zoomLbl').textContent = Math.round(S.zoom * 100) + '%';
 }
 
@@ -781,7 +826,7 @@ addEventListener('drop', e => {
   saveSession(); openFile(f);
 });
 
-async function openFile(file){
+async function openFile(file, drive = null){
   toast('Abrindo…', 60000);
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
@@ -790,7 +835,7 @@ async function openFile(file){
     // mesmo arquivo original de uma sessão anterior? traz as anotações de volta
     const prev = await Store.getSession(id);
     const marks = prev?.marks?.length ? new Map(prev.marks) : imported;
-    await loadDoc({ id, base, marks, editable, name:file.name || 'documento.pdf', restored:!!prev?.marks?.length, view:prev?.view });
+    await loadDoc({ id, base, marks, editable, name:file.name || 'documento.pdf', restored:!!prev?.marks?.length, view:prev?.view, drive });
   } catch (err){
     console.error(err);
     toast(err?.name === 'PasswordException' ? 'Esse PDF tem senha — ainda não sei abrir.' : 'Não consegui abrir esse PDF.');
@@ -802,16 +847,17 @@ async function openSession(id){
   try {
     const sess = await Store.getSession(id), bytes = await Store.getFile(id);
     if (!sess || !bytes) throw new Error('sessão incompleta');
-    await loadDoc({ id, base:bytes, marks:new Map(sess.marks || []), editable:sess.editable !== false, name:sess.name, restored:true, view:sess.view });
+    await loadDoc({ id, base:bytes, marks:new Map(sess.marks || []), editable:sess.editable !== false, name:sess.name, restored:true, view:sess.view, drive:sess.drive || null });
   } catch (err){
     console.error(err); toast('Não consegui reabrir essa sessão 😕'); renderRecent();
   }
   refreshButtons();
 }
-async function loadDoc({ id, base, marks, editable, name, restored, view }){
+async function loadDoc({ id, base, marks, editable, name, restored, view, drive }){
   const doc = await pdfjsLib.getDocument({ data: base.slice(), enableXfa:false }).promise;
   if (S.doc) S.doc.loadingTask?.destroy?.();
-  S.doc = doc; S.baseBytes = base; S.editable = editable; S.fileName = name; S.sessionId = id;
+  S.doc = doc; S.baseBytes = base; S.editable = editable; S.fileName = name; S.sessionId = id; S.driveFile = drive || null;
+  if (S.driveFile) driveLoad().catch(() => {});
   S.undo = []; S.redo = []; S.dirty = false; S.zoom = view?.zoom || 1;
   await buildPages(marks);
   if (view?.frac){ requestAnimationFrame(() => { viewer.scrollTop = view.frac * (viewer.scrollHeight - viewer.clientHeight); scheduleVisible(); }); }
@@ -865,7 +911,7 @@ async function saveSession(){
   S.pages.forEach((pg, i) => { if (pg.strokes.length) marks.push([i, pg.strokes.map(m => Object.fromEntries(Object.entries(m).filter(([k]) => k[0] !== '_')))]); });
   const frac = viewer.scrollHeight > viewer.clientHeight ? viewer.scrollTop / (viewer.scrollHeight - viewer.clientHeight) : 0;
   await Store.putSession({ id:S.sessionId, name:S.fileName, pages:S.pages.length, editable:S.editable,
-    count:marks.reduce((a, [, m]) => a + m.length, 0), marks, updated:Date.now(), view:{ zoom:S.zoom, frac } });
+    count:marks.reduce((a, [, m]) => a + m.length, 0), marks, updated:Date.now(), drive:S.driveFile || null, view:{ zoom:S.zoom, frac } });
   // poda as mais antigas
   const all = await Store.list();
   if (all && all.length > MAX_SESSIONS) for (const old of all.slice(MAX_SESSIONS)) await Store.remove(old.id);
@@ -1865,12 +1911,7 @@ function addNote(doc, page, st, idx){
 }
 function pdfDate(){ const d = new Date(), z = n => String(n).padStart(2, '0'); return `D:${d.getUTCFullYear()}${z(d.getUTCMonth() + 1)}${z(d.getUTCDate())}${z(d.getUTCHours())}${z(d.getUTCMinutes())}${z(d.getUTCSeconds())}Z`; }
 
-let saving = false;
-async function save(){
-  if (editing) finishEdit();
-  if (!S.doc || !S.editable || saving) return;
-  saving = true; toast('Salvando…', 60000);
-  try {
+async function buildPdf(){
     const doc = await PDFDocument.load(S.baseBytes, { updateMetadata:false });
     const pages = doc.getPages(); let idx = 0, font = null, charset = null;
     for (const pg of S.pages) for (const st of pg.strokes){
@@ -1881,16 +1922,184 @@ async function save(){
       } else if (st.kind === 'note') addNote(doc, page, st, idx++);
       else (st.kind === 'text' ? addHighlight : addInk)(doc, page, st, idx++);
     }
-    const out = await doc.save();
+    return { out: await doc.save(), n: idx };
+}
+const savedMsg = n => `${n} anotaç${n === 1 ? 'ão editável' : 'ões editáveis'}`;
+let saving = false;
+async function save(){
+  if (editing) finishEdit();
+  if (DRIVE && S.driveFile) return driveSave();
+  return download();
+}
+async function download(){
+  if (editing) finishEdit();
+  if (!S.doc || !S.editable || saving) return;
+  saving = true; toast('Salvando…', 60000);
+  try {
+    const { out, n:idx } = await buildPdf();
     const blob = new Blob([out], { type:'application/pdf' }), url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = S.fileName.match(/\.pdf$/i) ? S.fileName : S.fileName + '.pdf';
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
     S.dirty = false;
-    toast(`Salvo ✦ ${idx} anotaç${idx === 1 ? 'ão editável' : 'ões editáveis'}`);
+    toast(`Salvo ✦ ${savedMsg(idx)}`, 4500);
   } catch (err){ console.error(err); toast('Não consegui salvar esse PDF 😕'); }
   saving = false;
 }
 $('#btnSave').onclick = save;
+
+/* ---------- Google Drive ----------
+   Só existe no beta (DRIVE configurado no build). Tudo acontece entre este
+   aparelho e o Google: login oficial do Google, token só na memória, escopo
+   drive.file (o app só vê o que você escolheu ou o que ele criou). */
+const API = 'https://www.googleapis.com';
+const GD = { token:null, exp:0, tc:null, loading:null, pending:null };
+const driveKnown = () => { try { return localStorage.getItem('grimorio.drive') === '1'; } catch { return false; } };
+function loadScript(src){
+  return new Promise((ok, bad) => { const sc = document.createElement('script'); sc.src = src; sc.async = true; sc.onload = ok; sc.onerror = () => bad(new Error('sem conexão com o Google')); document.head.appendChild(sc); });
+}
+function driveLoad(){
+  if (!DRIVE) return Promise.reject(new Error('Drive desligado'));
+  if (window.__driveMock) return GD.loading ||= Promise.resolve();
+  return GD.loading ||= Promise.all([loadScript('https://accounts.google.com/gsi/client'), loadScript('https://apis.google.com/js/api.js')])
+    .then(() => new Promise((ok, bad) => gapi.load('picker', { callback:ok, onerror:() => bad(new Error('seletor do Drive não carregou')) })))
+    .then(() => {
+      GD.tc = google.accounts.oauth2.initTokenClient({
+        client_id:DRIVE.clientId, scope:'https://www.googleapis.com/auth/drive.file',
+        callback: r => {
+          const p = GD.pending; GD.pending = null;
+          if (r.error) return p?.bad(new Error(r.error_description || r.error));
+          GD.token = r.access_token; GD.exp = Date.now() + (Number(r.expires_in || 3600) - 60) * 1000;
+          try { localStorage.setItem('grimorio.drive', '1'); } catch {}
+          p?.ok(GD.token); renderDrivePanel();
+        },
+        error_callback: e => { const p = GD.pending; GD.pending = null; p?.bad(new Error(e?.type === 'popup_closed' ? 'login cancelado' : 'login não abriu (bloqueador de pop-up?)')); },
+      });
+    })
+    .catch(e => { GD.loading = null; throw e; });
+}
+// Chamar ainda dentro do toque: se precisar, abre a janelinha de login do Google.
+function driveToken(){
+  if (window.__driveMock) return window.__driveMock.token();
+  if (GD.token && Date.now() < GD.exp) return Promise.resolve(GD.token);
+  if (!GD.tc) return Promise.reject(new Error('ainda carregando o Google, tente de novo'));
+  return new Promise((ok, bad) => { GD.pending = { ok, bad }; GD.tc.requestAccessToken({ prompt: driveKnown() ? '' : 'consent' }); });
+}
+async function gfetch(path, opt = {}){
+  const tok = await driveToken();
+  const r = await (window.__driveMock?.fetch || fetch)(API + path, { ...opt, headers:{ ...(opt.headers || {}), Authorization:'Bearer ' + tok } });
+  if (r.status === 401){ GD.token = null; throw new Error('o login do Google expirou, toque de novo'); }
+  if (r.status === 404) throw Object.assign(new Error('arquivo não encontrado no Drive'), { status:404 });
+  if (!r.ok){
+    let why = ''; try { const j = await r.json(); why = j.error?.errors?.[0]?.reason || j.error?.message || ''; } catch {}
+    throw Object.assign(new Error(`o Drive respondeu ${r.status}${why ? ' (' + why + ')' : ''}`), { status:r.status, why });
+  }
+  return r;
+}
+function drivePick(token){
+  if (window.__driveMock) return window.__driveMock.pick();
+  return new Promise(ok => {
+    const view = new google.picker.DocsView(google.picker.ViewId.DOCS).setMimeTypes('application/pdf').setIncludeFolders(true);
+    new google.picker.PickerBuilder().addView(view).setOAuthToken(token).setDeveloperKey(DRIVE.apiKey).setAppId(DRIVE.appId)
+      .setLocale('pt-BR').setTitle('Escolha um PDF')
+      .setCallback(d => { if (d.action === google.picker.Action.PICKED) ok(d.docs[0]); else if (d.action === google.picker.Action.CANCEL) ok(null); })
+      .build().setVisible(true);
+  });
+}
+const metaOf = async id => (await gfetch(`/drive/v3/files/${id}?fields=id,name,headRevisionId,modifiedTime,trashed,capabilities/canEdit&supportsAllDrives=true`)).json();
+
+async function driveConnect(){
+  try { await driveToken(); toast('Conectado ao Drive ✦'); renderDrivePanel(); }
+  catch (e){ toast('Não conectou: ' + e.message); }
+}
+async function driveOpen(){
+  const tokP = driveToken();   // primeiro, ainda dentro do toque
+  try {
+    const doc = await drivePick(await tokP); if (!doc) return;
+    drivePanel(false); toast('Baixando do Drive…', 60000);
+    const meta = await metaOf(doc.id);
+    const bytes = await (await gfetch(`/drive/v3/files/${doc.id}?alt=media&supportsAllDrives=true`)).arrayBuffer();
+    saveSession();
+    await openFile(new File([bytes], meta.name, { type:'application/pdf' }), { id:meta.id, name:meta.name, rev:meta.headRevisionId || meta.modifiedTime, ...(meta.capabilities?.canEdit === false ? { readOnly:true } : {}) });
+    if (meta.capabilities?.canEdit === false) toast('Esse arquivo é só leitura pra você no Drive — ao salvar, vai uma cópia anotada pra pasta Grimório', 5000);
+  } catch (e){ console.error(e); toast('Não abri do Drive: ' + e.message); }
+}
+async function driveFolder(){
+  let id = null; try { id = localStorage.getItem('grimorio.driveFolder'); } catch {}
+  if (id){ try { if (!(await metaOf(id)).trashed) return id; } catch (e){ if (e.status !== 404) throw e; } }
+  const r = await gfetch('/drive/v3/files?fields=id', { method:'POST', headers:{ 'Content-Type':'application/json' },
+    body:JSON.stringify({ name:'Grimório', mimeType:'application/vnd.google-apps.folder' }) });
+  id = (await r.json()).id; try { localStorage.setItem('grimorio.driveFolder', id); } catch {}
+  return id;
+}
+async function driveCreate(name, out){
+  const parent = await driveFolder(), b = 'grimorio' + Math.random().toString(36).slice(2);
+  const body = new Blob([`--${b}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({ name, mimeType:'application/pdf', parents:[parent] })}\r\n--${b}\r\nContent-Type: application/pdf\r\n\r\n`, out, `\r\n--${b}--`]);
+  return (await gfetch('/upload/drive/v3/files?uploadType=multipart&fields=id,name,headRevisionId,modifiedTime', { method:'POST', headers:{ 'Content-Type':`multipart/related; boundary=${b}` }, body })).json();
+}
+async function driveSave(){
+  if (editing) finishEdit();
+  if (!S.doc || !S.editable || saving) return;
+  const tokP = driveToken();   // primeiro, ainda dentro do toque
+  saving = true; toast('Salvando no Drive…', 60000);
+  try {
+    await tokP;
+    const { out, n } = await buildPdf();
+    const name = /\.pdf$/i.test(S.fileName) ? S.fileName : S.fileName + '.pdf';
+    let res = null, f = S.driveFile, note = '';
+    const copyName = name.replace(/\.pdf$/i, ' (anotado).pdf');
+    if (f?.readOnly){ res = await driveCreate(copyName, out); note = ' · cópia na pasta Grimório (o original é só leitura)'; f = null; }
+    if (f){
+      let meta = null;
+      try { meta = await metaOf(f.id); } catch (e){ if (e.status !== 404) throw e; }
+      if (!meta || meta.trashed){ toast('O arquivo sumiu do Drive — salvando um novo na pasta Grimório', 4000); f = null; }
+      else if (f.rev && (meta.headRevisionId || meta.modifiedTime) !== f.rev && !confirm('Esse arquivo mudou no Drive depois que você abriu (talvez em outro aparelho).\n\nOK = substituir pelo que está aqui\nCancelar = salvar como cópia')){
+        res = await driveCreate(name.replace(/\.pdf$/i, ' (cópia).pdf'), out);
+      }
+      if (f && !res){
+        try { res = await (await gfetch(`/upload/drive/v3/files/${f.id}?uploadType=media&fields=id,name,headRevisionId,modifiedTime&supportsAllDrives=true`, { method:'PATCH', headers:{ 'Content-Type':'application/pdf' }, body:out })).json(); }
+        catch (e){
+          if (e.status !== 403 || /rateLimit|quota/i.test(e.why)) throw e;
+          res = await driveCreate(copyName, out); note = ' · cópia na pasta Grimório (sem permissão pra editar o original)';
+        }
+      }
+    }
+    if (!res) res = await driveCreate(name, out);
+    S.driveFile = { id:res.id, name:res.name, rev:res.headRevisionId || res.modifiedTime };
+    S.dirty = false; refreshButtons(); renderDrivePanel(); saveSession();
+    toast(`Salvo no Drive ✦ ${savedMsg(n)}${note}`, note ? 6000 : 4500);
+  } catch (e){ console.error(e); toast('Não salvei no Drive: ' + e.message); }
+  saving = false;
+}
+function renderDrivePanel(){
+  if (!DRIVE) return;
+  const on = !!GD.token || driveKnown() || !!window.__driveMock;
+  $('#dpInfo').hidden = on; $('#dpConnect').hidden = on;
+  for (const id of ['#dpOpen', '#dpSave', '#dpDownload', '#dpOff']) $(id).hidden = !on;
+  $('#dpSave').disabled = $('#dpDownload').disabled = !S.doc || !S.editable;
+  $('#dpSave').textContent = S.driveFile ? 'Salvar no Drive (atualiza o arquivo)' : 'Enviar pro Drive (pasta Grimório)';
+  $('#dpFile').hidden = !S.driveFile; $('#dpFile').textContent = S.driveFile ? '✦ ' + S.driveFile.name : '';
+}
+function drivePanel(open = $('#drivePanel').hidden){
+  $('#drivePanel').hidden = !open;
+  if (open){ openDrawer(false); renderDrivePanel(); driveLoad().catch(e => toast(e.message)); }
+}
+if (DRIVE){
+  $('#btnDrive').hidden = $('#btnDrive2').hidden = false;
+  $('#privacyNote').textContent = 'Tudo acontece neste aparelho. Só vai pro Google Drive o que você mandar salvar lá.';
+  $('#btnDrive').onclick = $('#btnDrive2').onclick = () => drivePanel();
+  $('#dpConnect').onclick = driveConnect;
+  $('#dpOpen').onclick = driveOpen;
+  $('#dpSave').onclick = () => { drivePanel(false); driveSave(); };
+  $('#dpDownload').onclick = () => { drivePanel(false); download(); };
+  $('#dpOff').onclick = () => {
+    if (GD.token && window.google?.accounts) google.accounts.oauth2.revoke(GD.token, () => {});
+    GD.token = null; try { localStorage.removeItem('grimorio.drive'); } catch {}
+    renderDrivePanel(); toast('Desconectado do Drive');
+  };
+  addEventListener('pointerdown', e => { if (!$('#drivePanel').hidden && !e.target.closest('#drivePanel,#btnDrive,#btnDrive2')) drivePanel(false); }, true);
+  // beta: se a segurança da página barrar algo do Google, mostra o quê (ajuda a depurar pelo celular)
+  addEventListener('securitypolicyviolation', e => toast('Bloqueado: ' + (e.blockedURI || e.violatedDirective).slice(0, 70), 6000));
+}
 
 // Instalado como app: abre PDFs passados pelo sistema ("Abrir com…")
 if ('launchQueue' in window) launchQueue.setConsumer(async p => { if (p.files?.length) openFile(await p.files[0].getFile()); });
