@@ -215,9 +215,19 @@ button{font:inherit;color:inherit}
 .bx-rz{position:absolute;right:-8px;top:50%;width:12px;height:22px;margin-top:-11px;border-radius:6px;background:#7c3aed;border:2px solid #fff;cursor:ew-resize;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .bx-del{position:absolute;right:-12px;top:-28px;width:24px;height:24px;border-radius:50%;border:2px solid #fff;background:#7c3aed;color:#fff;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .bx-del svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
-#noteCard{position:fixed;z-index:24;width:min(320px,calc(100vw - 16px));background:linear-gradient(180deg,#33264f,#241a3b);border:1px solid #4a3d66;border-radius:16px;
+#noteCard,#bmCard{position:fixed;z-index:24;width:min(320px,calc(100vw - 16px));background:linear-gradient(180deg,#33264f,#241a3b);border:1px solid #4a3d66;border-radius:16px;
   padding:10px 12px 12px;box-shadow:0 14px 36px rgba(0,0,0,.45);color:var(--text)}
-#noteCard[hidden]{display:none}
+#noteCard[hidden],#bmCard[hidden]{display:none}
+#bmTitle{display:block;width:100%;height:40px;border-radius:10px;border:1px solid #4a3d66;background:#160f25;color:var(--text);
+  font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:0 10px;-webkit-user-select:text;user-select:text;outline:none}
+#bmTitle:focus{border-color:var(--accent)}
+.bm-colors{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px}
+.bm-sw{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.22);padding:0;cursor:pointer}
+.bm-sw.on{border-color:#fff;box-shadow:0 0 0 2px #8b5cf6}
+.bm-pot{width:30px;height:30px;border-radius:50%;border:1.5px dashed #6b5a92;background:transparent;color:var(--lilac);padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.bm-pot svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bm-dot{width:12px;height:18px;flex:none;clip-path:polygon(0 0,100% 0,100% 100%,50% 76%,0 100%);background:var(--bmc,#8b5cf6)}
+
 .nc-head{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:var(--lilac);margin-bottom:8px;letter-spacing:.03em}
 .nc-dot{width:14px;height:14px;border-radius:4px;background:var(--nc,#ffd54a);border:1px solid rgba(255,255,255,.45)}
 .nc-head .btn{margin-left:auto;height:32px;min-width:32px}
@@ -253,10 +263,26 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
 .rc-meta{font-size:12px;opacity:.65}
 .rc-x{border:none;background:none;color:inherit;opacity:.45;padding:0 14px;cursor:pointer;font-size:13px}
 .rc-x:hover{opacity:.9}
-#drivePanel{position:fixed;z-index:26;top:calc(var(--bar-h) + env(safe-area-inset-top) + 6px);left:max(8px,env(safe-area-inset-left));width:min(320px,calc(100vw - 16px));
+#drivePanel,#bmPanel{position:fixed;z-index:26;top:calc(var(--bar-h) + env(safe-area-inset-top) + 6px);left:max(8px,env(safe-area-inset-left));width:min(320px,calc(100vw - 16px));
   background:linear-gradient(180deg,#33264f,#241a3b);border:1px solid #4a3d66;border-radius:18px;padding:14px;box-shadow:0 18px 40px rgba(0,0,0,.45);color:var(--text);
   display:flex;flex-direction:column;gap:8px}
-#drivePanel[hidden]{display:none}
+#drivePanel[hidden],#bmPanel[hidden]{display:none}
+#bmPanel{max-height:calc(100vh - var(--bar-h) - env(safe-area-inset-top) - 24px);overflow:auto}
+.bm-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.bm-list[hidden],.dp-info[hidden],.dp-sub[hidden]{display:none}
+.bm-list button{width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border:none;border-radius:10px;background:rgba(255,255,255,.05);color:var(--text);font:inherit;font-size:13.5px;text-align:left;cursor:pointer}
+.bm-list button:active{background:rgba(200,182,255,.16)}
+.bm-list .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bm-list .pg{font-size:11.5px;color:var(--muted);flex:none}
+.bm-list .rib{width:12px;height:18px;flex:none;clip-path:polygon(0 0,100% 0,100% 100%,50% 76%,0 100%);background:currentColor}
+.bm-list.toc button{background:transparent;padding:6px 10px}
+.bm-rib{position:absolute;top:-3px;right:22px;width:22px;height:34px;padding:0;border:none;background:none;cursor:pointer;z-index:3;color:#8b5cf6;touch-action:manipulation}
+.bm-rib svg{width:100%;height:100%;display:block;overflow:visible}
+.bm-rib:not(.on){opacity:.3}
+.bm-rib:not(.on):hover{opacity:.65}
+.bm-rib:not(.on) .fill{fill:rgba(255,255,255,.6);stroke:#7c3aed;stroke-dasharray:3 2.4}
+.bm-rib:not(.on) .shadow,.bm-rib:not(.on) .star{display:none}
+
 .dp-title{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--lilac);letter-spacing:.03em}
 .dp-title svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .dp-info{margin:0 0 4px;font-size:13px;line-height:1.4;color:var(--muted)}
@@ -329,6 +355,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
 <header class="bar">
   <div class="brand"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg><span class="txt">Grimório</span></div>
   <button class="btn" id="btnOpen" title="Abrir PDF"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="txt">Abrir</span></button>
+  <button class="btn icon" id="btnMarks" title="Marcadores (B)" disabled><svg viewBox="0 0 24 24"><path d="M7 3h10v17.5l-5-3.8-5 3.8z"/><path d="M12 7.3l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z" fill="currentColor" stroke="none"/></svg></button>
   <button class="btn icon" id="btnDrive" title="Bola de cristal: Google Drive" hidden><svg viewBox="0 0 24 24" class="orb"><circle cx="12" cy="9.6" r="6.6"/><path d="M8.3 15.3L6.6 19.6h10.8l-1.7-4.3"/><path d="M4.8 19.6h14.4"/><path d="M8.6 7.4a4.2 4.2 0 0 1 2.6-1.9" opacity=".7"/><path class="spark" d="M13.6 8.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z" fill="currentColor" stroke="none"/></svg></button>
   <span class="sep"></span>
   <button class="btn icon" id="btnTool" title="Gaveta de ferramentas (Espaço)" aria-expanded="false"><span id="toolIcon"><svg viewBox="0 0 24 24"><path d="M20.5 3.2C13 3.8 8.2 8.6 7.4 15.6c6.6-.6 11.6-5.2 13.1-12.4z"/><path d="M20.5 3.2L4 20.5"/><path d="M16.2 7.8l-3.4-.2M13.9 10.6l-3.6-.1M11.6 13.4l-3-.2"/></svg></span><svg class="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg></button>
@@ -356,7 +383,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <div id="recent" hidden><div class="rc-title">Continuar de onde parou</div><ul></ul></div>
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
-      <p class="fine ver">versão 2026.10.30-233333</p>
+      <p class="fine ver">versão 2026.10.30-234701</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -393,6 +420,22 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
   <button class="btn dp-btn" id="dpSave">Salvar no Drive</button>
   <button class="btn dp-btn" id="dpDownload">Baixar uma cópia no aparelho</button>
   <button class="dp-link" id="dpOff">Desconectar</button>
+</div>
+
+<div id="bmPanel" hidden role="dialog" aria-label="Marcadores">
+  <div class="dp-title"><svg viewBox="0 0 24 24"><path d="M7 3h10v17.5l-5-3.8-5 3.8z"/><path d="M12 7.3l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z" fill="currentColor" stroke="none"/></svg>Marcadores</div>
+  <div class="dp-sub">Seus marca-páginas</div>
+  <ul class="bm-list" id="bmList"></ul>
+  <p class="dp-info" id="bmEmpty">Toque na fitinha no canto de uma página pra marcar.</p>
+  <div class="dp-sub" id="tocHead" hidden>Sumário do PDF</div>
+  <ul class="bm-list toc" id="tocList" hidden></ul>
+</div>
+
+<div id="bmCard" hidden role="dialog" aria-label="Marca-página">
+  <div class="nc-head"><span class="bm-dot"></span><span id="bmHead">Marca-página</span><button class="btn icon" id="bmDel" title="Remover fita"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button></div>
+  <input id="bmTitle" maxlength="80" placeholder="Nome (opcional)" autocomplete="off">
+  <div class="bm-colors" id="bmColors"></div>
+  <div class="nc-row"><button class="btn primary" id="bmOk">Pronto</button></div>
 </div>
 
 <div id="noteCard" hidden role="dialog" aria-label="Comentário">
@@ -648,7 +691,7 @@ const TOOLS = {
 const INK_KEY = 'GrimorioInk';
 
 const S = {
-  tool:'pen', color:{ pen:PEN_COLORS[1], pencil:PENCIL_COLORS[0], hl:HL_COLORS[0], text:HL_COLORS[0], box:PEN_COLORS[0], note:'#c4a7ff' }, fingerDraws:false,
+  tool:'pen', color:{ pen:PEN_COLORS[1], pencil:PENCIL_COLORS[0], hl:HL_COLORS[0], text:HL_COLORS[0], box:PEN_COLORS[0], note:'#c4a7ff', ribbon:'#8b5cf6' }, fingerDraws:false,
   zoom:1, fit:1, doc:null, baseBytes:null, fileName:'documento.pdf', editable:true,
   pages:[], undo:[], redo:[], dirty:false,
 };
@@ -743,6 +786,7 @@ function drawWheel(){
 function syncPotion(fromHex){
   const hex = hsv2hex(PM.h, PM.s, PM.v);
   S.color[PM.tool] = hex; paintPotion();
+  if (PM.tool === 'ribbon') setRibbonColor(hex);
   if (editing && editing.st.tool === PM.tool){ editing.st.color = hex; placeOverlay(editing.pg, editing.st); $('#noteCard').style.setProperty('--nc', hex); }
   const a = PM.h * Math.PI / 180, mark = $('#wheelMark');
   mark.style.left = (12.67 + 74.67 * (.5 + Math.cos(a) * PM.s / 2)) + '%';
@@ -760,11 +804,12 @@ function renderHist(){
     box.appendChild(b);
   }
 }
-function openPotion(){
-  if (S.tool === 'eraser' || S.tool === 'lasso') return;
-  PM.tool = S.tool; PM.start = S.color[PM.tool];
+function openPotion(t){
+  t = typeof t === 'string' ? t : S.tool;
+  if (t === 'eraser' || t === 'lasso') return;
+  PM.tool = t; PM.start = S.color[PM.tool];
   Object.assign(PM, hex2hsv(PM.start));
-  $('#potionFor').textContent = 'para ' + TOOLS[PM.tool].name.toLowerCase();
+  $('#potionFor').textContent = 'para ' + (TOOLS[PM.tool]?.name || 'a fita').toLowerCase();
   $('#potionV').value = PM.v;
   $('#potionModal').hidden = false;
   drawWheel(); syncPotion();
@@ -833,6 +878,7 @@ function toast(msg, ms = 2600){ const t = $('#toast'); t.textContent = msg; t.cl
 function refreshButtons(){
   $('#btnUndo').disabled = !S.undo.length; $('#btnRedo').disabled = !S.redo.length;
   $('#btnSave').disabled = !S.doc || !S.editable;
+  $('#btnMarks').disabled = !S.doc;
   const toDrive = !!(DRIVE && S.driveFile);
   $('#btnSave .txt').textContent = toDrive ? 'Salvar no Drive' : 'Salvar PDF';
   $('#btnSave').classList.toggle('to-drive', toDrive);
@@ -863,11 +909,12 @@ async function openFile(file, drive = null){
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
     const id = fileId(bytes);
-    const { base, imported, editable } = await extractMarks(bytes);
+    const { base, imported, editable, bookmarks } = await extractMarks(bytes);
     // mesmo arquivo original de uma sessão anterior? traz as anotações de volta
     const prev = await Store.getSession(id);
     const marks = prev?.marks?.length ? new Map(prev.marks) : imported;
-    await loadDoc({ id, base, marks, editable, name:file.name || 'documento.pdf', restored:!!prev?.marks?.length, view:prev?.view, drive });
+    const bms = prev?.bookmarks ? new Map(prev.bookmarks) : (bookmarks || new Map());
+    await loadDoc({ id, base, marks, editable, name:file.name || 'documento.pdf', restored:!!prev?.marks?.length, view:prev?.view, drive, bookmarks:bms });
   } catch (err){
     console.error(err);
     toast(err?.name === 'PasswordException' ? 'Esse PDF tem senha — ainda não sei abrir.' : 'Não consegui abrir esse PDF.');
@@ -879,19 +926,23 @@ async function openSession(id){
   try {
     const sess = await Store.getSession(id), bytes = await Store.getFile(id);
     if (!sess || !bytes) throw new Error('sessão incompleta');
-    await loadDoc({ id, base:bytes, marks:new Map(sess.marks || []), editable:sess.editable !== false, name:sess.name, restored:true, view:sess.view, drive:sess.drive || null });
+    await loadDoc({ id, base:bytes, marks:new Map(sess.marks || []), editable:sess.editable !== false, name:sess.name, restored:true, view:sess.view, drive:sess.drive || null, bookmarks:new Map(sess.bookmarks || []) });
   } catch (err){
     console.error(err); toast('Não consegui reabrir essa sessão 😕'); renderRecent();
   }
   refreshButtons();
 }
-async function loadDoc({ id, base, marks, editable, name, restored, view, drive }){
+async function loadDoc({ id, base, marks, editable, name, restored, view, drive, bookmarks }){
   const doc = await pdfjsLib.getDocument({ data: base.slice(), enableXfa:false }).promise;
   if (S.doc) S.doc.loadingTask?.destroy?.();
   S.doc = doc; S.baseBytes = base; S.editable = editable; S.fileName = name; S.sessionId = id; S.driveFile = drive || null;
   if (S.driveFile) driveLoad().catch(() => {});
   clearSel(); S.undo = []; S.redo = []; S.dirty = false; S.zoom = view?.zoom || 1;
+  closeBmCard(true); bmPanel(false);
   await buildPages(marks);
+  for (const [i, bm] of (bookmarks || new Map())) if (S.pages[i]) S.pages[i].bm = bm;
+  S.pages.forEach(renderRibbon);
+  loadToc();
   if (view?.frac){ requestAnimationFrame(() => { viewer.scrollTop = view.frac * (viewer.scrollHeight - viewer.clientHeight); scheduleVisible(); }); }
   $('#empty').hidden = true;
   document.title = S.fileName.replace(/\.pdf$/i, '') + ' · Grimório';
@@ -943,7 +994,7 @@ async function saveSession(){
   S.pages.forEach((pg, i) => { if (pg.strokes.length) marks.push([i, pg.strokes.map(m => Object.fromEntries(Object.entries(m).filter(([k]) => k[0] !== '_')))]); });
   const frac = viewer.scrollHeight > viewer.clientHeight ? viewer.scrollTop / (viewer.scrollHeight - viewer.clientHeight) : 0;
   await Store.putSession({ id:S.sessionId, name:S.fileName, pages:S.pages.length, editable:S.editable,
-    count:marks.reduce((a, [, m]) => a + m.length, 0), marks, updated:Date.now(), drive:S.driveFile || null, view:{ zoom:S.zoom, frac } });
+    count:marks.reduce((a, [, m]) => a + m.length, 0), marks, bookmarks:S.pages.filter(q => q.bm).map(q => [q.i - 1, q.bm]), updated:Date.now(), drive:S.driveFile || null, view:{ zoom:S.zoom, frac } });
   // poda as mais antigas
   const all = await Store.list();
   if (all && all.length > MAX_SESSIONS) for (const old of all.slice(MAX_SESSIONS)) await Store.remove(old.id);
@@ -978,7 +1029,7 @@ renderRecent();
 
 /* Tira /Ink e /Highlight do arquivo (viram marcações editáveis) e devolve o PDF "limpo". */
 async function extractMarks(bytes){
-  const imported = new Map();
+  const imported = new Map(), bookmarks = new Map();
   try {
     const doc = await PDFDocument.load(bytes, { updateMetadata:false });
     if (doc.isEncrypted) return { base: bytes, imported, editable:false };
@@ -1005,7 +1056,8 @@ async function extractMarks(bytes){
       if (popups.size) for (let k = keep.length - 1; k >= 0; k--) if (popups.has(String(keep[k]))) keep.splice(k, 1);
       if (marks.length){ imported.set(i, marks); page.node.set(PDFName.of('Annots'), doc.context.obj(keep)); changed = true; }
     });
-    return { base: changed ? await doc.save() : bytes, imported, editable:true };
+    if (takeBookmarks(doc, bookmarks)) changed = true;
+    return { base: changed ? await doc.save() : bytes, imported, editable:true, bookmarks };
   } catch (e){
     console.warn('pdf-lib não leu o arquivo; só leitura', e);
     return { base: bytes, imported, editable:false };
@@ -1108,7 +1160,9 @@ async function buildPages(imported){
     const el = document.createElement('div'); el.className = 'page';
     const n = document.createElement('span'); n.className = 'num'; n.textContent = i; el.appendChild(n);
     pagesEl.appendChild(el);
-    const pg = { i, pdfPage, el, vp:null, pdfCanvas:null, inkCanvas:null, strokes: imported.get(i - 1) || [], gen:0, shown:-1, task:null, text:null, textP:null };
+    const pg = { i, pdfPage, el, vp:null, pdfCanvas:null, inkCanvas:null, strokes: imported.get(i - 1) || [], gen:0, shown:-1, task:null, text:null, textP:null, bm:null };
+    const rib = document.createElement('button'); rib.className = 'bm-rib'; rib.innerHTML = RIBBON_SVG;
+    rib.onclick = ev => { ev.stopPropagation(); ribbonTap(pg); }; el.appendChild(rib); pg.rib = rib;
     el._pg = pg; S.pages.push(pg);
   }
   for (const pg of S.pages) groupPage(pg);
@@ -1536,6 +1590,187 @@ function moveOv(e){
 
 
 
+
+/* ---------- marca-páginas (fita) e sumário ----------
+   Uma fita por página, com nome e cor. Ao salvar viram itens do /Outlines do PDF
+   (com /C = cor, que o Acrobat mostra) marcados com GrimorioBookmark; ao abrir,
+   esses itens voltam a ser fitas e o resto do sumário original fica como está. */
+const RIBBON_SVG = '<svg viewBox="0 0 22 34"><path class="shadow" d="M2 0H20V31L11 24.5 2 31Z" fill="rgba(45,31,79,.35)" transform="translate(0 1.4)"/>'
+  + '<path class="fill" d="M2 0H20V31L11 24.5 2 31Z" fill="currentColor" stroke="#2d1f4f" stroke-width="1.2" stroke-linejoin="round"/>'
+  + '<path class="star" d="M11 7.5l1 2.6 2.6 1-2.6 1L11 14.7l-1-2.6-2.6-1 2.6-1z" fill="#fff" stroke="#2d1f4f" stroke-width=".6"/></svg>';
+const RIB_COLORS = ['#8b5cf6', '#c4a7ff', '#ec4899', '#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6'];
+try { const c = localStorage.getItem('grimorio.ribbon'); if (/^#[0-9a-f]{6}$/i.test(c || '')) S.color.ribbon = c; } catch {}
+let bmEdit = null;   // { pg }
+function renderRibbon(pg){
+  const r = pg.rib; if (!r) return;
+  r.classList.toggle('on', !!pg.bm);
+  r.style.color = pg.bm ? pg.bm.color : '';
+  r.title = pg.bm ? (pg.bm.title || `Página ${pg.i}`) + ' (toque pra editar)' : 'Marcar esta página';
+}
+function ribbonTap(pg){
+  if (editing) finishEdit();
+  if (bmEdit && bmEdit.pg !== pg) closeBmCard();
+  if (!pg.bm){ pg.bm = { title:'', color:S.color.ribbon }; S.dirty = true; renderRibbon(pg); scheduleSave(); }
+  openBmCard(pg);
+}
+function renderBmColors(){
+  const box = $('#bmColors'), cur = bmEdit?.pg.bm?.color;
+  box.innerHTML = '';
+  for (const c of RIB_COLORS){
+    const b = document.createElement('button'); b.className = 'bm-sw' + (c === cur ? ' on' : ''); b.style.background = c; b.title = c;
+    b.onclick = () => { setRibbonColor(c); rememberRibbon(c); };
+    box.appendChild(b);
+  }
+  const pot = document.createElement('button'); pot.className = 'bm-pot'; pot.title = 'Outra cor (caldeirão)';
+  pot.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9.3 3h5.4"/><path d="M10.3 3v5.4L5.3 16.6A2.4 2.4 0 0 0 7.4 20.3h9.2a2.4 2.4 0 0 0 2.1-3.7L13.7 8.4V3"/></svg>';
+  pot.onclick = () => { if (!bmEdit?.pg.bm) return; S.color.ribbon = bmEdit.pg.bm.color; openPotion('ribbon'); };
+  box.appendChild(pot);
+  $('#bmCard').style.setProperty('--bmc', cur || S.color.ribbon);
+}
+function setRibbonColor(c){
+  if (!bmEdit?.pg.bm) return;
+  bmEdit.pg.bm.color = c; S.color.ribbon = c; S.dirty = true;
+  renderRibbon(bmEdit.pg); renderBmColors(); scheduleSave();
+}
+function rememberRibbon(c){ try { localStorage.setItem('grimorio.ribbon', c); } catch {} }
+function openBmCard(pg){
+  bmEdit = { pg };
+  $('#bmHead').textContent = `Marca-página · pág. ${pg.i}`;
+  $('#bmTitle').value = pg.bm.title || ''; $('#bmTitle').placeholder = `Página ${pg.i}`;
+  renderBmColors();
+  const card = $('#bmCard'); card.hidden = false;
+  const r = pg.rib.getBoundingClientRect(), w = card.offsetWidth, h = card.offsetHeight, top0 = viewer.getBoundingClientRect().top + 8;
+  let top = r.bottom + 8; if (top + h > innerHeight - 8) top = Math.max(top0, r.top - 8 - h);
+  card.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px'; card.style.top = Math.max(top0, top) + 'px';
+}
+function closeBmCard(silent){
+  if (!bmEdit) return;
+  const pg = bmEdit.pg; bmEdit = null;
+  $('#bmCard').hidden = true; $('#bmTitle').blur();
+  if (silent) return;
+  if (pg.bm){ const t = $('#bmTitle').value.trim(); if (t !== pg.bm.title){ pg.bm.title = t; S.dirty = true; } rememberRibbon(pg.bm.color); }
+  renderRibbon(pg); renderBmPanel(); scheduleSave();
+}
+$('#bmOk').onclick = () => closeBmCard();
+$('#bmTitle').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); closeBmCard(); } });
+$('#bmDel').onclick = () => { if (!bmEdit) return; const pg = bmEdit.pg; pg.bm = null; S.dirty = true; closeBmCard(); toast('Fita removida'); };
+addEventListener('pointerdown', e => {
+  if (bmEdit && !e.target.closest('#bmCard,#potionModal,.bm-rib')){ closeBmCard(); if (e.target.closest('#viewer')){ e.stopPropagation(); e.preventDefault(); } }
+  if (!$('#bmPanel').hidden && !e.target.closest('#bmPanel,#btnMarks')) bmPanel(false);
+}, true);
+
+function goToPage(i){
+  const pg = S.pages[i]; if (!pg) return;
+  viewer.scrollTo({ top:Math.max(0, pg.el.offsetTop - 12), behavior:'smooth' });
+}
+function bmPanel(open = $('#bmPanel').hidden){
+  $('#bmPanel').hidden = !open;
+  if (open){ openDrawer(false); if (typeof drivePanel === 'function' && DRIVE) drivePanel(false); renderBmPanel(); }
+}
+$('#btnMarks').onclick = () => bmPanel();
+function renderBmPanel(){
+  const ul = $('#bmList'); ul.innerHTML = '';
+  const list = S.pages.filter(pg => pg.bm);
+  $('#bmEmpty').hidden = !!list.length;
+  for (const pg of list){
+    const li = document.createElement('li');
+    li.innerHTML = '<button><span class="rib"></span><span class="t"></span><span class="pg"></span></button>';
+    li.querySelector('.rib').style.color = pg.bm.color;
+    li.querySelector('.t').textContent = pg.bm.title || `Página ${pg.i}`;
+    li.querySelector('.pg').textContent = 'pág. ' + pg.i;
+    li.querySelector('button').onclick = () => { bmPanel(false); goToPage(pg.i - 1); };
+    ul.appendChild(li);
+  }
+  const toc = S.toc || [];
+  $('#tocHead').hidden = $('#tocList').hidden = !toc.length;
+  const tl = $('#tocList'); tl.innerHTML = '';
+  for (const it of toc){
+    const li = document.createElement('li');
+    li.innerHTML = '<button><span class="t"></span><span class="pg"></span></button>';
+    li.querySelector('button').style.paddingLeft = (10 + it.level * 14) + 'px';
+    li.querySelector('.t').textContent = it.title;
+    li.querySelector('.pg').textContent = it.page >= 0 ? 'pág. ' + (it.page + 1) : '';
+    li.querySelector('button').onclick = () => { if (it.page >= 0){ bmPanel(false); goToPage(it.page); } };
+    tl.appendChild(li);
+  }
+}
+async function loadToc(){
+  const doc = S.doc; S.toc = [];
+  try {
+    const ol = await doc.getOutline(); if (!ol || doc !== S.doc) return;
+    const out = [];
+    const destPage = async dest => {
+      try {
+        if (typeof dest === 'string') dest = await doc.getDestination(dest);
+        if (!Array.isArray(dest)) return -1;
+        return typeof dest[0] === 'number' ? dest[0] : await doc.getPageIndex(dest[0]);
+      } catch { return -1; }
+    };
+    const walk = async (items, level) => {
+      for (const it of items){
+        if (out.length >= 400) return;
+        out.push({ title:(it.title || '').trim() || '(sem título)', level:Math.min(level, 5), page:await destPage(it.dest) });
+        if (it.items?.length && level < 5) await walk(it.items, level + 1);
+      }
+    };
+    await walk(ol, 0);
+    if (doc === S.doc){ S.toc = out; if (!$('#bmPanel').hidden) renderBmPanel(); }
+  } catch (e){ console.warn('sumário', e); }
+}
+
+// PDF → fitas: tira do sumário os itens marcados como nossos
+function takeBookmarks(doc, into){
+  const ctx = doc.context, O = PDFName.of('Outlines'), outl = ctx.lookup(doc.catalog.get(O));
+  if (!(outl instanceof PDFDict)) return false;
+  const refs = doc.getPages().map(pg => String(pg.ref));
+  const keep = []; let removed = 0, cur = outl.get(PDFName.of('First')), guard = 0;
+  while (cur && guard++ < 5000){
+    const it = ctx.lookup(cur); if (!(it instanceof PDFDict)) break;
+    const nxt = it.get(PDFName.of('Next'));
+    if (it.get(PDFName.of('GrimorioBookmark'))){
+      removed++;
+      const dest = ctx.lookup(it.get(PDFName.of('Dest')));
+      const pi = dest instanceof PDFArray ? refs.indexOf(String(dest.get(0))) : -1;
+      const color = annotText(doc, it, 'GrimorioColor');
+      if (pi >= 0) into.set(pi, { title:annotText(doc, it, 'GrimorioTitle'), color:/^#[0-9a-f]{6}$/i.test(color) ? color.toLowerCase() : '#8b5cf6' });
+    } else keep.push(cur);
+    cur = nxt;
+  }
+  if (!removed) return false;
+  if (!keep.length){ doc.catalog.delete(O); return true; }
+  keep.forEach((ref, i) => {
+    const it = ctx.lookup(ref);
+    if (i) it.set(PDFName.of('Prev'), keep[i - 1]); else it.delete(PDFName.of('Prev'));
+    if (i < keep.length - 1) it.set(PDFName.of('Next'), keep[i + 1]); else it.delete(PDFName.of('Next'));
+  });
+  outl.set(PDFName.of('First'), keep[0]); outl.set(PDFName.of('Last'), keep[keep.length - 1]);
+  const n = outl.get(PDFName.of('Count'));
+  if (n instanceof PDFNumber) outl.set(PDFName.of('Count'), ctx.obj(Math.max(keep.length, n.asNumber() - removed)));
+  return true;
+}
+// fitas → PDF: vão pro fim do sumário, com a cor da fita
+function putBookmarks(doc, pages){
+  const list = S.pages.filter(pg => pg.bm); if (!list.length) return;
+  const ctx = doc.context, O = PDFName.of('Outlines');
+  let outl = ctx.lookup(doc.catalog.get(O));
+  if (!(outl instanceof PDFDict)){ outl = ctx.obj({ Type:'Outlines' }); doc.catalog.set(O, ctx.register(outl)); }
+  const outRef = doc.catalog.get(O);
+  let last = outl.get(PDFName.of('Last'));
+  for (const pg of list){
+    const [r, g, b] = hexToRgb(pg.bm.color);
+    const it = ctx.obj({
+      Title:PDFHexString.fromText(pg.bm.title || `Página ${pg.i}`), Parent:outRef,
+      Dest:[pages[pg.i - 1].ref, 'XYZ', null, null, null], C:[+f2(r), +f2(g), +f2(b)],
+      GrimorioBookmark:true, GrimorioColor:PDFString.of(pg.bm.color), GrimorioTitle:PDFHexString.fromText(pg.bm.title || ''),
+    });
+    const ref = ctx.register(it);
+    if (last){ ctx.lookup(last).set(PDFName.of('Next'), ref); it.set(PDFName.of('Prev'), last); } else outl.set(PDFName.of('First'), ref);
+    outl.set(PDFName.of('Last'), ref); last = ref;
+  }
+  const n = outl.get(PDFName.of('Count'));
+  outl.set(PDFName.of('Count'), ctx.obj((n instanceof PDFNumber && n.asNumber() > 0 ? n.asNumber() : 0) + list.length));
+}
+
 /* ---------- objetos: traços que se encostam viram um só ----------
    Cada traço guarda um gid. Traços da mesma ferramenta que se tocam ficam com o
    mesmo gid: o laço pega o objeto inteiro e, ao salvar, cada objeto (por cor) vira
@@ -1919,6 +2154,7 @@ function fling(){
 
 viewer.addEventListener('pointerdown', e => {
   if (!S.doc) return;
+  if (e.target.closest('.bm-rib')) return;   // fita de marca-página
   if (e.target.closest('.sel-bar')) return;   // botões da seleção
   if (sel && !active && e.target.closest('.sel-box') && !(e.pointerType === 'mouse' && e.button !== 0)){
     if (e.pointerType === 'pen') lastPenAt = performance.now();
@@ -2056,7 +2292,8 @@ addEventListener('keydown', e => {
   if (!$('#potionModal').hidden) return;
   if (k === 'c'){ openPotion(); return; }
   if (k === ' ' && S.doc){ e.preventDefault(); openDrawer(); return; }
-  if (k === 'escape'){ openDrawer(false); clearSel(); return; }
+  if (k === 'escape'){ openDrawer(false); clearSel(); closeBmCard(); bmPanel(false); return; }
+  if (k === 'b' && S.doc){ bmPanel(); return; }
   if ((k === 'delete' || k === 'backspace') && sel){ e.preventDefault(); deleteSel(); return; }
   const keyTool = { p:'pen', l:'pencil', h:'hl', g:'text', t:'box', n:'note', v:'lasso', e:'eraser' }[k];
   if (keyTool) setTool(keyTool);
@@ -2217,6 +2454,7 @@ async function buildPdf(){
       else (st.kind === 'text' ? addHighlight : addInk)(doc, page, st, idx++);
       }
     }
+    putBookmarks(doc, pages);
     return { out: await doc.save(), n: idx };
 }
 const savedMsg = n => `${n} anotaç${n === 1 ? 'ão editável' : 'ões editáveis'}`;
