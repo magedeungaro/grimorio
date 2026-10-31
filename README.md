@@ -8,15 +8,19 @@ Leitor de PDF com caneta, feito pra iPad/Safari (e qualquer navegador). Tudo rod
 - **Pena** e **lápis** sensíveis à pressão (Apple Pencil, S Pen, mesa digitalizadora)
 - **Marca-texto** livre e **grifo** que gruda no texto selecionável
 - **Texto**: caixa de texto direto na página · **Nota**: marcador com balão de comentário
-- **Borracha** (apaga a marcação inteira), desfazer/refazer
+- **Laço**: contorna desenhos pra selecionar, mover, redimensionar pelos cantos ou apagar de uma vez
+- **Borracha** (apaga traço por traço), desfazer/refazer
 - Dedo rola e dá zoom com pinça; botão pra alternar pro "dedo desenha"
 
-Atalhos: `P` pena · `L` lápis · `H` marca-texto · `G` grifo · `T` texto · `N` nota · `E` borracha · `Espaço` gaveta · `C` caldeirão de cores · `⌘Z` / `⇧⌘Z` · `⌘S` salvar
+Atalhos: `P` pena · `L` lápis · `H` marca-texto · `G` grifo · `T` texto · `N` nota · `V` laço · `E` borracha · `Espaço` gaveta · `C` caldeirão de cores · `⌘Z` / `⇧⌘Z` · `⌘S` salvar
 
 ## Sessões
 Cada traço é guardado na hora, no próprio aparelho (IndexedDB), junto com o PDF. Fechou o app? Na tela inicial aparece "Continuar de onde parou". Abrir de novo o mesmo arquivo original também traz as anotações de volta.
 
 ## Como as anotações são salvas
+Traços da mesma ferramenta que se encostam viram um objeto só: o laço pega o desenho inteiro e,
+no PDF, cada objeto (por cor) vira uma única anotação.
+
 Viram anotações nativas do PDF (`/Ink`, `/Highlight`, `/FreeText` e `/Text`), que aparecem em qualquer leitor
 (Acrobat, Preview, navegadores). Ao reabrir no Grimório, continuam editáveis, com a pressão preservada.
 
