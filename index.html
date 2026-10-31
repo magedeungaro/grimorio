@@ -406,7 +406,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <div id="recent" hidden><div class="rc-title">Continuar de onde parou</div><ul></ul></div>
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
-      <p class="fine ver">versão 2026.10.31-002503</p>
+      <p class="fine ver">versão 2026.10.31-003022</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -1746,6 +1746,10 @@ const STAMPS = [
     const r = 15.5, L = crescentD(17.5, 50, r, 9.5, -1), R = mirrorD(L), C = circD(50, 50, r);
     return [{ d:L, fill:true, c:'#ddd6fe' }, { d:R, fill:true, c:'#ddd6fe' }, { d:C, fill:true, c:'#f5f3ff' },
             { d:L, stroke:2.5, c:'#6d28d9' }, { d:R, stroke:2.5, c:'#6d28d9' }, { d:C, stroke:2.5, c:'#6d28d9' }]; })() },
+  { id:'sun', cat:'Céu', fixed:true, name:'Sol', parts:[
+    { d:Array.from({ length:8 }, (_, k) => { const a = k * Math.PI / 4, c = Math.cos(a), sn = Math.sin(a); return `M${R1(50 + 28 * c)} ${R1(50 + 28 * sn)} L${R1(50 + (k % 2 ? 40 : 45) * c)} ${R1(50 + (k % 2 ? 40 : 45) * sn)}`; }).join(' '), stroke:6.5, c:'#f97316' },
+    { d:circD(50, 50, 19), fill:true, c:'#facc15' }, { d:circD(50, 50, 19), stroke:3, c:'#ea580c' },
+    { d:'M40 44 C42 39 46 36 51 35', stroke:2.5, c:'#fef9c3' } ] },
   { id:'aries', cat:'Zodíaco', name:'Áries ♈', parts:[{ d:'M50 92 L50 40 M50 40 C50 18 38 9 27 11 C16 13 12 26 19 34 M50 40 C50 18 62 9 73 11 C84 13 88 26 81 34', stroke:7 }] },
   { id:'taurus', cat:'Zodíaco', name:'Touro ♉', parts:[{ d:circD(50, 64, 22), stroke:7 }, { d:'M16 14 C22 32 34 40 50 40 C66 40 78 32 84 14', stroke:7 }] },
   { id:'gemini', cat:'Zodíaco', name:'Gêmeos ♊', parts:[{ d:'M22 14 C40 21 60 21 78 14 M22 86 C40 79 60 79 78 86 M38 19 L38 81 M62 19 L62 81', stroke:7 }] },
