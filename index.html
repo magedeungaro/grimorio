@@ -15,6 +15,15 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#211836">
 <title>Grimório</title>
+<script>
+/* tema: auto (segue o sistema), claro ou escuro — aplicado antes de pintar, sem piscar */
+(function(){
+  var mq = matchMedia('(prefers-color-scheme: dark)');
+  window.__theme = function(){ var t = 'auto'; try { t = localStorage.getItem('grimorio.theme') || 'auto'; } catch (e) {}
+    document.documentElement.classList.toggle('dark', t === 'dark' || (t === 'auto' && mq.matches)); return t; };
+  __theme(); mq.addEventListener && mq.addEventListener('change', __theme);
+})();
+</script>
 <style>
 :root{
   --bar:#211836; --bar-2:#2d2148; --bar-line:#3d2f5e;
@@ -23,7 +32,7 @@
   --bg:#e9e4f3; --page-shadow:0 1px 3px rgba(33,24,54,.18),0 6px 24px rgba(33,24,54,.10);
   --bar-h:56px;
 }
-@media (prefers-color-scheme:dark){ :root{ --bg:#161122; --page-shadow:0 1px 3px rgba(0,0,0,.5),0 8px 28px rgba(0,0,0,.35);} }
+:root.dark{ --bg:#161122; --page-shadow:0 1px 3px rgba(0,0,0,.5),0 8px 28px rgba(0,0,0,.35);}
 *{box-sizing:border-box}
 html{overscroll-behavior:none}
 body{position:fixed;inset:0;overscroll-behavior:none}
@@ -293,7 +302,7 @@ button{font:inherit;color:inherit}
 #empty[hidden]{display:none}
 #empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}
 .card{max-width:420px;width:100%;text-align:center;color:#3b2f5c;padding:32px 28px;border-radius:20px;background:rgba(255,255,255,.6);border:1.5px dashed #b7a6e6}
-@media (prefers-color-scheme:dark){.card{background:rgba(45,33,72,.55);color:var(--text);border-color:#5b4a8a}}
+:root.dark .card{background:rgba(45,33,72,.55);color:var(--text);border-color:#5b4a8a}
 .card h1{margin:6px 0 6px;font-size:22px}
 .card p{margin:0 0 18px;opacity:.8}
 .card .or{display:flex;align-items:center;gap:12px;margin:18px 0 14px;color:#7a6aa8;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
@@ -301,14 +310,12 @@ button{font:inherit;color:inherit}
 .btn.materialize{margin:0 auto;padding:10px 18px;border-radius:14px;border:1.5px solid #8b5cf6;background:rgba(139,92,246,.12);color:#5b21b6;font-weight:600}
 .btn.materialize:hover{background:rgba(139,92,246,.22)}
 .btn.materialize svg{width:18px;height:18px}
-@media (prefers-color-scheme:dark){
-  .card .or{color:#d4c6ff}
-  .card .or::before,.card .or::after{background:linear-gradient(90deg,transparent,#8f7cc9,transparent)}
-  .btn.materialize{color:#f1eaff;border-color:#b69cff;background:rgba(167,139,250,.24)}
-  .btn.materialize:hover{background:rgba(167,139,250,.34)}
-  .card .fine{opacity:.85}
-  .add-page{color:#e4d9ff;border-color:rgba(196,167,255,.6);background:rgba(167,139,250,.14)}
-}
+:root.dark .card .or{color:#d4c6ff}
+:root.dark .card .or::before,:root.dark .card .or::after{background:linear-gradient(90deg,transparent,#8f7cc9,transparent)}
+:root.dark .btn.materialize{color:#f1eaff;border-color:#b69cff;background:rgba(167,139,250,.24)}
+:root.dark .btn.materialize:hover{background:rgba(167,139,250,.34)}
+:root.dark .card .fine{opacity:.85}
+:root.dark .add-page{color:#e4d9ff;border-color:rgba(196,167,255,.6);background:rgba(167,139,250,.14)}
 .card .fine{margin:16px 0 0;font-size:12.5px;opacity:.65}
 .card .made{margin:14px 0 0;font-size:13px;opacity:.85}
 .card .made a{font-weight:700;text-decoration:none;letter-spacing:.02em;
@@ -443,6 +450,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
   <span class="lbl" id="zoomLbl">100%</span>
   <button class="btn icon" id="zoomIn" title="Aumentar zoom"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
   <span class="lbl" id="pageLbl"></span>
+  <button class="btn icon" id="btnTheme" title="Tema"></button>
   <span class="spacer"></span>
   <button class="btn primary" id="btnSave" title="Salvar PDF anotado" disabled><svg viewBox="0 0 24 24" class="ic-dl"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg><svg viewBox="0 0 24 24" class="ic-orb"><circle cx="12" cy="9.6" r="6.6"/><path d="M8.3 15.3L6.6 19.6h10.8l-1.7-4.3"/><path d="M4.8 19.6h14.4"/><path class="up" d="M12 12.6V6.8M9.6 9.1L12 6.7l2.4 2.4"/></svg><span class="txt">Salvar PDF</span></button>
 </header>
@@ -460,7 +468,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
       <p class="made">feito por <a href="https://www.instagram.com/magenifica.dev/" target="_blank" rel="noopener">Magenifica</a></p>
-      <p class="fine ver">versão 2026.10.31-014226</p>
+      <p class="fine ver">versão 2026.10.31-015027</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -988,6 +996,21 @@ function refreshButtons(){
   $('#btnSave').title = toDrive ? 'Salvar de volta no Google Drive (⌘S)' : 'Salvar PDF anotado (⌘S)';
   $('#zoomLbl').textContent = Math.round(S.zoom * 100) + '%';
 }
+
+/* ---------- tema ---------- */
+const THEMES = {
+  auto:['Automático (segue o aparelho)', '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg>'],
+  light:['Claro', '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>'],
+  dark:['Escuro', '<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/><path d="M17 3.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="currentColor" stroke="none"/></svg>'],
+};
+function paintThemeBtn(){ const t = window.__theme ? __theme() : 'auto', [nm, ic] = THEMES[t] || THEMES.auto; $('#btnTheme').innerHTML = ic; $('#btnTheme').title = 'Tema: ' + nm; return nm; }
+$('#btnTheme').onclick = () => {
+  const order = ['auto', 'light', 'dark']; let cur = 'auto'; try { cur = localStorage.getItem('grimorio.theme') || 'auto'; } catch {}
+  const next = order[(order.indexOf(cur) + 1) % 3];
+  try { localStorage.setItem('grimorio.theme', next); } catch {}
+  toast('Tema: ' + paintThemeBtn());
+};
+paintThemeBtn();
 
 /* ---------- abrir ---------- */
 const fileInput = $('#file');
