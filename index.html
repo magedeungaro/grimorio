@@ -260,6 +260,8 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
 @keyframes orbSpark{0%,100%{opacity:.55;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
 @media (prefers-reduced-motion:reduce){.orb .spark{animation:none}}
 .card .ver{margin-top:4px;font-size:11px}
+.card .legal{margin-top:10px}
+.card .legal a{color:inherit}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
@@ -340,7 +342,8 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <div class="card-actions"><button class="btn primary" id="btnOpen2" disabled>Carregando…</button><button class="btn" id="btnDrive2" hidden><svg viewBox="0 0 24 24" class="orb"><circle cx="12" cy="9.6" r="6.6"/><path d="M8.3 15.3L6.6 19.6h10.8l-1.7-4.3"/><path d="M4.8 19.6h14.4"/><path d="M8.6 7.4a4.2 4.2 0 0 1 2.6-1.9" opacity=".7"/><path class="spark" d="M13.6 8.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z" fill="currentColor" stroke="none"/></svg>Do Google Drive</button></div>
       <div id="recent" hidden><div class="rc-title">Continuar de onde parou</div><ul></ul></div>
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
-      <p class="fine ver">versão 2026.10.30-211038</p>
+      <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
+      <p class="fine ver">versão 2026.10.30-213649</p>
     </div>
   </div>
   <div id="pages"></div>
