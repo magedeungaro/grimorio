@@ -252,9 +252,11 @@ button{font:inherit;color:inherit}
 #btnNight.on{color:#ffc46b}
 :root.vela4 #btnNight.on{color:#c084fc}
 /* vela na mão: círculo de luz que tremula em volta da chama; o resto fica na penumbra */
+#candleGlow,#magicInk{--gr:1}
+@media (max-width:700px){#candleGlow,#magicInk{--gr:.68}}
 #candleGlow{position:fixed;inset:calc(var(--bar-h) + env(safe-area-inset-top)) 0 0 0;z-index:6;pointer-events:none;overflow:hidden;mix-blend-mode:multiply;display:none}
 #candleGlow i{position:absolute;left:calc(var(--cx) - 1600px);top:calc(var(--cy) - 1600px);width:3200px;height:3200px;border-radius:50%;
-  background:radial-gradient(circle at center,#fff7e6 0,#ffe3b3 110px,#f2c286 240px,#a07a52 390px,#4d3824 570px,#3a2a1b 1600px);
+  background:radial-gradient(circle at center,#fff7e6 0,#ffe3b3 calc(var(--gr) * 110px),#f2c286 calc(var(--gr) * 240px),#a07a52 calc(var(--gr) * 390px),#4d3824 calc(var(--gr) * 570px),#3a2a1b 1600px);
   animation:candleFlicker 2.7s ease-in-out infinite;will-change:transform}
 @keyframes candleFlicker{0%{transform:scale(1)}11%{transform:scale(1.03)}23%{transform:scale(.985)}37%{transform:scale(1.015)}52%{transform:scale(.975)}
   63%{transform:scale(1.025)}77%{transform:scale(.99)}89%{transform:scale(1.035)}100%{transform:scale(1)}}
@@ -268,9 +270,9 @@ button{font:inherit;color:inherit}
 :root.vela3 #candleGlow,:root.vela3 #candle,:root.vela4 #candleGlow,:root.vela4 #candle{display:block}
 #candle .cm,:root.vela4 #candle .cn{display:none}
 :root.vela4 #candle .cm{display:inline}
-:root.vela4 #candleGlow i{background:radial-gradient(circle at center,#f6eeff 0,#dfc9ff 110px,#ad8fe0 240px,#4f3777 390px,#21173a 570px,#170f28 1600px)}
+:root.vela4 #candleGlow i{background:radial-gradient(circle at center,#dccbf7 0,#b99be6 calc(var(--gr) * 95px),#7d5fb0 calc(var(--gr) * 205px),#3b2860 calc(var(--gr) * 330px),#1c1331 calc(var(--gr) * 480px),#130c22 1600px)}
 #magicInk{position:fixed;inset:calc(var(--bar-h) + env(safe-area-inset-top)) 0 0 0;z-index:6;pointer-events:none;display:none;width:100%;height:calc(100% - var(--bar-h) - env(safe-area-inset-top));
-  -webkit-mask-image:radial-gradient(circle at var(--cx) var(--cy),#000 0,#000 150px,transparent 340px);mask-image:radial-gradient(circle at var(--cx) var(--cy),#000 0,#000 150px,transparent 340px)}
+  -webkit-mask-image:radial-gradient(circle at var(--cx) var(--cy),#000 0,#000 calc(var(--gr) * 140px),transparent calc(var(--gr) * 310px));mask-image:radial-gradient(circle at var(--cx) var(--cy),#000 0,#000 calc(var(--gr) * 140px),transparent calc(var(--gr) * 310px))}
 :root.vela4 #magicInk{display:block}
 @media (prefers-reduced-motion:reduce){#candleGlow i,#candle .fl{animation:none}}
 .ov-item{position:absolute}
@@ -498,7 +500,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
       <p class="made">feito por <a href="https://www.instagram.com/magenifica.dev/" target="_blank" rel="noopener">Magenifica</a></p>
-      <p class="fine ver">versão 2026.11.01-051122</p>
+      <p class="fine ver">versão 2026.11.01-052006</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -1149,7 +1151,8 @@ function magicLive(pg){
   if (!mystic()){ live.style.opacity = 0; return; }
   const pr = pg.el.getBoundingClientRect(), gr = magicEl.getBoundingClientRect();
   const cx = parseFloat(magicEl.style.getPropertyValue('--cx')) + gr.left - pr.left, cy = parseFloat(magicEl.style.getPropertyValue('--cy')) + gr.top - pr.top;
-  const m = `radial-gradient(circle at ${cx}px ${cy}px,#000 0,#000 150px,transparent 340px)`;
+  const gs = parseFloat(getComputedStyle(magicEl).getPropertyValue('--gr')) || 1;
+  const m = `radial-gradient(circle at ${cx}px ${cy}px,#000 0,#000 ${140 * gs}px,transparent ${310 * gs}px)`;
   live.style.webkitMaskImage = live.style.maskImage = m;
 }
 viewer.addEventListener('scroll', scheduleMagic, { passive:true });
