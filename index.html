@@ -22,6 +22,7 @@
   window.__theme = function(){ var t = 'auto'; try { t = localStorage.getItem('grimorio.theme') || 'auto'; } catch (e) {}
     document.documentElement.classList.toggle('dark', t === 'dark' || (t === 'auto' && mq.matches)); return t; };
   __theme(); mq.addEventListener && mq.addEventListener('change', __theme);
+  try { var v = localStorage.getItem('grimorio.vela'); if (v === '1' || v === '2') document.documentElement.classList.add('vela' + v); } catch (e) {}
 })();
 </script>
 <style>
@@ -244,6 +245,11 @@ button{font:inherit;color:inherit}
 .st-btn.on{background:radial-gradient(circle at 50% 60%,rgba(139,92,246,.55),rgba(30,22,48,.9) 72%);box-shadow:0 0 0 1.5px rgba(200,182,255,.6),0 0 14px rgba(139,92,246,.45)}
 /* caixas de texto e notas: elementos por cima da página */
 .ov-layer{position:absolute;inset:0;pointer-events:none;z-index:2}
+/* luz de vela: tom âmbar multiplicado por cima das páginas (só na tela, não vai pro PDF) */
+.page::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;mix-blend-mode:multiply;background:var(--vela,transparent);display:none}
+:root.vela1 .page::after{--vela:#ffe6bf;display:block}
+:root.vela2 .page::after{--vela:#ffcf96;display:block}
+#btnNight.on{color:#ffc46b}
 .ov-item{position:absolute}
 .ov-note{width:28px;height:28px;transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;touch-action:none}
 .ov-note .halo{fill:none;stroke:rgba(167,139,250,.4);stroke-width:3.2;stroke-linejoin:round}
@@ -451,6 +457,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
   <button class="btn icon" id="zoomIn" title="Aumentar zoom"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
   <span class="lbl" id="pageLbl"></span>
   <button class="btn icon" id="btnTheme" title="Tema"></button>
+  <button class="btn icon" id="btnNight" title="Luz de vela"><svg viewBox="0 0 24 24"><path d="M12 2.8c2 2.3 2.7 3.8 2 5.2-.5 1-1.4 1.4-2 1.4s-1.5-.4-2-1.4c-.7-1.4 0-2.9 2-5.2z"/><path d="M12 9.4v2.1"/><rect x="8.5" y="11.5" width="7" height="9.5" rx="1"/><path d="M6 21h12"/></svg></button>
   <span class="spacer"></span>
   <button class="btn primary" id="btnSave" title="Salvar PDF anotado" disabled><svg viewBox="0 0 24 24" class="ic-dl"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg><svg viewBox="0 0 24 24" class="ic-orb"><circle cx="12" cy="9.6" r="6.6"/><path d="M8.3 15.3L6.6 19.6h10.8l-1.7-4.3"/><path d="M4.8 19.6h14.4"/><path class="up" d="M12 12.6V6.8M9.6 9.1L12 6.7l2.4 2.4"/></svg><span class="txt">Salvar PDF</span></button>
 </header>
@@ -468,7 +475,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
       <p class="made">feito por <a href="https://www.instagram.com/magenifica.dev/" target="_blank" rel="noopener">Magenifica</a></p>
-      <p class="fine ver">versão 2026.10.31-015027</p>
+      <p class="fine ver">versão 2026.11.01-041344</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -1011,6 +1018,17 @@ $('#btnTheme').onclick = () => {
   toast('Tema: ' + paintThemeBtn());
 };
 paintThemeBtn();
+// luz de vela: desligada → suave → forte
+const VELA = ['', '1', '2'], VELA_NM = ['Luz de vela apagada', 'Luz de vela ✦ suave', 'Luz de vela ✦ forte'];
+function velaNow(){ return VELA.find(v => v && document.documentElement.classList.contains('vela' + v)) || ''; }
+function paintNight(){ const v = velaNow(); $('#btnNight').classList.toggle('on', !!v); $('#btnNight').title = VELA_NM[VELA.indexOf(v)]; }
+$('#btnNight').onclick = () => {
+  const next = VELA[(VELA.indexOf(velaNow()) + 1) % 3], root = document.documentElement;
+  root.classList.remove('vela1', 'vela2'); if (next) root.classList.add('vela' + next);
+  try { localStorage.setItem('grimorio.vela', next); } catch {}
+  paintNight(); toast(VELA_NM[VELA.indexOf(next)]);
+};
+paintNight();
 
 /* ---------- abrir ---------- */
 const fileInput = $('#file');
@@ -1584,7 +1602,7 @@ function layout(){
 function dprFor(vp){ let d = Math.min(devicePixelRatio || 1, 2.5); while (vp.width * vp.height * d * d > 12e6) d *= .85; return d; }
 
 async function renderPage(pg){
-  if (pg.task || pg.shown === pg.gen) return;
+  if (!pg.vp || pg.task || pg.shown === pg.gen) return;   // página recém-criada ainda sem tamanho (o layout vem logo depois)
   const gen = pg.gen, vp = pg.vp, dpr = dprFor(vp);
   const c = document.createElement('canvas');
   c.width = Math.floor(vp.width * dpr); c.height = Math.floor(vp.height * dpr);
