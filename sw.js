@@ -1,7 +1,7 @@
 // Grimório offline: guarda só os arquivos do próprio app (nunca os seus PDFs).
 // A versão abaixo é carimbada pelo build: todo deploy muda este arquivo, então o
 // navegador instala o worker novo e a página avisa/recarrega.
-const VERSION = '2026.11.01-052006';
+const VERSION = '2026.11.01-085229';
 const CACHE = 'grimorio-' + VERSION;
 const APP = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-192.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 

@@ -220,7 +220,8 @@ button{font:inherit;color:inherit}
 /* ---------- visualizador ---------- */
 #viewer{position:fixed;inset:calc(var(--bar-h) + env(safe-area-inset-top)) 0 0 0;overflow:auto;touch-action:none;
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:contain}
-#pages{width:max-content;min-width:100%;padding:18px 16px 40vh;transform-origin:0 0;will-change:auto}
+#pages{width:max-content;min-width:100%;min-height:100%;box-sizing:border-box;background:var(--bg);   /* fundo aqui (e não só no #viewer): a luz da vela mistura com ele */
+  padding:18px 16px 40vh;transform-origin:0 0;will-change:auto}
 .page{position:relative;margin:0 auto 18px;background:#fff;box-shadow:var(--page-shadow);border-radius:2px;cursor:crosshair}
 .page canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .page .num{position:absolute;right:-2px;bottom:-16px;font-size:11px;color:#8a80a8}
@@ -252,11 +253,13 @@ button{font:inherit;color:inherit}
 #btnNight.on{color:#ffc46b}
 :root.vela4 #btnNight.on{color:#c084fc}
 /* vela na mão: círculo de luz que tremula em volta da chama; o resto fica na penumbra */
-#candleGlow,#magicInk{--gr:1}
-@media (max-width:700px){#candleGlow,#magicInk{--gr:.68}}
-#candleGlow{position:fixed;inset:calc(var(--bar-h) + env(safe-area-inset-top)) 0 0 0;z-index:6;pointer-events:none;overflow:hidden;mix-blend-mode:multiply;display:none}
-#candleGlow i{position:absolute;left:calc(var(--cx) - 1600px);top:calc(var(--cy) - 1600px);width:3200px;height:3200px;border-radius:50%;
-  background:radial-gradient(circle at center,#fff7e6 0,#ffe3b3 calc(var(--gr) * 110px),#f2c286 calc(var(--gr) * 240px),#a07a52 calc(var(--gr) * 390px),#4d3824 calc(var(--gr) * 570px),#3a2a1b 1600px);
+#candleGlow{--gr:1}
+@media (max-width:700px){#candleGlow{--gr:.68}}
+/* a luz mora dentro da área de leitura (grudada no topo dela), abaixo da tinta mágica de cada página */
+#candleGlow{position:sticky;top:0;left:0;width:100%;height:var(--vh,100%);margin-bottom:calc(-1 * var(--vh,100%));z-index:3;pointer-events:none;overflow:hidden;mix-blend-mode:multiply;display:none;background:#3a2a1b}
+/* círculo do tamanho da luz (antes era uma camada de 3200px: pesadíssima no celular); fora dele, a cor fixa do contêiner */
+#candleGlow i{position:absolute;left:calc(var(--cx) - var(--gr) * 600px);top:calc(var(--cy) - var(--gr) * 600px);width:calc(var(--gr) * 1200px);height:calc(var(--gr) * 1200px);border-radius:50%;
+  background:radial-gradient(circle closest-side,#fff7e6 0,#ffe3b3 18%,#f2c286 40%,#a07a52 65%,#4d3824 92%,#3a2a1b 100%);
   animation:candleFlicker 2.7s ease-in-out infinite;will-change:transform}
 @keyframes candleFlicker{0%{transform:scale(1)}11%{transform:scale(1.03)}23%{transform:scale(.985)}37%{transform:scale(1.015)}52%{transform:scale(.975)}
   63%{transform:scale(1.025)}77%{transform:scale(.99)}89%{transform:scale(1.035)}100%{transform:scale(1)}}
@@ -267,13 +270,15 @@ button{font:inherit;color:inherit}
 #candle .fl{transform-box:fill-box;transform-origin:50% 100%;animation:candleFlame 1.1s ease-in-out infinite alternate}
 #candle .fl2{animation-duration:.7s;animation-delay:.15s}
 @keyframes candleFlame{0%{transform:scaleY(.9) skewX(-3deg)}50%{transform:scaleY(1.06) skewX(2deg)}100%{transform:scaleY(.95) skewX(4deg)}}
-:root.vela3 #candleGlow,:root.vela3 #candle,:root.vela4 #candleGlow,:root.vela4 #candle{display:block}
+/* só com documento aberto: na tela inicial não tem página pra iluminar */
+:root.has-doc.vela3 #candleGlow,:root.has-doc.vela3 #candle,:root.has-doc.vela4 #candleGlow,:root.has-doc.vela4 #candle{display:block}
 #candle .cm,:root.vela4 #candle .cn{display:none}
 :root.vela4 #candle .cm{display:inline}
-:root.vela4 #candleGlow i{background:radial-gradient(circle at center,#dccbf7 0,#b99be6 calc(var(--gr) * 95px),#7d5fb0 calc(var(--gr) * 205px),#3b2860 calc(var(--gr) * 330px),#1c1331 calc(var(--gr) * 480px),#130c22 1600px)}
-#magicInk{position:fixed;inset:calc(var(--bar-h) + env(safe-area-inset-top)) 0 0 0;z-index:6;pointer-events:none;display:none;width:100%;height:calc(100% - var(--bar-h) - env(safe-area-inset-top));
-  -webkit-mask-image:radial-gradient(circle at var(--cx) var(--cy),#000 0,#000 calc(var(--gr) * 140px),transparent calc(var(--gr) * 310px));mask-image:radial-gradient(circle at var(--cx) var(--cy),#000 0,#000 calc(var(--gr) * 140px),transparent calc(var(--gr) * 310px))}
-:root.vela4 #magicInk{display:block}
+:root.vela4 #candleGlow{background:#130c22}
+:root.vela4 #candleGlow i{background:radial-gradient(circle closest-side,#dccbf7 0,#b99be6 16%,#7d5fb0 34%,#3b2860 55%,#1c1331 80%,#130c22 100%)}
+/* tinta mágica: canvas próprio em cada página, por cima da luz; só aparece com a vela misteriosa */
+.page canvas.magic{z-index:4;display:none}
+:root.vela4 .page canvas.magic{display:block}
 @media (prefers-reduced-motion:reduce){#candleGlow i,#candle .fl{animation:none}}
 .ov-item{position:absolute}
 .ov-note{width:28px;height:28px;transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;touch-action:none}
@@ -488,6 +493,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
 </header>
 
 <main id="viewer">
+  <div id="candleGlow" aria-hidden="true"><i></i></div>
   <div id="empty">
     <div class="card">
       <svg class="star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
@@ -500,14 +506,12 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
       <p class="made">feito por <a href="https://www.instagram.com/magenifica.dev/" target="_blank" rel="noopener">Magenifica</a></p>
-      <p class="fine ver">versão 2026.11.01-052006</p>
+      <p class="fine ver">versão 2026.11.01-085229</p>
     </div>
   </div>
   <div id="pages"></div>
 </main>
 <input type="file" id="file" accept="application/pdf,.pdf" hidden>
-<div id="candleGlow" aria-hidden="true"><i></i></div>
-<canvas id="magicInk" aria-hidden="true"></canvas>
 <button id="candle" title="Arraste a vela pela página" aria-label="Vela: arraste pela página"><svg viewBox="0 0 84 100">
   <defs>
     <linearGradient id="slv" x1="0" x2="1"><stop offset="0" stop-color="#8d959f"/><stop offset=".22" stop-color="#eef1f4"/><stop offset=".5" stop-color="#b4bcc5"/><stop offset=".78" stop-color="#e4e8ec"/><stop offset="1" stop-color="#7c848e"/></linearGradient>
@@ -1120,49 +1124,41 @@ $('#btnNight').onclick = () => {
   root.classList.remove('vela1', 'vela2', 'vela3', 'vela4'); if (next) root.classList.add('vela' + next);
   if (next === '3' || next === '4') placeCandle();
   if (!mystic() && sel && sel.items.some(st => st.tool === 'magic')) clearSel();
-  scheduleMagic();
   try { localStorage.setItem('grimorio.vela', next); } catch {}
   paintNight(); toast(VELA_NM[VELA.indexOf(next)]);
 };
 paintNight();
 // vela na mão: arrasta; a luz sai da chama
-const candle = $('#candle'), glow = $('#candleGlow'), magicEl = $('#magicInk');
-// tinta mágica: desenhada numa camada fixa por cima da luz, recortada pelo círculo da vela
-var magicRAF = 0;
-function scheduleMagic(){ if (!magicRAF) magicRAF = requestAnimationFrame(renderMagic); }
-function renderMagic(){
-  magicRAF = 0;
-  if (!mystic()) return;
-  const r = magicEl.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
-  const W = Math.round(r.width * d), H = Math.round(r.height * d);
-  if (magicEl.width !== W || magicEl.height !== H){ magicEl.width = W; magicEl.height = H; }
-  const ctx = magicEl.getContext('2d'); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = '#f5ecff'; ctx.shadowColor = '#c026d3'; ctx.shadowBlur = 12 * d;
-  for (const pg of S.pages || []){
-    if (!pg.vp || !pg.strokes.some(st => st.tool === 'magic')) continue;
-    const pr = pg.el.getBoundingClientRect();
-    if (pr.bottom < r.top || pr.top > r.bottom) continue;
-    ctx.setTransform(d, 0, 0, d, (pr.left - r.left) * d, (pr.top - r.top) * d);
-    for (const st of pg.strokes) if (st.tool === 'magic'){ ctx.beginPath(); tracePath(ctx, pg, smoothOf(st)); ctx.fill('nonzero'); }
-  }
+const candle = $('#candle'), glow = $('#candleGlow');
+// tinta mágica: desenhada uma vez no canvas da própria página (rola junto, sem redesenhar)
+function scheduleMagic(){}
+function drawMagic(pg){
+  const list = pg.strokes.filter(st => st.tool === 'magic');
+  if (!list.length){ if (pg.magicCanvas){ pg.magicCanvas.width = pg.magicCanvas.height = 0; pg.magicCanvas.remove(); pg.magicCanvas = null; } return; }
+  if (!pg.inkCanvas) return;
+  if (!pg.magicCanvas){ pg.magicCanvas = document.createElement('canvas'); pg.magicCanvas.className = 'magic'; pg.inkCanvas.after(pg.magicCanvas); }
+  const c = pg.magicCanvas, d = Math.min(pg.dpr, matchMedia('(max-width:700px)').matches ? 1.5 : 2);
+  const W = Math.round(pg.vp.width * d), H = Math.round(pg.vp.height * d);
+  if (c.width !== W || c.height !== H){ c.width = W; c.height = H; }
+  const ctx = c.getContext('2d'); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H);
+  ctx.setTransform(d, 0, 0, d, 0, 0); ctx.fillStyle = '#f5ecff'; ctx.shadowColor = '#c026d3'; ctx.shadowBlur = 12 * d;
+  for (const st of list){ ctx.beginPath(); tracePath(ctx, pg, smoothOf(st)); ctx.fill('nonzero'); }
 }
-// enquanto escreve: o traço ao vivo só aparece dentro da luz (e nem aparece sem a vela misteriosa)
+// enquanto escreve: sem a vela misteriosa, nada aparece; com ela, o traço vem por cima da luz
 function magicLive(pg){
   if (!mystic()){ live.style.opacity = 0; return; }
-  const pr = pg.el.getBoundingClientRect(), gr = magicEl.getBoundingClientRect();
-  const cx = parseFloat(magicEl.style.getPropertyValue('--cx')) + gr.left - pr.left, cy = parseFloat(magicEl.style.getPropertyValue('--cy')) + gr.top - pr.top;
-  const gs = parseFloat(getComputedStyle(magicEl).getPropertyValue('--gr')) || 1;
-  const m = `radial-gradient(circle at ${cx}px ${cy}px,#000 0,#000 ${140 * gs}px,transparent ${310 * gs}px)`;
-  live.style.webkitMaskImage = live.style.maskImage = m;
+  live.style.zIndex = 4;
 }
-viewer.addEventListener('scroll', scheduleMagic, { passive:true });
-addEventListener('resize', scheduleMagic);
+// a luz fica grudada no topo da área de leitura: altura da área + acompanha a rolagem lateral
+function sizeGlow(){ glow.style.setProperty('--vh', viewer.clientHeight + 'px'); }
+viewer.addEventListener('scroll', () => { const x = viewer.scrollLeft; if (glow._x !== x){ glow._x = x; glow.style.transform = x ? `translateX(${x}px)` : ''; } }, { passive:true });
+addEventListener('resize', sizeGlow); sizeGlow();
 let candlePos = (() => { try { const v = JSON.parse(localStorage.getItem('grimorio.candle')); if (v && v.x >= 0 && v.x <= 1) return v; } catch {} return { x:.82, y:.62 }; })();
 function placeCandle(){
   const r = glow.getBoundingClientRect(); if (!r.width) return;
   const x = r.left + candlePos.x * r.width, y = r.top + candlePos.y * r.height;   // ponto da chama na tela
   candle.style.left = (x - 32) + 'px'; candle.style.top = (y - 14) + 'px';   // chama em (32, 14) no desenho
-  for (const el of [glow, magicEl]){ el.style.setProperty('--cx', (x - r.left) + 'px'); el.style.setProperty('--cy', (y - r.top) + 'px'); }
+  glow.style.setProperty('--cx', (x - r.left) + 'px'); glow.style.setProperty('--cy', (y - r.top) + 'px');
 }
 let candleDrag = null;
 candle.addEventListener('pointerdown', e => {
@@ -1242,6 +1238,7 @@ async function loadDoc({ id, base, marks, editable, name, restored, view, drive,
   loadToc();
   if (view?.frac){ requestAnimationFrame(() => { viewer.scrollTop = view.frac * (viewer.scrollHeight - viewer.clientHeight); scheduleVisible(); }); }
   $('#empty').hidden = true;
+  document.documentElement.classList.add('has-doc'); placeCandle();
   document.title = S.fileName.replace(/\.pdf$/i, '') + ' · Grimório';
   const n = [...marks.values()].reduce((a, s) => a + s.length, 0);
   toast(!editable ? 'PDF protegido: dá pra ler e rabiscar, mas não salvar.'
@@ -1747,7 +1744,6 @@ function layout(){
     if (pg.task){ pg.task.cancel(); pg.task = null; }
     renderOverlays(pg);
   }
-  scheduleMagic?.();
   if (addPageBtn.parentNode) addPageBtn.style.width = S.pages.length ? S.pages[S.pages.length - 1].el.style.width : '';
   refreshButtons();
 }
@@ -1778,7 +1774,7 @@ async function renderPage(pg){
 }
 function unloadPage(pg){
   if (pg.task){ pg.task.cancel(); pg.task = null; }
-  for (const k of ['pdfCanvas', 'hlCanvas', 'inkCanvas']) if (pg[k]){ pg[k].width = pg[k].height = 0; pg[k].remove(); pg[k] = null; }
+  for (const k of ['pdfCanvas', 'hlCanvas', 'inkCanvas', 'magicCanvas']) if (pg[k]){ pg[k].width = pg[k].height = 0; pg[k].remove(); pg[k] = null; }
   pg.shown = -1;
 }
 
@@ -1939,9 +1935,9 @@ let scratch = null;
 function drawInk(pg){
   renderOverlays(pg);
   const c = pg.inkCanvas; if (!c) return;
+  drawMagic(pg);
   const top = c.getContext('2d'), hl = pg.hlCanvas.getContext('2d');
   for (const x of [top, hl]){ x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, c.width, c.height); }
-  scheduleMagic();
   for (const st of pg.strokes){
     if (isOv(st) || st.tool === 'magic') continue;   // tinta mágica: só na camada da vela misteriosa
     const ctx = st.alpha < 1 ? hl : top;
@@ -1975,7 +1971,7 @@ function attachLive(pg, alpha){
   if (!pg.inkCanvas) return false;
   if (live.parentNode !== pg.el) pg.el.appendChild(live);
   if (live.width !== pg.inkCanvas.width || live.height !== pg.inkCanvas.height){ live.width = pg.inkCanvas.width; live.height = pg.inkCanvas.height; }
-  live.style.opacity = alpha; live.classList.toggle('hl', alpha < 1); live.style.webkitMaskImage = live.style.maskImage = '';
+  live.style.opacity = alpha; live.classList.toggle('hl', alpha < 1); live.style.zIndex = '';
   const ctx = live.getContext('2d'); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, live.width, live.height);
   ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, 0);
   return true;
