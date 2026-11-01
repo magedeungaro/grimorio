@@ -12,7 +12,8 @@ Leitor de PDF com caneta, feito pra iPad/Safari (e qualquer navegador). Tudo rod
 - **Carimbos**: grimório com símbolos místicos, céu, runas nórdicas e os 12 signos (alguns coloridos, outros na cor do caldeirão)
 - **Cadernos**: materialize um caderno em branco (pautado, pontilhado, quadriculado, liso ou pergaminho), com capa colorida e "＋ Nova página" no fim
 - **Tema**: automático (segue o aparelho), claro ou escuro, num botão na barra
-- **Luz de vela**: tom âmbar por cima das páginas pra ler de noite (suave ou forte), só na tela
+- **Luz de vela**: tom âmbar por cima das páginas (suave ou forte), uma vela num castiçal de prata que você arrasta pela página, e a **vela misteriosa** de chama roxa
+- **Pena mágica**: tinta invisível que só aparece, brilhando, à luz da vela misteriosa (no PDF vai como anotação escondida)
 - **Borracha** (apaga traço por traço), desfazer/refazer
 - **Marca-páginas**: fita colorida no canto de cada página, com nome; painel **Marcadores** com as fitas e o sumário do PDF
 - Dedo rola e dá zoom com pinça; botão pra alternar pro "dedo desenha"

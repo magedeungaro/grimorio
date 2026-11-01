@@ -22,7 +22,7 @@
   window.__theme = function(){ var t = 'auto'; try { t = localStorage.getItem('grimorio.theme') || 'auto'; } catch (e) {}
     document.documentElement.classList.toggle('dark', t === 'dark' || (t === 'auto' && mq.matches)); return t; };
   __theme(); mq.addEventListener && mq.addEventListener('change', __theme);
-  try { var v = localStorage.getItem('grimorio.vela'); if (v === '1' || v === '2') document.documentElement.classList.add('vela' + v); } catch (e) {}
+  try { var v = localStorage.getItem('grimorio.vela'); if (v === '1' || v === '2' || v === '3' || v === '4') document.documentElement.classList.add('vela' + v); } catch (e) {}
 })();
 </script>
 <style>
@@ -250,6 +250,29 @@ button{font:inherit;color:inherit}
 :root.vela1 .page::after{--vela:#ffe6bf;display:block}
 :root.vela2 .page::after{--vela:#ffcf96;display:block}
 #btnNight.on{color:#ffc46b}
+:root.vela4 #btnNight.on{color:#c084fc}
+/* vela na mão: círculo de luz que tremula em volta da chama; o resto fica na penumbra */
+#candleGlow{position:fixed;inset:calc(var(--bar-h) + env(safe-area-inset-top)) 0 0 0;z-index:6;pointer-events:none;overflow:hidden;mix-blend-mode:multiply;display:none}
+#candleGlow i{position:absolute;left:calc(var(--cx) - 1600px);top:calc(var(--cy) - 1600px);width:3200px;height:3200px;border-radius:50%;
+  background:radial-gradient(circle at center,#fff7e6 0,#ffe3b3 110px,#f2c286 240px,#a07a52 390px,#4d3824 570px,#3a2a1b 1600px);
+  animation:candleFlicker 2.7s ease-in-out infinite;will-change:transform}
+@keyframes candleFlicker{0%{transform:scale(1)}11%{transform:scale(1.03)}23%{transform:scale(.985)}37%{transform:scale(1.015)}52%{transform:scale(.975)}
+  63%{transform:scale(1.025)}77%{transform:scale(.99)}89%{transform:scale(1.035)}100%{transform:scale(1)}}
+#candle{position:fixed;z-index:7;width:84px;height:100px;margin:0;padding:0;border:0;background:none;cursor:grab;touch-action:none;display:none;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#candle:active{cursor:grabbing}
+#candle svg{width:100%;height:100%;overflow:visible}
+#candle .fl{transform-box:fill-box;transform-origin:50% 100%;animation:candleFlame 1.1s ease-in-out infinite alternate}
+#candle .fl2{animation-duration:.7s;animation-delay:.15s}
+@keyframes candleFlame{0%{transform:scaleY(.9) skewX(-3deg)}50%{transform:scaleY(1.06) skewX(2deg)}100%{transform:scaleY(.95) skewX(4deg)}}
+:root.vela3 #candleGlow,:root.vela3 #candle,:root.vela4 #candleGlow,:root.vela4 #candle{display:block}
+#candle .cm,:root.vela4 #candle .cn{display:none}
+:root.vela4 #candle .cm{display:inline}
+:root.vela4 #candleGlow i{background:radial-gradient(circle at center,#f6eeff 0,#dfc9ff 110px,#ad8fe0 240px,#4f3777 390px,#21173a 570px,#170f28 1600px)}
+#magicInk{position:fixed;inset:calc(var(--bar-h) + env(safe-area-inset-top)) 0 0 0;z-index:6;pointer-events:none;display:none;width:100%;height:calc(100% - var(--bar-h) - env(safe-area-inset-top));
+  -webkit-mask-image:radial-gradient(circle at var(--cx) var(--cy),#000 0,#000 150px,transparent 340px);mask-image:radial-gradient(circle at var(--cx) var(--cy),#000 0,#000 150px,transparent 340px)}
+:root.vela4 #magicInk{display:block}
+@media (prefers-reduced-motion:reduce){#candleGlow i,#candle .fl{animation:none}}
 .ov-item{position:absolute}
 .ov-note{width:28px;height:28px;transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;touch-action:none}
 .ov-note .halo{fill:none;stroke:rgba(167,139,250,.4);stroke-width:3.2;stroke-linejoin:round}
@@ -475,12 +498,76 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
       <p class="made">feito por <a href="https://www.instagram.com/magenifica.dev/" target="_blank" rel="noopener">Magenifica</a></p>
-      <p class="fine ver">versão 2026.11.01-041344</p>
+      <p class="fine ver">versão 2026.11.01-043151</p>
     </div>
   </div>
   <div id="pages"></div>
 </main>
 <input type="file" id="file" accept="application/pdf,.pdf" hidden>
+<div id="candleGlow" aria-hidden="true"><i></i></div>
+<canvas id="magicInk" aria-hidden="true"></canvas>
+<button id="candle" title="Arraste a vela pela página" aria-label="Vela: arraste pela página"><svg viewBox="0 0 84 100">
+  <defs>
+    <linearGradient id="slv" x1="0" x2="1"><stop offset="0" stop-color="#8d959f"/><stop offset=".22" stop-color="#eef1f4"/><stop offset=".5" stop-color="#b4bcc5"/><stop offset=".78" stop-color="#e4e8ec"/><stop offset="1" stop-color="#7c848e"/></linearGradient>
+    <linearGradient id="slvD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3f5f7"/><stop offset=".55" stop-color="#b9c0c8"/><stop offset="1" stop-color="#6f7781"/></linearGradient>
+    <linearGradient id="waxB" x1="0" x2="1"><stop offset="0" stop-color="#120e1a"/><stop offset=".35" stop-color="#2a2238"/><stop offset="1" stop-color="#0c0912"/></linearGradient>
+    <linearGradient id="wax" x1="0" x2="1"><stop offset="0" stop-color="#e9d9b8"/><stop offset=".35" stop-color="#fbf3e2"/><stop offset="1" stop-color="#d9c49c"/></linearGradient>
+  </defs>
+  <g class="cn">
+  <ellipse cx="32" cy="17" rx="14" ry="17" fill="#ffd27a" opacity=".22"/>
+  <path class="fl" d="M32 2c5 6 7.5 10.5 6 15-1 3-3.6 4.4-6 4.4S27 20 26 17c-1.5-4.5 1-9 6-15z" fill="#ffb347"/>
+  <path class="fl fl2" d="M32 9c2.6 3.4 3.6 5.8 2.8 8-.5 1.5-1.6 2.2-2.8 2.2s-2.3-.7-2.8-2.2c-.8-2.2.2-4.6 2.8-8z" fill="#fff3c4"/>
+  <path d="M32 21.5c.6 1.4.2 2.8-.4 4.2" stroke="#2a1d10" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+  </g>
+  <g class="cm">
+  <ellipse cx="32" cy="17" rx="15" ry="18" fill="#c084fc" opacity=".3"/>
+  <path class="fl" d="M32 2c5 6 7.5 10.5 6 15-1 3-3.6 4.4-6 4.4S27 20 26 17c-1.5-4.5 1-9 6-15z" fill="#a855f7"/>
+  <path class="fl fl2" d="M32 9c2.6 3.4 3.6 5.8 2.8 8-.5 1.5-1.6 2.2-2.8 2.2s-2.3-.7-2.8-2.2c-.8-2.2.2-4.6 2.8-8z" fill="#f5d0fe"/>
+  <path d="M32 21.5c.6 1.4.2 2.8-.4 4.2" stroke="#0b0710" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+  </g>
+  <!-- castiçal: alça de anel -->
+  <path d="M60 85c6-1 13-2 15-8 1.6-5-2-9.5-6.6-9-4.4.5-6.4 5-4.4 8.4" fill="none" stroke="url(#slvD)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M60 85c6-1 13-2 15-8" fill="none" stroke="#f7f9fb" stroke-width="1" stroke-linecap="round" opacity=".7"/>
+  <!-- pratinho -->
+  <ellipse cx="34" cy="88" rx="30" ry="8" fill="#6f7781"/>
+  <ellipse cx="34" cy="86" rx="30" ry="7.5" fill="url(#slv)"/>
+  <ellipse cx="34" cy="85" rx="24" ry="5" fill="url(#slvD)" opacity=".9"/>
+  <path d="M12 84.5c6-3.5 38-3.5 44 0" stroke="#fff" stroke-width="1" fill="none" opacity=".75"/>
+  <!-- cera que pingou no prato -->
+  <path class="cn" d="M38 84c3-.6 7-.4 8.4.8 1 .9-.6 1.8-3.4 1.9-2.6.1-5.6-.4-6-1.2-.3-.6.2-1.2 1-1.5z" fill="#f6ecd6"/>
+  <path class="cm" d="M38 84c3-.6 7-.4 8.4.8 1 .9-.6 1.8-3.4 1.9-2.6.1-5.6-.4-6-1.2-.3-.6.2-1.2 1-1.5z" fill="#1d1729"/>
+  <!-- copinho -->
+  <path d="M21 72h22l-2 10H23z" fill="url(#slv)"/>
+  <ellipse cx="32" cy="72" rx="12" ry="2.6" fill="url(#slvD)"/>
+  <g class="cn">
+  <!-- vela derretida -->
+  <path d="M24 31c0-2.6 3.4-3.6 8-3.4 4.6-.2 8 .8 8 3.4V72H24z" fill="url(#wax)"/>
+  <ellipse cx="32" cy="30" rx="7.2" ry="2.2" fill="#fffaf0"/>
+  <ellipse cx="32" cy="30" rx="3.4" ry="1" fill="#f4dfae" opacity=".8"/>
+  <path d="M24.2 30c-1.4 5-1.6 12.5-.2 17.5.9 3.2 3.6 2.6 3.4-.6-.2-3.4-.6-6 .2-9.6.7-3 .4-5.4-.6-7.6z" fill="#fff8ea" stroke="#d6bf92" stroke-width=".8"/>
+  <path d="M24 47c-.6 4 .4 7.6 2 7.6s2-2.8 1.2-6" fill="#fff8ea" stroke="#d6bf92" stroke-width=".8"/>
+  <path d="M39.8 30.6c1.2 3.6 1.4 7.4.2 9.8-1 2-3.2 1.4-3-1.2.2-2.6-.2-4.6-.8-7z" fill="#fff8ea" stroke="#d6bf92" stroke-width=".8"/>
+  <path d="M33.4 29.6c.6 3.2.4 6-.8 8-.9 1.5-2.6.9-2.4-.9.2-2-.1-4-.6-6.4z" fill="#fff8ea" stroke="#d6bf92" stroke-width=".8"/>
+  <path d="M38 40c1 3 .8 6.6-.4 8.4-.8 1.2-2.2.6-2-1 .2-2.2-.1-4.6-.8-7" fill="#f7ecd5" stroke="#d6bf92" stroke-width=".8"/>
+  <path d="M39.4 33v38" stroke="#cdb68a" stroke-width="1.4" opacity=".7"/>
+  <path d="M27 36v32" stroke="#fff" stroke-width="1.6" opacity=".55" stroke-linecap="round"/>
+  <path d="M23.6 70c2.6 1.4 14.2 1.4 16.8 0" stroke="#e8d7b2" stroke-width="1.6" fill="none"/>
+  </g>
+  <g class="cm">
+  <!-- vela preta -->
+  <path d="M24 31c0-2.6 3.4-3.6 8-3.4 4.6-.2 8 .8 8 3.4V72H24z" fill="url(#waxB)"/>
+  <ellipse cx="32" cy="30" rx="7.2" ry="2.2" fill="#2e2640"/>
+  <ellipse cx="32" cy="30" rx="3.4" ry="1" fill="#7e5bb5" opacity=".8"/>
+  <path d="M24.2 30c-1.4 5-1.6 12.5-.2 17.5.9 3.2 3.6 2.6 3.4-.6-.2-3.4-.6-6 .2-9.6.7-3 .4-5.4-.6-7.6z" fill="#262036" stroke="#4a3d63" stroke-width=".8"/>
+  <path d="M24 47c-.6 4 .4 7.6 2 7.6s2-2.8 1.2-6" fill="#262036" stroke="#4a3d63" stroke-width=".8"/>
+  <path d="M39.8 30.6c1.2 3.6 1.4 7.4.2 9.8-1 2-3.2 1.4-3-1.2.2-2.6-.2-4.6-.8-7z" fill="#262036" stroke="#4a3d63" stroke-width=".8"/>
+  <path d="M33.4 29.6c.6 3.2.4 6-.8 8-.9 1.5-2.6.9-2.4-.9.2-2-.1-4-.6-6.4z" fill="#262036" stroke="#4a3d63" stroke-width=".8"/>
+  <path d="M38 40c1 3 .8 6.6-.4 8.4-.8 1.2-2.2.6-2-1 .2-2.2-.1-4.6-.8-7" fill="#231d31" stroke="#4a3d63" stroke-width=".8"/>
+  <path d="M39.4 33v38" stroke="#0d0a14" stroke-width="1.4" opacity=".7"/>
+  <path d="M27 36v32" stroke="#6c5a8e" stroke-width="1.6" opacity=".55" stroke-linecap="round"/>
+  <path d="M23.6 70c2.6 1.4 14.2 1.4 16.8 0" stroke="#3a3050" stroke-width="1.6" fill="none"/>
+  </g>
+</svg></button>
 <div id="toast" role="status"></div>
 <div id="upd" hidden>✦ Versão nova do Grimório <button class="btn primary" id="updGo">Atualizar</button></div>
 
@@ -489,6 +576,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
     <div class="dr-title">✦ Gaveta mágica ✦</div>
     <div class="dr-items" id="tools">
       <button class="dr-item on" data-tool="pen" title="Pena (P)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M20.5 3.2C13 3.8 8.2 8.6 7.4 15.6c6.6-.6 11.6-5.2 13.1-12.4z"/><path d="M20.5 3.2L4 20.5"/><path d="M16.2 7.8l-3.4-.2M13.9 10.6l-3.6-.1M11.6 13.4l-3-.2"/></svg></span><span class="nm">Pena</span></button>
+      <button class="dr-item" data-tool="magic" title="Pena mágica: tinta invisível (M)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M20.5 3.2C13 3.8 8.2 8.6 7.4 15.6c6.6-.6 11.6-5.2 13.1-12.4z" stroke-dasharray="2.4 2"/><path d="M20.5 3.2L4 20.5"/><path d="M6 4.5l.6 1.4 1.4.6-1.4.6L6 8.5l-.6-1.4L4 6.5l1.4-.6z" fill="currentColor" stroke="none"/><path d="M18.5 15l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5z" fill="currentColor" stroke="none"/></svg></span><span class="nm">Pena mágica</span></button>
       <button class="dr-item" data-tool="pencil" title="Lápis (L)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M16 3.5l4.5 4.5L8.5 20H4v-4.5z"/><path d="M13.5 6l4.5 4.5"/><path d="M4 15.5L8.5 20"/><path d="M5.6 17.4l1 1" stroke-width="2.6"/></svg></span><span class="nm">Lápis</span></button>
       <button class="dr-item" data-tool="hl" title="Marca-texto (H)"><span class="slot"><svg viewBox="0 0 24 24"><path d="M14 4l6 6-7.5 7.5h-4L6 15v-3.5z"/><path d="M6 15l-3 3v2h5l1.5-2.5"/></svg></span><span class="nm">Marca-texto</span></button>
       <button class="dr-item" data-tool="text" title="Grifo (G)"><span class="slot"><svg viewBox="0 0 24 24"><rect x="3" y="14.5" width="18" height="6" rx="1.2" fill="currentColor" opacity=".35" stroke="none"/><path d="M7 4.5h10"/><path d="M12 4.5v12"/></svg></span><span class="nm">Grifo</span></button>
@@ -794,6 +882,7 @@ const HL_COLORS     = ['#ffe14d', '#c4a7ff', '#8ff0a4', '#8fd3ff', '#ffa8d1'];
 const TOOLS = {
   pen:    { name:'Pena',        colors:PEN_COLORS,    alpha:1,   size:{ min:.4, max:5,  step:.1, val:1.4 } },
   pencil: { name:'Lápis',       colors:PENCIL_COLORS, alpha:.9, size:{ min:.4, max:4,  step:.1, val:1.1 } },
+  magic:  { name:'Pena mágica', colors:[],            alpha:1,   size:{ min:.4, max:5,  step:.1, val:1.6 } },
   hl:     { name:'Marca-texto', colors:HL_COLORS,     alpha:.55, size:{ min:4,  max:24, step:1,  val:12 } },
   text:   { name:'Grifo',       colors:HL_COLORS,     alpha:.55, size:null },
   box:    { name:'Texto',       colors:PEN_COLORS,    alpha:1,   size:{ min:7,  max:36, step:1,  val:13 } },
@@ -805,7 +894,7 @@ const TOOLS = {
 const INK_KEY = 'GrimorioInk';
 
 const S = {
-  tool:'pen', color:{ pen:PEN_COLORS[1], pencil:PENCIL_COLORS[0], hl:HL_COLORS[0], text:HL_COLORS[0], box:PEN_COLORS[0], note:'#c4a7ff', ribbon:'#8b5cf6', stamp:'#1d1630' }, fingerDraws:false,
+  tool:'pen', color:{ pen:PEN_COLORS[1], pencil:PENCIL_COLORS[0], hl:HL_COLORS[0], text:HL_COLORS[0], box:PEN_COLORS[0], magic:'#f3e8ff', note:'#c4a7ff', ribbon:'#8b5cf6', stamp:'#1d1630' }, fingerDraws:false,
   zoom:1, fit:1, doc:null, baseBytes:null, fileName:'documento.pdf', editable:true,
   pages:[], undo:[], redo:[], dirty:false,
 };
@@ -824,7 +913,8 @@ function setTool(t){
   $('#sizeLbl').textContent = (t === 'box' || t === 'stamp') ? 'Tamanho' : 'Espessura';
   document.body.classList.toggle('tool-stamp', t === 'stamp');
   $('#stampRow').hidden = t !== 'stamp';
-  $('#btnPotion').hidden = t === 'eraser' || t === 'lasso';
+  $('#btnPotion').hidden = t === 'eraser' || t === 'lasso' || t === 'magic';
+  if (t === 'magic' && !mystic()) toast('Pena mágica ✦ a tinta só aparece à luz da vela misteriosa');
   paintPotion();
   const r = TOOLS[t].size, inp = $('#size');
   $('#sizeRow').hidden = !r;
@@ -878,7 +968,7 @@ function hex2hsv(hex){
   return { h, s: mx ? d / mx : 0, v: mx };
 }
 function paintPotion(){
-  const t = (S.tool === 'eraser' || S.tool === 'lasso') ? 'pen' : S.tool;
+  const t = (S.tool === 'eraser' || S.tool === 'lasso' || S.tool === 'magic') ? 'pen' : S.tool;
   document.documentElement.style.setProperty('--potion', S.color[t]);
 }
 const PM = { h:0, s:1, v:1, tool:'pen', start:null };
@@ -924,7 +1014,7 @@ function renderHist(){
 }
 function openPotion(t){
   t = typeof t === 'string' ? t : S.tool;
-  if (t === 'eraser' || t === 'lasso') return;
+  if (t === 'eraser' || t === 'lasso' || t === 'magic') return;
   PM.tool = t; PM.start = S.color[PM.tool];
   Object.assign(PM, hex2hsv(PM.start));
   $('#potionFor').textContent = 'para ' + (TOOLS[PM.tool]?.name || (t === 'cover' ? 'a capa' : 'a fita')).toLowerCase();
@@ -1019,16 +1109,75 @@ $('#btnTheme').onclick = () => {
 };
 paintThemeBtn();
 // luz de vela: desligada → suave → forte
-const VELA = ['', '1', '2'], VELA_NM = ['Luz de vela apagada', 'Luz de vela ✦ suave', 'Luz de vela ✦ forte'];
+const VELA = ['', '1', '2', '3', '4'], VELA_NM = ['Luz de vela apagada', 'Luz de vela ✦ suave', 'Luz de vela ✦ forte', 'Vela na mão ✦ arraste a vela pela página', 'Vela misteriosa ✦ revela o que a pena mágica escreveu'];
+function mystic(){ return document.documentElement.classList.contains('vela4'); }
 function velaNow(){ return VELA.find(v => v && document.documentElement.classList.contains('vela' + v)) || ''; }
 function paintNight(){ const v = velaNow(); $('#btnNight').classList.toggle('on', !!v); $('#btnNight').title = VELA_NM[VELA.indexOf(v)]; }
 $('#btnNight').onclick = () => {
-  const next = VELA[(VELA.indexOf(velaNow()) + 1) % 3], root = document.documentElement;
-  root.classList.remove('vela1', 'vela2'); if (next) root.classList.add('vela' + next);
+  const next = VELA[(VELA.indexOf(velaNow()) + 1) % VELA.length], root = document.documentElement;
+  root.classList.remove('vela1', 'vela2', 'vela3', 'vela4'); if (next) root.classList.add('vela' + next);
+  if (next === '3' || next === '4') placeCandle();
+  if (!mystic() && sel && sel.items.some(st => st.tool === 'magic')) clearSel();
+  scheduleMagic();
   try { localStorage.setItem('grimorio.vela', next); } catch {}
   paintNight(); toast(VELA_NM[VELA.indexOf(next)]);
 };
 paintNight();
+// vela na mão: arrasta; a luz sai da chama
+const candle = $('#candle'), glow = $('#candleGlow'), magicEl = $('#magicInk');
+// tinta mágica: desenhada numa camada fixa por cima da luz, recortada pelo círculo da vela
+var magicRAF = 0;
+function scheduleMagic(){ if (!magicRAF) magicRAF = requestAnimationFrame(renderMagic); }
+function renderMagic(){
+  magicRAF = 0;
+  if (!mystic()) return;
+  const r = magicEl.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+  const W = Math.round(r.width * d), H = Math.round(r.height * d);
+  if (magicEl.width !== W || magicEl.height !== H){ magicEl.width = W; magicEl.height = H; }
+  const ctx = magicEl.getContext('2d'); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#f5ecff'; ctx.shadowColor = '#c026d3'; ctx.shadowBlur = 12 * d;
+  for (const pg of S.pages || []){
+    if (!pg.vp || !pg.strokes.some(st => st.tool === 'magic')) continue;
+    const pr = pg.el.getBoundingClientRect();
+    if (pr.bottom < r.top || pr.top > r.bottom) continue;
+    ctx.setTransform(d, 0, 0, d, (pr.left - r.left) * d, (pr.top - r.top) * d);
+    for (const st of pg.strokes) if (st.tool === 'magic'){ ctx.beginPath(); tracePath(ctx, pg, smoothOf(st)); ctx.fill('nonzero'); }
+  }
+}
+// enquanto escreve: o traço ao vivo só aparece dentro da luz (e nem aparece sem a vela misteriosa)
+function magicLive(pg){
+  if (!mystic()){ live.style.opacity = 0; return; }
+  const pr = pg.el.getBoundingClientRect(), gr = magicEl.getBoundingClientRect();
+  const cx = parseFloat(magicEl.style.getPropertyValue('--cx')) + gr.left - pr.left, cy = parseFloat(magicEl.style.getPropertyValue('--cy')) + gr.top - pr.top;
+  const m = `radial-gradient(circle at ${cx}px ${cy}px,#000 0,#000 150px,transparent 340px)`;
+  live.style.webkitMaskImage = live.style.maskImage = m;
+}
+viewer.addEventListener('scroll', scheduleMagic, { passive:true });
+addEventListener('resize', scheduleMagic);
+let candlePos = (() => { try { const v = JSON.parse(localStorage.getItem('grimorio.candle')); if (v && v.x >= 0 && v.x <= 1) return v; } catch {} return { x:.82, y:.62 }; })();
+function placeCandle(){
+  const r = glow.getBoundingClientRect(); if (!r.width) return;
+  const x = r.left + candlePos.x * r.width, y = r.top + candlePos.y * r.height;   // ponto da chama na tela
+  candle.style.left = (x - 32) + 'px'; candle.style.top = (y - 14) + 'px';   // chama em (32, 14) no desenho
+  for (const el of [glow, magicEl]){ el.style.setProperty('--cx', (x - r.left) + 'px'); el.style.setProperty('--cy', (y - r.top) + 'px'); }
+}
+let candleDrag = null;
+candle.addEventListener('pointerdown', e => {
+  e.preventDefault(); e.stopPropagation();
+  const r = candle.getBoundingClientRect();
+  candleDrag = { id:e.pointerId, dx:e.clientX - (r.left + 32), dy:e.clientY - (r.top + 14) };
+  try { candle.setPointerCapture(e.pointerId); } catch {}
+});
+candle.addEventListener('pointermove', e => {
+  if (!candleDrag || e.pointerId !== candleDrag.id) return;
+  const r = glow.getBoundingClientRect();
+  candlePos = { x:Math.min(1, Math.max(0, (e.clientX - candleDrag.dx - r.left) / r.width)), y:Math.min(1, Math.max(0, (e.clientY - candleDrag.dy - r.top) / r.height)) };
+  placeCandle();
+});
+const dropCandle = e => { if (!candleDrag || e.pointerId !== candleDrag.id) return; candleDrag = null; try { localStorage.setItem('grimorio.candle', JSON.stringify(candlePos)); } catch {} };
+candle.addEventListener('pointerup', dropCandle); candle.addEventListener('pointercancel', dropCandle);
+addEventListener('resize', placeCandle); visualViewport?.addEventListener('resize', placeCandle);
+placeCandle();
 
 /* ---------- abrir ---------- */
 const fileInput = $('#file');
@@ -1595,6 +1744,7 @@ function layout(){
     if (pg.task){ pg.task.cancel(); pg.task = null; }
     renderOverlays(pg);
   }
+  scheduleMagic?.();
   if (addPageBtn.parentNode) addPageBtn.style.width = S.pages.length ? S.pages[S.pages.length - 1].el.style.width : '';
   refreshButtons();
 }
@@ -1788,8 +1938,9 @@ function drawInk(pg){
   const c = pg.inkCanvas; if (!c) return;
   const top = c.getContext('2d'), hl = pg.hlCanvas.getContext('2d');
   for (const x of [top, hl]){ x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, c.width, c.height); }
+  scheduleMagic();
   for (const st of pg.strokes){
-    if (isOv(st)) continue;
+    if (isOv(st) || st.tool === 'magic') continue;   // tinta mágica: só na camada da vela misteriosa
     const ctx = st.alpha < 1 ? hl : top;
     if (st.kind === 'stamp'){ drawStamp(top, pg, st); continue; }
     if (st.alpha >= 1 && st.tool !== 'pencil'){
@@ -1821,7 +1972,7 @@ function attachLive(pg, alpha){
   if (!pg.inkCanvas) return false;
   if (live.parentNode !== pg.el) pg.el.appendChild(live);
   if (live.width !== pg.inkCanvas.width || live.height !== pg.inkCanvas.height){ live.width = pg.inkCanvas.width; live.height = pg.inkCanvas.height; }
-  live.style.opacity = alpha; live.classList.toggle('hl', alpha < 1);
+  live.style.opacity = alpha; live.classList.toggle('hl', alpha < 1); live.style.webkitMaskImage = live.style.maskImage = '';
   const ctx = live.getContext('2d'); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, live.width, live.height);
   ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, 0);
   return true;
@@ -2458,7 +2609,7 @@ function groupPage(pg){
 // Contorna os desenhos → ficam selecionados (traços, marca-texto livre, caixas e notas;
 // grifos ficam presos ao texto e não entram). Arrastar dentro da seleção move tudo.
 var sel = null;   // { pg, items:[stroke…] } (var: setTool roda antes desta linha)
-const selectable = st => st.kind !== 'text';
+const selectable = st => st.kind !== 'text' && (st.tool !== 'magic' || mystic());
 function translateMark(st, dx, dy){
   if (st.pts){ for (const q of st.pts){ q[0] += dx; q[1] += dy; } delete st._sm; delete st._bb; }
   if (st.at){ st.at = [st.at[0] + dx, st.at[1] + dy]; }
@@ -2678,6 +2829,7 @@ function startStroke(e, pg){
   if (!attachLive(pg, T.alpha)) return;
   active = { kind:'draw', id:e.pointerId, type:e.pointerType, pg, tool, colorTool:S.tool, p:null, lx:null, ly:null,
              stroke:{ kind:'ink', tool, color:S.color[S.tool], alpha:T.alpha, pts:[] } };
+  if (tool === 'magic') magicLive(pg);
   addPoint(e, true);
 }
 function widthFor(e){
@@ -2697,7 +2849,9 @@ function addPoint(e, force){
   const w = widthFor(e);
   const P = a.stroke.pts; P.push([x, y, w]); a.lx = e.clientX; a.ly = e.clientY;
   const ctx = live.getContext('2d'); ctx.fillStyle = a.stroke.color;
+  if (a.tool === 'magic'){ ctx.shadowColor = '#c026d3'; ctx.shadowBlur = 10; }
   ctx.beginPath(); tracePath(ctx, pg, P, P.length - 1); ctx.fill('nonzero');
+  if (a.tool === 'magic') ctx.shadowBlur = 0;
   if (a.tool === 'pencil'){
     // aplica o grão só na região do último pedaço
     const q = P.slice(-2).map(([px, py, pw]) => { const [vx, vy] = pg.vp.convertToViewportPoint(px, py); return [vx * pg.dpr, vy * pg.dpr, (pw * pg.vp.scale / 2 + 2) * pg.dpr]; });
@@ -2749,6 +2903,7 @@ function eraseAt(e){
   const rad = TOOLS.eraser.size.val / 2 / pg.vp.scale;
   for (let i = pg.strokes.length - 1; i >= 0; i--){
     const st = pg.strokes[i];
+    if (st.tool === 'magic' && !mystic()) continue;
     if (st.kind === 'ink' || st.kind === 'box' || st.kind === 'note'){   // descarta rápido o que está longe
       const b = markBounds(st);
       if (x < b[0] - rad - 12 || x > b[2] + rad + 12 || y < b[1] - rad - 12 || y > b[3] + rad + 12) continue;
@@ -2970,7 +3125,7 @@ addEventListener('keydown', e => {
   if (k === 'escape'){ openDrawer(false); clearSel(); closeBmCard(); bmPanel(false); return; }
   if (k === 'b' && S.doc){ bmPanel(); return; }
   if ((k === 'delete' || k === 'backspace') && sel){ e.preventDefault(); deleteSel(); return; }
-  const keyTool = { p:'pen', l:'pencil', h:'hl', g:'text', t:'box', n:'note', k:'stamp', v:'lasso', e:'eraser' }[k];
+  const keyTool = { p:'pen', l:'pencil', m:'magic', h:'hl', g:'text', t:'box', n:'note', k:'stamp', v:'lasso', e:'eraser' }[k];
   if (keyTool) setTool(keyTool);
   else if (k === '+' || k === '=') setZoom(S.zoom * 1.25); else if (k === '-') setZoom(S.zoom / 1.25);
 });
@@ -3035,6 +3190,7 @@ function addInk(doc, page, list, idx){
     BS:{ Type:'Border', W:+f2(wsum / n), S:'S' },
     AP:{ N:appearanceStream(ctx, st, list.map(m => inkAppearance(smoothOf(m))).join(''), rect) },
     [INK_KEY]:PDFString.of(data),
+    ...(st.tool === 'magic' ? { F:2 } : {}),   // tinta mágica: escondida em qualquer leitor
     ...(st.gid ? { GrimorioGroup:PDFString.of(st.gid) } : {}),
   });
   page.node.addAnnot(ctx.register(annot));
