@@ -253,8 +253,8 @@ button{font:inherit;color:inherit}
 #btnNight.on{color:#ffc46b}
 :root.vela4 #btnNight.on{color:#c084fc}
 /* vela na mão: círculo de luz que tremula em volta da chama; o resto fica na penumbra */
-#candleGlow{--gr:1}
-@media (max-width:700px){#candleGlow{--gr:.68}}
+#candleGlow,#candleShade{--gr:1}
+@media (max-width:700px){#candleGlow,#candleShade{--gr:.68}}
 /* a luz mora dentro da área de leitura (grudada no topo dela), abaixo da tinta mágica de cada página */
 #candleGlow{position:sticky;top:0;left:0;width:100%;height:var(--vh,100%);margin-bottom:calc(-1 * var(--vh,100%));z-index:3;pointer-events:none;overflow:hidden;mix-blend-mode:multiply;display:none;background:#3a2a1b}
 /* círculo do tamanho da luz (antes era uma camada de 3200px: pesadíssima no celular); fora dele, a cor fixa do contêiner */
@@ -276,8 +276,15 @@ button{font:inherit;color:inherit}
 :root.vela4 #candle .cm{display:inline}
 :root.vela4 #candleGlow{background:#130c22}
 :root.vela4 #candleGlow i{background:radial-gradient(circle closest-side,#dccbf7 0,#b99be6 16%,#7d5fb0 34%,#3b2860 55%,#1c1331 80%,#130c22 100%)}
-/* tinta mágica: canvas próprio em cada página, por cima da luz; só aparece com a vela misteriosa */
-.page canvas.magic{z-index:4;display:none}
+/* tinta mágica: canvas próprio em cada página (rola junto, sem redesenhar), entre a luz e a sombra */
+.page canvas.magic{z-index:4;display:none;pointer-events:none}   /* por cima da fita e das notas: não pode roubar o toque */
+/* sombra da vela misteriosa: parada na tela, transparente no círculo e escura fora — esconde a tinta longe da luz.
+   É só composição na placa de vídeo: nada é redesenhado na rolagem. */
+#candleShade{position:sticky;top:0;left:0;width:100%;height:var(--vh,100%);margin-bottom:calc(-1 * var(--vh,100%));z-index:5;pointer-events:none;overflow:hidden;display:none}
+#candleShade i{position:absolute;left:var(--sx);top:var(--sy);width:var(--ss);height:var(--ss);
+  background:radial-gradient(circle closest-side,rgba(19,12,34,0) 0,rgba(19,12,34,0) 22%,rgba(19,12,34,.08) 38%,rgba(19,12,34,.22) 52%,rgba(19,12,34,.42) 66%,rgba(19,12,34,.62) 80%,rgba(19,12,34,.78) 92%,rgba(19,12,34,.84) 100%);
+  box-shadow:0 0 0 3000px rgba(19,12,34,.84)}   /* o escuro de fora: recortado pelo contêiner, a camada fica do tamanho da tela */
+:root.has-doc.vela4 #candleShade{display:block}
 :root.vela4 .page canvas.magic{display:block}
 @media (prefers-reduced-motion:reduce){#candleGlow i,#candle .fl{animation:none}}
 .ov-item{position:absolute}
@@ -494,6 +501,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
 
 <main id="viewer">
   <div id="candleGlow" aria-hidden="true"><i></i></div>
+  <div id="candleShade" aria-hidden="true"><i></i></div>
   <div id="empty">
     <div class="card">
       <svg class="star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>
@@ -506,7 +514,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
       <p class="made">feito por <a href="https://www.instagram.com/magenifica.dev/" target="_blank" rel="noopener">Magenifica</a></p>
-      <p class="fine ver">versão 2026.11.01-085229</p>
+      <p class="fine ver">versão 2026.11.01-161945</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -1129,7 +1137,7 @@ $('#btnNight').onclick = () => {
 };
 paintNight();
 // vela na mão: arrasta; a luz sai da chama
-const candle = $('#candle'), glow = $('#candleGlow');
+const candle = $('#candle'), glow = $('#candleGlow'), shade = $('#candleShade');
 // tinta mágica: desenhada uma vez no canvas da própria página (rola junto, sem redesenhar)
 function scheduleMagic(){}
 function drawMagic(pg){
@@ -1147,18 +1155,21 @@ function drawMagic(pg){
 // enquanto escreve: sem a vela misteriosa, nada aparece; com ela, o traço vem por cima da luz
 function magicLive(pg){
   if (!mystic()){ live.style.opacity = 0; return; }
-  live.style.zIndex = 4;
+  live.style.zIndex = 4;   // entre a luz e a sombra, igual à tinta já escrita
 }
 // a luz fica grudada no topo da área de leitura: altura da área + acompanha a rolagem lateral
-function sizeGlow(){ glow.style.setProperty('--vh', viewer.clientHeight + 'px'); }
-viewer.addEventListener('scroll', () => { const x = viewer.scrollLeft; if (glow._x !== x){ glow._x = x; glow.style.transform = x ? `translateX(${x}px)` : ''; } }, { passive:true });
+function sizeGlow(){ for (const el of [glow, shade]) el.style.setProperty('--vh', viewer.clientHeight + 'px'); }
+viewer.addEventListener('scroll', () => { const x = viewer.scrollLeft; if (glow._x !== x){ glow._x = x; glow.style.transform = shade.style.transform = x ? `translateX(${x}px)` : ''; } }, { passive:true });
 addEventListener('resize', sizeGlow); sizeGlow();
 let candlePos = (() => { try { const v = JSON.parse(localStorage.getItem('grimorio.candle')); if (v && v.x >= 0 && v.x <= 1) return v; } catch {} return { x:.82, y:.62 }; })();
 function placeCandle(){
   const r = glow.getBoundingClientRect(); if (!r.width) return;
   const x = r.left + candlePos.x * r.width, y = r.top + candlePos.y * r.height;   // ponto da chama na tela
   candle.style.left = (x - 32) + 'px'; candle.style.top = (y - 14) + 'px';   // chama em (32, 14) no desenho
-  glow.style.setProperty('--cx', (x - r.left) + 'px'); glow.style.setProperty('--cy', (y - r.top) + 'px');
+  for (const el of [glow, shade]){ el.style.setProperty('--cx', (x - r.left) + 'px'); el.style.setProperty('--cy', (y - r.top) + 'px'); }
+  // sombra: quadrado em pixels inteiros (sem aro de serrilhado na emenda com o escuro de fora)
+  const gs = parseFloat(getComputedStyle(shade).getPropertyValue('--gr')) || 1, half = Math.round(560 * gs);
+  shade.style.setProperty('--sx', Math.round(x - r.left) - half + 'px'); shade.style.setProperty('--sy', Math.round(y - r.top) - half + 'px'); shade.style.setProperty('--ss', 2 * half + 'px');
 }
 let candleDrag = null;
 candle.addEventListener('pointerdown', e => {
