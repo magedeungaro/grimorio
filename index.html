@@ -145,9 +145,15 @@ button{font:inherit;color:inherit}
 #potionModal{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;
   background:rgba(15,10,26,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:pmFade .18s ease-out}
 #potionModal[hidden]{display:none}
-#nbModal,#scModal,#shelfModal{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;overscroll-behavior:contain;
+#nbModal,#scModal,#shelfModal,#pwModal,#spellModal{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;overscroll-behavior:contain;
   background:rgba(15,10,26,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:pmFade .18s ease-out}
-#nbModal[hidden],#scModal[hidden],#shelfModal[hidden]{display:none}
+#nbModal[hidden],#scModal[hidden],#shelfModal[hidden],#pwModal[hidden],#spellModal[hidden]{display:none}
+.pw-txt{margin:10px 2px 12px;font-size:13.5px;line-height:1.45;color:var(--text);opacity:.9}
+#pwInput{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:12px;border:1px solid var(--bar-line);background:rgba(0,0,0,.25);color:var(--text);font:inherit;font-size:16px;-webkit-user-select:text;user-select:text}
+.pw-err{margin:8px 2px 0;color:#fca5a5;font-size:12.5px}
+.pw-err[hidden]{display:none}
+.pm-card.shake{animation:pwShake .35s}
+@keyframes pwShake{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
 #scName{width:100%;box-sizing:border-box;padding:9px 12px;border-radius:12px;border:1px solid var(--bar-line);background:rgba(0,0,0,.25);color:var(--text);font:inherit;font-size:16px;-webkit-user-select:text;user-select:text}
 .sc-papers{grid-template-columns:repeat(5,minmax(0,1fr))}
 .sc-seal{width:38px;height:38px;border-radius:50%;border:0;padding:0;cursor:pointer;background:none;position:relative}
@@ -603,7 +609,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
       <p class="made">feito por <a href="https://www.instagram.com/magenifica.dev/" target="_blank" rel="noopener">Magenifica</a></p>
-      <p class="fine ver">versão 2026.11.02-025212</p>
+      <p class="fine ver">versão 2026.11.02-032039</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -765,6 +771,22 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
   </div>
 </div>
 <div id="unroll" hidden aria-hidden="true"><div class="ur"><div class="ur-rod"></div><div class="ur-sheet"></div><div class="ur-rod b"></div><div class="ur-rib"></div><div class="ur-seal"><b class="l"></b><b class="r"></b></div></div><div class="ur-name"></div></div>
+<div id="pwModal" hidden>
+  <div class="pm-card nb-card" role="dialog" aria-modal="true" aria-label="PDF com senha">
+    <div class="pm-title">🔒 Grimório selado 🔒<small id="pwName"></small></div>
+    <p class="pw-txt">Este PDF tem senha. Ela só é usada pra abrir, aqui no aparelho, e não fica guardada.</p>
+    <input id="pwInput" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" placeholder="Senha">
+    <div class="pw-err" id="pwErr" hidden>Senha errada — tente de novo</div>
+    <div class="nb-row"><button class="btn" id="pwCancel">Cancelar</button><button class="btn primary" id="pwOk">Abrir ✦</button></div>
+  </div>
+</div>
+<div id="spellModal" hidden>
+  <div class="pm-card nb-card" role="dialog" aria-modal="true" aria-label="Feitiço de desbloqueio">
+    <div class="pm-title">✦ Feitiço de desbloqueio ✦</div>
+    <p class="pw-txt">Este PDF precisa de um feitiço de desbloqueio. Uma vez lançado, o arquivo não será mais protegido. Conjurar mesmo assim?</p>
+    <div class="nb-row"><button class="btn" id="spCancel">Cancelar</button><button class="btn primary" id="spOk">Conjurar ✦</button></div>
+  </div>
+</div>
 <div id="nbModal" hidden>
   <div class="pm-card nb-card" role="dialog" aria-modal="true" aria-label="Materialize um caderno">
     <div class="pm-title">✦ Materialize um caderno ✦<small>Um PDF em branco pra você escrever e desenhar</small></div>
@@ -1336,14 +1358,17 @@ addEventListener('drop', e => {
 async function openFile(file, drive = null){
   toast('Abrindo…', 60000);
   try {
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const id = fileId(bytes);
+    const orig = new Uint8Array(await file.arrayBuffer());
+    const id = fileId(orig);
+    const sealed = await openSealed(orig, file.name);
+    if (sealed?.cancel){ toast('Ficou selado 🔒'); return refreshButtons(); }
+    const bytes = sealed?.plain || orig;
     const { base, imported, editable, bookmarks, paper, seal } = await extractMarks(bytes);
     // mesmo arquivo original de uma sessão anterior? traz as anotações de volta
     const prev = await Store.getSession(id);
     const marks = prev?.marks?.length ? new Map(prev.marks) : imported;
     const bms = prev?.bookmarks ? new Map(prev.bookmarks) : (bookmarks || new Map());
-    await loadDoc({ id, base, marks, editable, name:file.name || 'documento.pdf', restored:!!prev?.marks?.length, view:prev?.view, drive, bookmarks:bms, paper, seal:prev?.seal || seal });
+    await loadDoc({ id, base, marks, editable, name:file.name || 'documento.pdf', restored:!!prev?.marks?.length, view:prev?.view, drive, bookmarks:bms, paper, seal:prev?.seal || seal, locked:!!sealed, keep:sealed ? orig : null });
   } catch (err){
     console.error(err);
     toast(err?.name === 'PasswordException' ? 'Esse PDF tem senha — ainda não sei abrir.' : 'Não consegui abrir esse PDF.');
@@ -1353,18 +1378,24 @@ async function openFile(file, drive = null){
 async function openSession(id, quiet){
   if (!quiet) toast('Abrindo…', 60000);
   try {
-    const sess = await Store.getSession(id), bytes = await Store.getFile(id);
+    const sess = await Store.getSession(id); let bytes = await Store.getFile(id);
     if (!sess || !bytes) throw new Error('sessão incompleta');
-    await loadDoc({ id, base:bytes, marks:new Map(sess.marks || []), editable:sess.editable !== false, name:sess.name, restored:true, view:sess.view, drive:sess.drive || null, bookmarks:new Map(sess.bookmarks || []), paper:parsePaper(sess.paper), seal:sess.seal, quiet });
+    let locked = false;
+    if (sess.locked){
+      const sealed = await openSealed(bytes, sess.name);
+      if (sealed?.cancel){ toast('Ficou selado 🔒'); return refreshButtons(); }
+      if (sealed){ bytes = (await extractMarks(sealed.plain)).base; locked = true; }
+    }
+    await loadDoc({ id, base:bytes, locked, marks:new Map(sess.marks || []), editable:sess.editable !== false, name:sess.name, restored:true, view:sess.view, drive:sess.drive || null, bookmarks:new Map(sess.bookmarks || []), paper:parsePaper(sess.paper), seal:sess.seal, quiet });
   } catch (err){
     console.error(err); toast('Não consegui reabrir essa sessão 😕'); renderRecent();
   }
   refreshButtons();
 }
-async function loadDoc({ id, base, marks, editable, name, restored, view, drive, bookmarks, paper, seal, quiet }){
+async function loadDoc({ id, base, marks, editable, name, restored, view, drive, bookmarks, paper, seal, quiet, locked, keep }){
   const doc = await pdfjsLib.getDocument({ data: base.slice(), enableXfa:false }).promise;
   if (S.doc) S.doc.loadingTask?.destroy?.();
-  S.doc = doc; S.baseBytes = base; S.editable = editable; S.fileName = name; S.sessionId = id; S.driveFile = drive || null; S.paper = paper || null; S.seal = seal || null;
+  S.doc = doc; S.baseBytes = base; S.editable = editable; S.fileName = name; S.sessionId = id; S.driveFile = drive || null; S.paper = paper || null; S.seal = seal || null; S.locked = !!locked;
   const root = document.documentElement; root.classList.toggle('scroll-doc', isScroll(S.paper));
   if (isScroll(S.paper)) root.style.setProperty('--scroll-bg', S.paper.kind === 'parchment' ? '#ecd9ad' : PAPER_TONES[S.paper.tone][1]);
   if (S.driveFile) driveLoad().catch(() => {});
@@ -1384,7 +1415,7 @@ async function loadDoc({ id, base, marks, editable, name, restored, view, drive,
   if (!quiet) toast(!editable ? 'PDF protegido: dá pra ler e rabiscar, mas não salvar.'
     : restored ? (n ? `Sessão restaurada ✦ ${n} anotaç${n > 1 ? 'ões' : 'ão'}` : 'Sessão restaurada ✦')
     : n ? `${n} anotaç${n > 1 ? 'ões' : 'ão'} carregada${n > 1 ? 's' : ''} pra edição` : 'Pronto pra rabiscar ✦');
-  await Store.putFile(id, base);   // guarda o PDF pra poder continuar depois
+  await Store.putFile(id, keep || base);   // guarda o PDF pra poder continuar depois (o selado fica guardado com a senha)
   saveSession();
 }
 
@@ -1907,6 +1938,294 @@ function unroll(){
 }
 $('#unroll').onclick = () => { urT.forEach(clearTimeout); urT = []; $('#unroll').classList.add('bye'); setTimeout(() => { $('#unroll').hidden = true; }, 450); };
 
+/* ---------- feitiço de desbloqueio: tira a senha de um PDF (com a senha certa) ----------
+   Handler padrão do PDF: RC4 40/128, AES-128 e AES-256 (R2 a R6). Tudo aqui no aparelho.
+   1º passo: lê o /Encrypt e o /ID. 2º: reparse decifrando cada objeto (e os object
+   streams antes de serem abertos). Sai um PDF sem criptografia. */
+const Unlock = (() => {
+  // --- MD5 ---
+  function md5(bytes){
+    const K = new Uint32Array(64), S = [7, 12, 17, 22, 5, 9, 14, 20, 4, 11, 16, 23, 6, 10, 15, 21];
+    for (let i = 0; i < 64; i++) K[i] = Math.floor(Math.abs(Math.sin(i + 1)) * 2 ** 32) >>> 0;
+    const n = bytes.length, total = ((n + 8 >>> 6) + 1) << 6, m = new Uint8Array(total);
+    m.set(bytes); m[n] = 0x80;
+    const bits = n * 8; for (let i = 0; i < 8; i++) m[total - 8 + i] = Math.floor(bits / 2 ** (8 * i)) & 255;
+    let a0 = 0x67452301, b0 = 0xefcdab89, c0 = 0x98badcfe, d0 = 0x10325476;
+    const W = new Uint32Array(16);
+    for (let off = 0; off < total; off += 64){
+      for (let i = 0; i < 16; i++) W[i] = m[off + 4 * i] | m[off + 4 * i + 1] << 8 | m[off + 4 * i + 2] << 16 | m[off + 4 * i + 3] << 24;
+      let A = a0, B = b0, C = c0, D = d0;
+      for (let i = 0; i < 64; i++){
+        let F, g;
+        if (i < 16){ F = B & C | ~B & D; g = i; }
+        else if (i < 32){ F = D & B | ~D & C; g = (5 * i + 1) & 15; }
+        else if (i < 48){ F = B ^ C ^ D; g = (3 * i + 5) & 15; }
+        else { F = C ^ (B | ~D); g = (7 * i) & 15; }
+        F = (F + A + K[i] + W[g]) >>> 0;
+        A = D; D = C; C = B;
+        const s = S[(i >> 4) * 4 + (i & 3)];
+        B = (B + (F << s | F >>> 32 - s)) >>> 0;
+      }
+      a0 = a0 + A >>> 0; b0 = b0 + B >>> 0; c0 = c0 + C >>> 0; d0 = d0 + D >>> 0;
+    }
+    const out = new Uint8Array(16);
+    [a0, b0, c0, d0].forEach((v, j) => { for (let i = 0; i < 4; i++) out[4 * j + i] = v >>> 8 * i & 255; });
+    return out;
+  }
+  // --- RC4 ---
+  function rc4(key, data){
+    const s = new Uint8Array(256); for (let i = 0; i < 256; i++) s[i] = i;
+    for (let i = 0, j = 0; i < 256; i++){ j = j + s[i] + key[i % key.length] & 255; [s[i], s[j]] = [s[j], s[i]]; }
+    const out = new Uint8Array(data.length);
+    for (let k = 0, i = 0, j = 0; k < data.length; k++){ i = i + 1 & 255; j = j + s[i] & 255; [s[i], s[j]] = [s[j], s[i]]; out[k] = data[k] ^ s[s[i] + s[j] & 255]; }
+    return out;
+  }
+  // --- AES (128/256), blocos de 16 bytes ---
+  const SB = new Uint8Array(256), ISB = new Uint8Array(256);
+  (() => {
+    let p = 1, q = 1;
+    do {
+      p = p ^ (p << 1) ^ (p & 0x80 ? 0x1b : 0); p &= 255;
+      q ^= q << 1; q ^= q << 2; q ^= q << 4; q &= 255; if (q & 0x80) q ^= 0x09;
+      const x = q ^ (q << 1 | q >> 7) ^ (q << 2 | q >> 6) ^ (q << 3 | q >> 5) ^ (q << 4 | q >> 4);
+      SB[p] = (x ^ 0x63) & 255;
+    } while (p !== 1);
+    SB[0] = 0x63; for (let i = 0; i < 256; i++) ISB[SB[i]] = i;
+  })();
+  const xt = b => (b << 1 ^ (b & 0x80 ? 0x1b : 0)) & 255;
+  const mul = (a, b) => { let r = 0; while (b){ if (b & 1) r ^= a; a = xt(a); b >>= 1; } return r; };
+  function expand(key){
+    const nk = key.length / 4, nr = nk + 6, w = new Uint8Array(16 * (nr + 1));
+    w.set(key);
+    let rcon = 1;
+    for (let i = nk; i < 4 * (nr + 1); i++){
+      let t = w.slice(4 * (i - 1), 4 * i);
+      if (i % nk === 0){ t = Uint8Array.of(SB[t[1]] ^ rcon, SB[t[2]], SB[t[3]], SB[t[0]]); rcon = xt(rcon); }
+      else if (nk > 6 && i % nk === 4) t = t.map(b => SB[b]);
+      for (let j = 0; j < 4; j++) w[4 * i + j] = w[4 * (i - nk) + j] ^ t[j];
+    }
+    return { w, nr };
+  }
+  function encBlock({ w, nr }, b){
+    const s = b.slice();
+    for (let i = 0; i < 16; i++) s[i] ^= w[i];
+    for (let r = 1; r <= nr; r++){
+      for (let i = 0; i < 16; i++) s[i] = SB[s[i]];
+      const t = s.slice(); for (let c = 0; c < 4; c++) for (let rr = 0; rr < 4; rr++) s[4 * c + rr] = t[4 * ((c + rr) % 4) + rr];
+      if (r < nr) for (let c = 0; c < 4; c++){
+        const a0 = s[4 * c], a1 = s[4 * c + 1], a2 = s[4 * c + 2], a3 = s[4 * c + 3];
+        s[4 * c] = xt(a0) ^ xt(a1) ^ a1 ^ a2 ^ a3; s[4 * c + 1] = a0 ^ xt(a1) ^ xt(a2) ^ a2 ^ a3;
+        s[4 * c + 2] = a0 ^ a1 ^ xt(a2) ^ xt(a3) ^ a3; s[4 * c + 3] = xt(a0) ^ a0 ^ a1 ^ a2 ^ xt(a3);
+      }
+      for (let i = 0; i < 16; i++) s[i] ^= w[16 * r + i];
+    }
+    return s;
+  }
+  function decBlock({ w, nr }, b){
+    const s = b.slice();
+    for (let i = 0; i < 16; i++) s[i] ^= w[16 * nr + i];
+    for (let r = nr - 1; r >= 0; r--){
+      const t = s.slice(); for (let c = 0; c < 4; c++) for (let rr = 0; rr < 4; rr++) s[4 * ((c + rr) % 4) + rr] = t[4 * c + rr];
+      for (let i = 0; i < 16; i++) s[i] = ISB[s[i]];
+      for (let i = 0; i < 16; i++) s[i] ^= w[16 * r + i];
+      if (r > 0) for (let c = 0; c < 4; c++){
+        const a0 = s[4 * c], a1 = s[4 * c + 1], a2 = s[4 * c + 2], a3 = s[4 * c + 3];
+        s[4 * c] = mul(a0, 14) ^ mul(a1, 11) ^ mul(a2, 13) ^ mul(a3, 9); s[4 * c + 1] = mul(a0, 9) ^ mul(a1, 14) ^ mul(a2, 11) ^ mul(a3, 13);
+        s[4 * c + 2] = mul(a0, 13) ^ mul(a1, 9) ^ mul(a2, 14) ^ mul(a3, 11); s[4 * c + 3] = mul(a0, 11) ^ mul(a1, 13) ^ mul(a2, 9) ^ mul(a3, 14);
+      }
+    }
+    return s;
+  }
+  function cbcDec(key, iv, data, unpad){
+    const k = expand(key), n = data.length - data.length % 16, out = new Uint8Array(n);
+    let prev = iv;
+    for (let o = 0; o < n; o += 16){ const c = data.subarray(o, o + 16), p = decBlock(k, c); for (let i = 0; i < 16; i++) out[o + i] = p[i] ^ prev[i]; prev = c; }
+    if (unpad && n){ const pad = out[n - 1]; if (pad >= 1 && pad <= 16) return out.subarray(0, n - pad); }
+    return out;
+  }
+  function cbcEnc(key, iv, data){   // sem padding (dados já múltiplos de 16)
+    const k = expand(key), out = new Uint8Array(data.length);
+    let prev = iv;
+    for (let o = 0; o < data.length; o += 16){ const b = new Uint8Array(16); for (let i = 0; i < 16; i++) b[i] = data[o + i] ^ prev[i]; prev = encBlock(k, b); out.set(prev, o); }
+    return out;
+  }
+  const sha = async (alg, b) => new Uint8Array(await crypto.subtle.digest(alg, b));
+  const cat = (...a) => { const out = new Uint8Array(a.reduce((n, x) => n + x.length, 0)); let o = 0; for (const x of a){ out.set(x, o); o += x.length; } return out; };
+  const eq = (a, b, n) => { for (let i = 0; i < n; i++) if (a[i] !== b[i]) return false; return true; };
+  const PAD = Uint8Array.from([0x28, 0xBF, 0x4E, 0x5E, 0x4E, 0x75, 0x8A, 0x41, 0x64, 0x00, 0x4E, 0x56, 0xFF, 0xFA, 0x01, 0x08, 0x2E, 0x2E, 0x00, 0xB6, 0xD0, 0x68, 0x3E, 0x80, 0x2F, 0x0C, 0xA9, 0xFE, 0x64, 0x53, 0x69, 0x7A]);
+  const latin1 = s => Uint8Array.from([...s].map(c => c.charCodeAt(0) & 255));
+  const padPw = b => cat(b.subarray(0, 32), PAD.subarray(0, 32 - Math.min(32, b.length)));
+
+  // --- chaves R2–R4 ---
+  function key4(pw, E){
+    let k = md5(cat(padPw(pw), E.O.subarray(0, 32), Uint8Array.of(E.P & 255, E.P >> 8 & 255, E.P >> 16 & 255, E.P >>> 24 & 255), E.id, E.R >= 4 && !E.encMeta ? Uint8Array.of(255, 255, 255, 255) : new Uint8Array(0)));
+    const n = E.R === 2 ? 5 : E.len;
+    if (E.R >= 3) for (let i = 0; i < 50; i++) k = md5(k.subarray(0, n));
+    return k.slice(0, n);
+  }
+  function userOk4(k, E){
+    if (E.R === 2) return eq(rc4(k, PAD), E.U, 32);
+    let x = rc4(k, md5(cat(PAD, E.id)));
+    for (let i = 1; i <= 19; i++) x = rc4(k.map(b => b ^ i), x);
+    return eq(x, E.U, 16);
+  }
+  function ownerToUser4(pw, E){
+    let k = md5(padPw(pw)); const n = E.R === 2 ? 5 : E.len;
+    if (E.R >= 3) for (let i = 0; i < 50; i++) k = md5(k);
+    k = k.subarray(0, n);
+    let u = E.O.subarray(0, 32);
+    if (E.R === 2) u = rc4(k, u); else for (let i = 19; i >= 0; i--) u = rc4(k.map(b => b ^ i), u);
+    return u;
+  }
+  // --- chaves R5/R6 (AES-256) ---
+  async function hash6(pw, salt, udata, R){
+    let K = await sha('SHA-256', cat(pw, salt, udata));
+    if (R === 5) return K;
+    for (let i = 0; ; i++){
+      const one = cat(pw, K, udata), K1 = new Uint8Array(one.length * 64);
+      for (let j = 0; j < 64; j++) K1.set(one, j * one.length);
+      const E = cbcEnc(K.subarray(0, 16), K.subarray(16, 32), K1);
+      let sum = 0; for (let j = 0; j < 16; j++) sum += E[j];
+      K = await sha(['SHA-256', 'SHA-384', 'SHA-512'][sum % 3], E);
+      if (i >= 63 && E[E.length - 1] <= i - 31) break;
+    }
+    return K.subarray(0, 32);
+  }
+  async function fileKey(password, E){
+    if (E.V === 5){
+      const pw = new TextEncoder().encode(password).subarray(0, 127), U48 = E.U.subarray(0, 48), z = new Uint8Array(16);
+      if (eq(await hash6(pw, E.U.subarray(32, 40), new Uint8Array(0), E.R), E.U, 32))
+        return cbcDec(await hash6(pw, E.U.subarray(40, 48), new Uint8Array(0), E.R), z, E.UE.subarray(0, 32), false);
+      if (eq(await hash6(pw, E.O.subarray(32, 40), U48, E.R), E.O, 32))
+        return cbcDec(await hash6(pw, E.O.subarray(40, 48), U48, E.R), z, E.OE.subarray(0, 32), false);
+      return null;
+    }
+    const pw = latin1(password);
+    let k = key4(pw, E); if (userOk4(k, E)) return k;
+    k = key4(ownerToUser4(pw, E), E); if (userOk4(k, E)) return k;
+    return null;
+  }
+  function cipher(method, fk, num, gen, data){
+    if (method === 'none' || !data.length) return data;
+    if (method === 'aes256') return data.length < 16 ? new Uint8Array(0) : cbcDec(fk, data.subarray(0, 16), data.subarray(16), true);
+    const aes = method === 'aes128';
+    const k = md5(cat(fk, Uint8Array.of(num & 255, num >> 8 & 255, num >> 16 & 255, gen & 255, gen >> 8 & 255), aes ? Uint8Array.of(0x73, 0x41, 0x6C, 0x54) : new Uint8Array(0))).subarray(0, Math.min(fk.length + 5, 16));
+    if (!aes) return rc4(k, data);
+    return data.length < 16 ? new Uint8Array(0) : cbcDec(k, data.subarray(0, 16), data.subarray(16), true);
+  }
+
+  // Lê o /Encrypt. Devolve null se o PDF não tem senha.
+  async function info(bytes){
+    const { PDFDocument, PDFDict, PDFName, PDFNumber, PDFBool } = PDFLib;
+    const pre = await PDFDocument.load(bytes, { ignoreEncryption:true, updateMetadata:false });
+    const ctx = pre.context, encRef = ctx.trailerInfo.Encrypt, d = encRef && ctx.lookup(encRef);
+    if (!(d instanceof PDFDict)) return null;
+    const num = (k, df) => { const v = ctx.lookup(d.get(PDFName.of(k))); return v instanceof PDFNumber ? v.asNumber() : df; };
+    const str = k => { const v = ctx.lookup(d.get(PDFName.of(k))); return v?.asBytes ? v.asBytes() : new Uint8Array(0); };
+    const name = (dict, k) => { const v = dict && ctx.lookup(dict.get(PDFName.of(k))); return v instanceof PDFName ? v.decodeText() : null; };
+    if (name(d, 'Filter') !== 'Standard') throw Object.assign(new Error('tipo de proteção que eu ainda não sei abrir'), { code:'unsupported' });
+    const V = num('V', 0), R = num('R', 2), em = ctx.lookup(d.get(PDFName.of('EncryptMetadata')));
+    const idArr = ctx.lookup(ctx.trailerInfo.ID), id0 = idArr?.get ? ctx.lookup(idArr.get(0)) : null;
+    const E = { encRef, V, R, P:num('P', 0) | 0, len:num('Length', 40) / 8, O:str('O'), U:str('U'), OE:str('OE'), UE:str('UE'), encMeta:!(em instanceof PDFBool) || em.asBoolean(), id:id0?.asBytes ? id0.asBytes() : new Uint8Array(0) };
+    if (V === 1 || V === 2) E.stm = E.str = 'rc4';
+    else if (V === 4 || V === 5){
+      const cf = ctx.lookup(d.get(PDFName.of('CF')));
+      const pick = k => {
+        const f = name(d, k) || 'Identity'; if (f === 'Identity') return 'none';
+        const cfm = name(cf instanceof PDFDict ? ctx.lookup(cf.get(PDFName.of(f))) : null, 'CFM');
+        return cfm === 'AESV3' ? 'aes256' : cfm === 'AESV2' ? 'aes128' : cfm === 'V2' ? 'rc4' : 'none';
+      };
+      E.stm = pick('StmF'); E.str = pick('StrF');
+      if (V === 5) E.len = 32;
+    } else throw Object.assign(new Error('tipo de proteção que eu ainda não sei abrir'), { code:'unsupported' });
+    return E;
+  }
+  // Confere a senha. Devolve a chave (ou null se a senha está errada).
+  async function check(E, password){ return fileKey(password, E); }
+
+  // Gera o PDF sem senha.
+  async function unlock(bytes, E, fk){
+    const { PDFDocument, PDFParser, PDFRawStream, PDFDict, PDFArray, PDFString, PDFHexString, PDFName, PDFRef } = PDFLib;
+    const toHex = b => { let s = ''; for (const x of b) s += x.toString(16).padStart(2, '0'); return s; };
+    const XREF = PDFName.of('XRef'), META = PDFName.of('Metadata'), TYPE = PDFName.of('Type');
+    const parser = PDFParser.forBytesWithOptions(bytes, Infinity, false, false);
+    let cur = null, depth = 0;
+    const hdr = parser.parseIndirectObjectHeader, po = parser.parseObject;
+    parser.parseIndirectObjectHeader = function(){ const r = hdr.call(this); cur = r; return r; };
+    const walk = (o, ref) => {
+      if (o instanceof PDFString || o instanceof PDFHexString) return PDFHexString.of(toHex(cipher(E.str, fk, ref.objectNumber, ref.generationNumber, o.asBytes())));
+      if (o instanceof PDFDict){ for (const [k, v] of o.entries()) o.set(k, walk(v, ref)); return o; }
+      if (o instanceof PDFArray){ for (let i = 0; i < o.size(); i++) o.set(i, walk(o.get(i), ref)); return o; }
+      return o;
+    };
+    parser.parseObject = function(){
+      depth++;
+      let o; try { o = po.call(this); } finally { depth--; }
+      if (depth === 0 && cur){
+        const ref = cur; cur = null;
+        if (E.encRef instanceof PDFRef && ref.objectNumber === E.encRef.objectNumber && ref.generationNumber === E.encRef.generationNumber) return o;
+        if (o instanceof PDFRawStream){
+          const t = o.dict.get(TYPE);
+          if (t === XREF) return o;
+          walk(o.dict, ref);
+          if (!(t === META && !E.encMeta)) o.contents = cipher(E.stm, fk, ref.objectNumber, ref.generationNumber, o.contents);
+        } else o = walk(o, ref);
+      }
+      return o;
+    };
+    const ctx = await parser.parseDocument();
+    if (ctx.trailerInfo.Encrypt instanceof PDFRef) ctx.delete(ctx.trailerInfo.Encrypt);
+    ctx.trailerInfo.Encrypt = undefined;
+    const doc = new PDFDocument(ctx, false, false);
+    return doc.save();
+  }
+  return { info, check, unlock };
+})();
+
+// pede a senha (fica só na memória) e devolve a chave do arquivo, ou null se cancelar
+function askPassword(E, name){
+  return new Promise(done => {
+    const m = $('#pwModal'), inp = $('#pwInput'), err = $('#pwErr');
+    $('#pwName').textContent = String(name || '').replace(/\.pdf$/i, '');
+    inp.value = ''; err.hidden = true; m.hidden = false; setTimeout(() => inp.focus(), 50);
+    const finish = k => { m.hidden = true; $('#pwOk').onclick = $('#pwCancel').onclick = inp.onkeydown = null; done(k); };
+    const go = async () => {
+      $('#pwOk').disabled = true;
+      let k = null; try { k = await Unlock.check(E, inp.value); } catch {}
+      $('#pwOk').disabled = false;
+      if (k) return finish(k);
+      err.hidden = false; m.querySelector('.pm-card').classList.remove('shake'); void m.offsetWidth; m.querySelector('.pm-card').classList.add('shake'); inp.select();
+    };
+    $('#pwOk').onclick = go; $('#pwCancel').onclick = () => finish(null);
+    inp.onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); go(); } else if (e.key === 'Escape') finish(null); };
+  });
+}
+// PDF com senha de abrir → { plain } (sem senha, só em memória) | { cancel } | null (sem senha / só restrições / tipo desconhecido)
+async function openSealed(bytes, name){
+  let E; try { E = await Unlock.info(bytes); } catch { return null; }
+  if (!E || await Unlock.check(E, '')) return null;   // sem senha, ou só restrições (abre como "protegido", como sempre)
+  toast('Este grimório está selado 🔒', 2500);
+  const k = await askPassword(E, name);
+  if (!k) return { cancel:true };
+  toast('Abrindo…', 60000);
+  return { plain:await Unlock.unlock(bytes, E, k) };
+}
+// ao salvar um PDF que tinha senha: pergunta antes de tirar a proteção
+function unlockSpell(){
+  if (!S.locked) return Promise.resolve(true);
+  return new Promise(done => {
+    const m = $('#spellModal'); m.hidden = false;
+    const finish = ok => { m.hidden = true; $('#spOk').onclick = $('#spCancel').onclick = null; done(ok); };
+    $('#spCancel').onclick = () => finish(false);
+    $('#spOk').onclick = async () => {
+      S.locked = false;
+      await Store.setFile(S.sessionId, S.baseBytes);   // daqui em diante a cópia do aparelho também fica sem senha
+      saveSession(); finish(true);
+      toast('Feitiço lançado ✦ o PDF não tem mais senha', 3000);
+    };
+  });
+}
+
 /* ---------- sessões: tudo fica no aparelho (IndexedDB) ---------- */
 // Identidade do arquivo: tamanho + amostras do conteúdo (rápido mesmo em PDF grande).
 function fileId(u8){
@@ -1957,7 +2276,7 @@ async function saveSession(){
   const marks = curMarks(), bookmarks = curBookmarks(), sig = sigOf(marks, bookmarks, S.pages.length);
   const frac = viewer.scrollHeight > viewer.clientHeight ? viewer.scrollTop / (viewer.scrollHeight - viewer.clientHeight) : 0;
   await Store.putSession({ id:S.sessionId, name:S.fileName, pages:S.pages.length, editable:S.editable,
-    count:marks.reduce((a, [, m]) => a + m.length, 0), marks, bookmarks, sig, updated:Date.now(), drive:S.driveFile || null, paper:S.paper ? paperStr(S.paper) : null, seal:S.seal || null, view:{ zoom:S.zoom, frac } });
+    count:marks.reduce((a, [, m]) => a + m.length, 0), marks, bookmarks, sig, updated:Date.now(), locked:!!S.locked, drive:S.driveFile || null, paper:S.paper ? paperStr(S.paper) : null, seal:S.seal || null, view:{ zoom:S.zoom, frac } });
   if (isScroll(S.paper)) autoSync(sig);
   // poda as mais antigas (os pergaminhos da estante nunca somem sozinhos)
   const all = ((await Store.list()) || []).filter(it => !isScroll(parsePaper(it.paper)));
@@ -3742,6 +4061,7 @@ async function save(){
 async function download(){
   if (editing) finishEdit();
   if (!S.doc || !S.editable || saving) return;
+  if (!(await unlockSpell())) return;
   saving = true; toast('Salvando…', 60000);
   try {
     const { out, n:idx } = await buildPdf();
@@ -3865,6 +4185,7 @@ async function driveSave(quiet){
   if (editing && !quiet) finishEdit();
   if (!S.doc || !S.editable || saving) return;
   const tokP = driveToken();   // primeiro, ainda dentro do toque
+  if (!(await unlockSpell())){ tokP.catch(() => {}); return; }
   saving = true; if (!quiet) toast('Salvando no Drive…', 60000);
   const say = (m, ms) => { if (!quiet) toast(m, ms); };
   try {
