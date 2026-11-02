@@ -603,7 +603,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
       <p class="made">feito por <a href="https://www.instagram.com/magenifica.dev/" target="_blank" rel="noopener">Magenifica</a></p>
-      <p class="fine ver">versão 2026.11.01-232229</p>
+      <p class="fine ver">versão 2026.11.02-025212</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -1285,7 +1285,7 @@ function magicLive(pg){
 }
 // a luz fica grudada no topo da área de leitura: altura da área + acompanha a rolagem lateral
 function sizeGlow(){ for (const el of [glow, shade]) el.style.setProperty('--vh', viewer.clientHeight + 'px'); }
-viewer.addEventListener('scroll', () => { const x = viewer.scrollLeft; if (glow._x !== x){ glow._x = x; glow.style.transform = shade.style.transform = x ? `translateX(${x}px)` : ''; } }, { passive:true });
+// (o sticky com left:0 já acompanha a rolagem lateral; empurrar de novo deixava uma faixa sem sombra no zoom)
 addEventListener('resize', sizeGlow); sizeGlow();
 let candlePos = (() => { try { const v = JSON.parse(localStorage.getItem('grimorio.candle')); if (v && v.x >= 0 && v.x <= 1) return v; } catch {} return { x:.82, y:.62 }; })();
 function placeCandle(){
