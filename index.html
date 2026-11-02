@@ -145,9 +145,94 @@ button{font:inherit;color:inherit}
 #potionModal{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;
   background:rgba(15,10,26,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:pmFade .18s ease-out}
 #potionModal[hidden]{display:none}
-#nbModal{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;overscroll-behavior:contain;
+#nbModal,#scModal,#shelfModal{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;overscroll-behavior:contain;
   background:rgba(15,10,26,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:pmFade .18s ease-out}
-#nbModal[hidden]{display:none}
+#nbModal[hidden],#scModal[hidden],#shelfModal[hidden]{display:none}
+#scName{width:100%;box-sizing:border-box;padding:9px 12px;border-radius:12px;border:1px solid var(--bar-line);background:rgba(0,0,0,.25);color:var(--text);font:inherit;font-size:16px;-webkit-user-select:text;user-select:text}
+.sc-papers{grid-template-columns:repeat(5,minmax(0,1fr))}
+.sc-seal{width:38px;height:38px;border-radius:50%;border:0;padding:0;cursor:pointer;background:none;position:relative}
+.sc-seal svg{position:absolute;inset:0;width:100%;height:100%}
+#scSeals,#scPats{gap:6px}
+.sc-seal.on{outline:2.5px solid var(--lilac);outline-offset:3px}
+/* ---------- estante de feitiços ---------- */
+.shelf-card{width:min(460px,100%)}
+.sh-sync{display:flex;align-items:center;gap:10px;margin-top:12px;padding:8px 8px 8px 12px;border-radius:12px;background:rgba(139,92,246,.12);font-size:12px;color:var(--muted)}
+.sh-sync[hidden]{display:none}
+.sh-sync span{flex:1;min-width:0}
+.sh-sync .btn{flex:none;padding:6px 10px;font-size:12.5px}
+.sh-sync{flex-wrap:wrap}
+.sh-sync .dp-link{flex:none;padding:4px 2px;font-size:11.5px}
+.sh-sync .btn svg{width:15px;height:15px}
+.sh-sync .btn:disabled svg{animation:shSpin 1s linear infinite}
+@keyframes shSpin{to{transform:rotate(360deg)}}
+.shelf{margin-top:12px;padding:8px 10px 0;border-radius:12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:112px;column-gap:6px;
+  background:repeating-linear-gradient(180deg,transparent 0,transparent 98px,#b47a42 98px,#8a5528 100px,#6b3f1c 108px,#3d220e 112px),linear-gradient(180deg,#2c1b10,#22140b);box-shadow:inset 0 0 0 2px #3d220e,inset 0 8px 18px rgba(0,0,0,.5)}
+@media (max-width:400px){.shelf{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sh-item{position:relative;min-width:0}
+.sh-open{width:100%;height:98px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:1px;padding:0 2px 4px;border:0;background:none;color:#f3e6cf;font:inherit;cursor:pointer;border-radius:10px}
+.sh-open:hover,.sh-open:focus-visible{background:rgba(255,220,160,.08)}
+.sh-open svg{width:88px;max-width:100%;height:42px;margin-bottom:3px;transition:transform .2s}
+.sh-open:hover svg{transform:translateY(-3px) rotate(-2deg)}
+.sh-name{max-width:100%;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-meta{font-size:10px;opacity:.6;white-space:nowrap}
+.sh-item.cur .sh-name::before{content:"✦ ";color:#e9c46a}
+.sh-x{position:absolute;top:2px;right:0;width:28px;height:28px;border-radius:50%;border:0;padding:0;background:rgba(0,0,0,.45);color:#f3e6cf;font-size:12px;cursor:pointer;opacity:.7;touch-action:manipulation}
+@media (hover:none){.sh-x{opacity:1}}
+.sh-x:hover,.sh-x.armed{opacity:1}
+.sh-x.armed{background:#b91c1c}
+.sh-new .sh-open{color:#e9d8b4}
+.sh-new svg{opacity:.75}
+.sh-empty{grid-column:1/-1;align-self:center;text-align:center;color:#e9d8b4;font-size:12.5px;opacity:.8;padding:0 10px 14px}
+.mat-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.sh-count{margin-left:2px;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;background:#8b5cf6;color:#fff;font-size:11px;line-height:18px}
+.sh-count:empty{display:none}
+/* ---------- pergaminho em rolo (no visualizador) ---------- */
+:root.scroll-doc #pages{padding-top:44px}
+:root.scroll-doc .page{margin:0 auto;border-radius:0;background:var(--scroll-bg,#ecd9ad);box-shadow:none}
+:root.scroll-doc .bm-rib,:root.scroll-doc #pageLbl{display:none}
+:root.scroll-doc .add-page{background:linear-gradient(180deg,#e0b072 0,#a56a34 40%,#6b3f1c 75%,#3d220e 100%);box-shadow:0 5px 10px rgba(0,0,0,.4)}
+:root.scroll-doc .page:first-child::before{content:"";position:absolute;left:-36px;right:-36px;top:-30px;height:38px;z-index:2;pointer-events:none;filter:drop-shadow(0 5px 5px rgba(0,0,0,.35));
+  background:radial-gradient(circle at 50% 50%,#f0c88e 0,#a86c35 48%,#4a2a10 68%,transparent 70%) left/38px 38px no-repeat,radial-gradient(circle at 50% 50%,#f0c88e 0,#a86c35 48%,#4a2a10 68%,transparent 70%) right/38px 38px no-repeat,
+  linear-gradient(180deg,#e0b072 0,#a56a34 40%,#6b3f1c 75%,#3d220e 100%) center/calc(100% - 36px) 30px no-repeat}
+:root.scroll-doc .page .num{display:block;position:absolute;inset:0 -12px;font-size:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(40,24,8,.22) 12px,transparent 12px,transparent calc(100% - 12px),rgba(40,24,8,.22) calc(100% - 12px),transparent)}
+:root.scroll-doc .add-page{position:relative;height:30px;margin:-4px auto 18px;border:0;border-radius:15px;color:#fbe9c8;font-weight:700;font-size:12.5px;letter-spacing:.06em;text-shadow:0 1px 2px rgba(0,0,0,.6);overflow:visible}
+:root.scroll-doc .add-page::before,:root.scroll-doc .add-page::after{content:"";position:absolute;top:-4px;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#f0c88e 0,#a86c35 48%,#4a2a10 70%)}
+:root.scroll-doc .add-page::before{left:-22px}
+:root.scroll-doc .add-page::after{right:-22px}
+:root.scroll-doc .add-page:active{filter:brightness(1.15)}
+:root.scroll-doc .add-page.end{cursor:default;filter:none;color:rgba(251,233,200,.7)}
+:root.dark.scroll-doc .add-page{color:#fbe9c8;background:linear-gradient(180deg,#e0b072 0,#a56a34 40%,#6b3f1c 75%,#3d220e 100%)}
+/* abertura: o selo quebra e o rolo desenrola */
+#unroll{position:fixed;inset:0;z-index:28;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(ellipse at 50% 45%,#2a1d45 0,#170f28 60%,#0f0a1a 100%);transition:opacity .45s;cursor:pointer}   /* opaco: o que está escrito só aparece depois de desenrolar */
+#unroll[hidden]{display:none}
+#unroll.bye{opacity:0}
+.ur{position:relative;width:min(400px,72vw);display:flex;flex-direction:column;align-items:center}
+.ur-rod{position:relative;z-index:2;width:calc(100% + 36px);height:30px;border-radius:15px;background:linear-gradient(180deg,#e0b072 0,#a56a34 40%,#6b3f1c 75%,#3d220e 100%);box-shadow:0 6px 12px rgba(0,0,0,.45)}
+.ur-rod::before,.ur-rod::after{content:"";position:absolute;top:-4px;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#f0c88e 0,#a86c35 48%,#4a2a10 70%)}
+.ur-rod::before{left:-22px}.ur-rod::after{right:-22px}
+.ur-rod.b{margin-top:-20px;transition:margin-top .3s}
+.ur-sheet{width:100%;height:0;background:var(--paper);overflow:hidden;transition:height 1.15s cubic-bezier(.3,.75,.25,1);
+  box-shadow:inset 0 12px 14px -10px rgba(0,0,0,.45),inset 0 -12px 14px -10px rgba(0,0,0,.45)}
+.ur-sheet.parch{background-image:linear-gradient(90deg,rgba(90,58,20,.38),transparent 13%,transparent 87%,rgba(90,58,20,.38))}
+.ur-sheet.ruled{background-image:repeating-linear-gradient(180deg,transparent 0,transparent 23px,var(--line) 23px,var(--line) 24px);background-size:84% 100%;background-position:center;background-repeat:no-repeat}
+.ur-sheet.grid{background-image:repeating-linear-gradient(180deg,transparent 0 14px,var(--line) 14px 15px),repeating-linear-gradient(90deg,transparent 0 14px,var(--line) 14px 15px);background-size:84% 100%;background-position:center;background-repeat:no-repeat}
+.ur-sheet.dots{background-image:radial-gradient(circle,var(--line) 1.1px,transparent 1.6px);background-size:15px 15px}
+.ur.open .ur-sheet{height:min(56vh,480px)}
+.ur.open .ur-rod.b{margin-top:-2px}
+.ur-rib{position:absolute;z-index:3;left:50%;top:-6px;width:22px;height:52px;margin-left:-11px;background:linear-gradient(90deg,rgba(0,0,0,.25),transparent 40%,rgba(255,255,255,.15) 60%,rgba(0,0,0,.25)),var(--seal);transition:transform .5s ease-in,opacity .5s}
+.ur-seal{position:absolute;z-index:4;left:50%;top:-12px;width:62px;height:62px;margin-left:-31px}
+.ur-seal b{position:absolute;inset:0;transition:transform .55s cubic-bezier(.4,0,.7,.4),opacity .55s}
+.ur-seal b svg{width:100%;height:100%;display:block}
+.ur-seal .l{clip-path:polygon(0 0,52% 0,44% 38%,56% 60%,46% 100%,0 100%)}
+.ur-seal .r{clip-path:polygon(52% 0,100% 0,100% 100%,46% 100%,56% 60%,44% 38%)}
+.ur.wob .ur-seal{animation:urWob .55s ease-in-out}
+@keyframes urWob{20%{transform:rotate(-9deg) scale(1.06)}45%{transform:rotate(8deg) scale(1.08)}70%{transform:rotate(-5deg) scale(1.04)}100%{transform:none}}
+.ur.crack .ur-seal .l{transform:translate(-46px,60px) rotate(-50deg);opacity:0}
+.ur.crack .ur-seal .r{transform:translate(48px,66px) rotate(44deg);opacity:0}
+.ur.crack .ur-rib{transform:translateY(40px) rotate(10deg);opacity:0}
+.ur-name{color:#f3e6cf;font-weight:700;letter-spacing:.03em;text-shadow:0 2px 6px rgba(0,0,0,.6);opacity:0;transition:opacity .6s .3s;max-width:80vw;text-align:center}
+.ur.open + .ur-name{opacity:1}
 .nb-card{width:min(430px,100%)}
 .nb-lbl{font-size:12px;color:var(--muted);margin:12px 2px 6px;letter-spacing:.02em}
 #nbName{width:100%;box-sizing:border-box;padding:9px 12px;border-radius:12px;border:1px solid var(--bar-line);background:rgba(0,0,0,.25);color:var(--text);font:inherit;font-size:16px;-webkit-user-select:text;user-select:text}
@@ -479,6 +564,7 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
   <div class="brand"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg><span class="txt">Grimório</span></div>
   <button class="btn" id="btnOpen" title="Abrir PDF"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span class="txt">Abrir</span></button>
   <button class="btn icon" id="btnNew" title="Materialize um caderno"><svg viewBox="0 0 24 24"><path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6z"/><path d="M6 3v18M4 7h4M4 12h4M4 17h4"/><path d="M13 8.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z" fill="currentColor" stroke="none"/></svg></button>
+  <button class="btn icon" id="btnShelf" title="Estante de feitiços"><svg viewBox="0 0 24 24"><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg></button>
   <button class="btn icon" id="btnMarks" title="Marcadores (B)" disabled><svg viewBox="0 0 24 24"><path d="M7 3h10v17.5l-5-3.8-5 3.8z"/><path d="M12 7.3l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z" fill="currentColor" stroke="none"/></svg></button>
   <button class="btn icon" id="btnDrive" title="Bola de cristal: Google Drive" hidden><svg viewBox="0 0 24 24" class="orb"><circle cx="12" cy="9.6" r="6.6"/><path d="M8.3 15.3L6.6 19.6h10.8l-1.7-4.3"/><path d="M4.8 19.6h14.4"/><path d="M8.6 7.4a4.2 4.2 0 0 1 2.6-1.9" opacity=".7"/><path class="spark" d="M13.6 8.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z" fill="currentColor" stroke="none"/></svg></button>
   <span class="sep"></span>
@@ -509,12 +595,15 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
       <p>Abra um PDF deste aparelho ou do seu Drive. Também dá pra arrastar o arquivo pra cá.</p>
       <div class="card-actions"><button class="btn primary" id="btnOpen2" disabled>Carregando…</button><button class="btn" id="btnDrive2" hidden><svg viewBox="0 0 24 24" class="orb"><circle cx="12" cy="9.6" r="6.6"/><path d="M8.3 15.3L6.6 19.6h10.8l-1.7-4.3"/><path d="M4.8 19.6h14.4"/><path d="M8.6 7.4a4.2 4.2 0 0 1 2.6-1.9" opacity=".7"/><path class="spark" d="M13.6 8.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z" fill="currentColor" stroke="none"/></svg>Do Google Drive</button></div>
       <div class="or"><span>ou</span></div>
+      <div class="mat-row">
       <button class="btn materialize" id="btnNew2"><svg viewBox="0 0 24 24"><path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6z"/><path d="M6 3v18M4 7h4M4 12h4M4 17h4"/><path d="M13 8.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z" fill="currentColor" stroke="none"/></svg>Materialize um caderno</button>
+      <button class="btn materialize" id="btnShelf2"><svg viewBox="0 0 24 24"><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg>Estante de feitiços<span class="sh-count" id="shelfCount"></span></button>
+      </div>
       <div id="recent" hidden><div class="rc-title">Continuar de onde parou</div><ul></ul></div>
       <p class="fine" id="privacyNote">Tudo acontece neste aparelho. O arquivo não é enviado pra lugar nenhum.</p>
       <p class="fine legal"><a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
       <p class="made">feito por <a href="https://www.instagram.com/magenifica.dev/" target="_blank" rel="noopener">Magenifica</a></p>
-      <p class="fine ver">versão 2026.11.01-161945</p>
+      <p class="fine ver">versão 2026.11.01-232229</p>
     </div>
   </div>
   <div id="pages"></div>
@@ -640,6 +729,42 @@ body.dragging .card{border-color:var(--accent);background:rgba(139,92,246,.12)}
   <div class="nc-row"><button class="btn primary" id="ncOk">Pronto</button></div>
 </div>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="shShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".25" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".32"/></linearGradient>
+  <radialGradient id="waxHi" cx=".32" cy=".26" r=".55"><stop offset="0" stop-color="#fff" stop-opacity=".42"/><stop offset=".55" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="waxLo" cx=".5" cy=".5" r=".5"><stop offset=".62" stop-color="#000" stop-opacity="0"/><stop offset=".9" stop-color="#000" stop-opacity=".18"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></radialGradient>
+  <linearGradient id="waxIn" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".34"/><stop offset=".5" stop-color="#000" stop-opacity=".06"/><stop offset="1" stop-color="#fff" stop-opacity=".16"/></linearGradient>
+  <linearGradient id="waxRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".5"/><stop offset=".5" stop-color="#000" stop-opacity=".1"/><stop offset="1" stop-color="#fff" stop-opacity=".45"/></linearGradient>
+  <linearGradient id="waxLip" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+  <radialGradient id="shSeal" cx=".35" cy=".3" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".4"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></radialGradient>
+</defs></svg>
+<div id="shelfModal" hidden>
+  <div class="pm-card shelf-card" role="dialog" aria-modal="true" aria-label="Estante de feitiços">
+    <div class="pm-title">✦ Estante de feitiços ✦<small>Seus pergaminhos ficam guardados neste aparelho</small></div>
+    <div class="sh-sync" id="shSync" hidden><span id="shSyncTxt"></span><button class="btn" id="shSyncBtn"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12a8 8 0 0 1 14.3-4.9"/><path d="M18.6 3.2v4h-4M5.4 20.8v-4h4"/></svg><span>Sincronizar</span></button><button class="dp-link" id="shOff" hidden>Desconectar</button></div>
+    <div class="shelf" id="shelfList"></div>
+    <div class="nb-row"><button class="btn" id="shelfClose">Fechar</button><button class="btn primary" id="shelfNew">Novo pergaminho ✦</button></div>
+  </div>
+</div>
+<div id="scModal" hidden>
+  <div class="pm-card nb-card" role="dialog" aria-modal="true" aria-label="Novo pergaminho">
+    <div class="pm-title">✦ Novo pergaminho ✦<small>Pra poemas, feitiços e encantamentos · até 3 folhas</small></div>
+    <div class="nb-lbl">Nome</div>
+    <input id="scName" maxlength="80" autocomplete="off" autocapitalize="sentences" enterkeyhint="done">
+    <div class="nb-lbl">Papel</div>
+    <div class="nb-papers sc-papers" id="scPapers"></div>
+    <div class="nb-lbl">Cor do papel</div>
+    <div class="nb-seg" id="scTones"></div>
+    <div class="nb-lbl">Tamanho</div>
+    <div class="nb-seg" id="scLen"></div>
+    <div class="nb-lbl">Selo de cera</div>
+    <div class="nb-covers" id="scSeals"></div>
+    <div class="nb-lbl">Símbolo do selo</div>
+    <div class="nb-covers" id="scPats"></div>
+    <div class="nb-row"><button class="btn" id="scCancel">Cancelar</button><button class="btn primary" id="scOk">Desenrolar ✦</button></div>
+  </div>
+</div>
+<div id="unroll" hidden aria-hidden="true"><div class="ur"><div class="ur-rod"></div><div class="ur-sheet"></div><div class="ur-rod b"></div><div class="ur-rib"></div><div class="ur-seal"><b class="l"></b><b class="r"></b></div></div><div class="ur-name"></div></div>
 <div id="nbModal" hidden>
   <div class="pm-card nb-card" role="dialog" aria-modal="true" aria-label="Materialize um caderno">
     <div class="pm-title">✦ Materialize um caderno ✦<small>Um PDF em branco pra você escrever e desenhar</small></div>
@@ -1141,7 +1266,8 @@ const candle = $('#candle'), glow = $('#candleGlow'), shade = $('#candleShade');
 // tinta mágica: desenhada uma vez no canvas da própria página (rola junto, sem redesenhar)
 function scheduleMagic(){}
 function drawMagic(pg){
-  const list = pg.strokes.filter(st => st.tool === 'magic');
+  const list = pg.strokes.filter(st => st.tool === 'magic').map(st => [st, pg]);
+  for (const it of seamItems(pg)) if (it[0].tool === 'magic') list.push(it);
   if (!list.length){ if (pg.magicCanvas){ pg.magicCanvas.width = pg.magicCanvas.height = 0; pg.magicCanvas.remove(); pg.magicCanvas = null; } return; }
   if (!pg.inkCanvas) return;
   if (!pg.magicCanvas){ pg.magicCanvas = document.createElement('canvas'); pg.magicCanvas.className = 'magic'; pg.inkCanvas.after(pg.magicCanvas); }
@@ -1150,7 +1276,7 @@ function drawMagic(pg){
   if (c.width !== W || c.height !== H){ c.width = W; c.height = H; }
   const ctx = c.getContext('2d'); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H);
   ctx.setTransform(d, 0, 0, d, 0, 0); ctx.fillStyle = '#f5ecff'; ctx.shadowColor = '#c026d3'; ctx.shadowBlur = 12 * d;
-  for (const st of list){ ctx.beginPath(); tracePath(ctx, pg, smoothOf(st)); ctx.fill('nonzero'); }
+  for (const [st, p] of list){ ctx.beginPath(); tracePath(ctx, p, smoothOf(st)); ctx.fill('nonzero'); }
 }
 // enquanto escreve: sem a vela misteriosa, nada aparece; com ela, o traço vem por cima da luz
 function magicLive(pg){
@@ -1212,33 +1338,35 @@ async function openFile(file, drive = null){
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
     const id = fileId(bytes);
-    const { base, imported, editable, bookmarks, paper } = await extractMarks(bytes);
+    const { base, imported, editable, bookmarks, paper, seal } = await extractMarks(bytes);
     // mesmo arquivo original de uma sessão anterior? traz as anotações de volta
     const prev = await Store.getSession(id);
     const marks = prev?.marks?.length ? new Map(prev.marks) : imported;
     const bms = prev?.bookmarks ? new Map(prev.bookmarks) : (bookmarks || new Map());
-    await loadDoc({ id, base, marks, editable, name:file.name || 'documento.pdf', restored:!!prev?.marks?.length, view:prev?.view, drive, bookmarks:bms, paper });
+    await loadDoc({ id, base, marks, editable, name:file.name || 'documento.pdf', restored:!!prev?.marks?.length, view:prev?.view, drive, bookmarks:bms, paper, seal:prev?.seal || seal });
   } catch (err){
     console.error(err);
     toast(err?.name === 'PasswordException' ? 'Esse PDF tem senha — ainda não sei abrir.' : 'Não consegui abrir esse PDF.');
   }
   refreshButtons();
 }
-async function openSession(id){
-  toast('Abrindo…', 60000);
+async function openSession(id, quiet){
+  if (!quiet) toast('Abrindo…', 60000);
   try {
     const sess = await Store.getSession(id), bytes = await Store.getFile(id);
     if (!sess || !bytes) throw new Error('sessão incompleta');
-    await loadDoc({ id, base:bytes, marks:new Map(sess.marks || []), editable:sess.editable !== false, name:sess.name, restored:true, view:sess.view, drive:sess.drive || null, bookmarks:new Map(sess.bookmarks || []), paper:parsePaper(sess.paper) });
+    await loadDoc({ id, base:bytes, marks:new Map(sess.marks || []), editable:sess.editable !== false, name:sess.name, restored:true, view:sess.view, drive:sess.drive || null, bookmarks:new Map(sess.bookmarks || []), paper:parsePaper(sess.paper), seal:sess.seal, quiet });
   } catch (err){
     console.error(err); toast('Não consegui reabrir essa sessão 😕'); renderRecent();
   }
   refreshButtons();
 }
-async function loadDoc({ id, base, marks, editable, name, restored, view, drive, bookmarks, paper }){
+async function loadDoc({ id, base, marks, editable, name, restored, view, drive, bookmarks, paper, seal, quiet }){
   const doc = await pdfjsLib.getDocument({ data: base.slice(), enableXfa:false }).promise;
   if (S.doc) S.doc.loadingTask?.destroy?.();
-  S.doc = doc; S.baseBytes = base; S.editable = editable; S.fileName = name; S.sessionId = id; S.driveFile = drive || null; S.paper = paper || null;
+  S.doc = doc; S.baseBytes = base; S.editable = editable; S.fileName = name; S.sessionId = id; S.driveFile = drive || null; S.paper = paper || null; S.seal = seal || null;
+  const root = document.documentElement; root.classList.toggle('scroll-doc', isScroll(S.paper));
+  if (isScroll(S.paper)) root.style.setProperty('--scroll-bg', S.paper.kind === 'parchment' ? '#ecd9ad' : PAPER_TONES[S.paper.tone][1]);
   if (S.driveFile) driveLoad().catch(() => {});
   clearSel(); S.undo = []; S.redo = []; S.dirty = false; S.zoom = view?.zoom || 1;
   closeBmCard(true); bmPanel(false);
@@ -1250,9 +1378,10 @@ async function loadDoc({ id, base, marks, editable, name, restored, view, drive,
   if (view?.frac){ requestAnimationFrame(() => { viewer.scrollTop = view.frac * (viewer.scrollHeight - viewer.clientHeight); scheduleVisible(); }); }
   $('#empty').hidden = true;
   document.documentElement.classList.add('has-doc'); placeCandle();
+  if (isScroll(S.paper) && !quiet) unroll();
   document.title = S.fileName.replace(/\.pdf$/i, '') + ' · Grimório';
   const n = [...marks.values()].reduce((a, s) => a + s.length, 0);
-  toast(!editable ? 'PDF protegido: dá pra ler e rabiscar, mas não salvar.'
+  if (!quiet) toast(!editable ? 'PDF protegido: dá pra ler e rabiscar, mas não salvar.'
     : restored ? (n ? `Sessão restaurada ✦ ${n} anotaç${n > 1 ? 'ões' : 'ão'}` : 'Sessão restaurada ✦')
     : n ? `${n} anotaç${n > 1 ? 'ões' : 'ão'} carregada${n > 1 ? 's' : ''} pra edição` : 'Pronto pra rabiscar ✦');
   await Store.putFile(id, base);   // guarda o PDF pra poder continuar depois
@@ -1264,6 +1393,50 @@ const PAPERS = { ruled:'Pautado', dots:'Pontilhado', grid:'Quadriculado', blank:
 const PAPER_TONES = { white:['Branco', '#ffffff', '#c9cfdc'], cream:['Creme', '#fbf6e9', '#d8cdb2'], lilac:['Lilás', '#f6f1ff', '#d3c6f0'] };
 const PAPER_SIZES = { a5:['A5', 419.53, 595.28], a4:['A4', 595.28, 841.89], letter:['Carta', 612, 792] };
 const MM = 72 / 25.4;
+PAPER_SIZES.scroll = ['Rolo', 130 * MM, 160 * MM];   // pergaminho em rolo: segmentos que se encaixam sem emenda
+const isScroll = pp => pp?.size === 'scroll';
+const SEALS = ['#7f1d2d', '#5b21b6', '#1f1a2e', '#a87b22', '#1f5f3f', '#1e3a8a'];
+const SCROLL_MAX = 3;   // pergaminho é curto: poema, feitiço… no máximo 3 folhas
+const SEAL_PATS = { star:'Estrela', moon:'Lua', penta:'Pentagrama', triskele:'Triskle', eye:'Olho', algiz:'Runa', rose:'Flor' };
+// selo guardado como "#cor|símbolo" (só "#cor" = estrela)
+const sealOf = v => { const [color, pat] = String(v || '').split('|'); return { color:/^#[0-9a-f]{6}$/i.test(color) ? color : SEALS[0], pat:SEAL_PATS[pat] ? pat : 'star' }; };
+function sealGlyph(pat, name){   // viewBox 0 0 24 24, cor = currentColor
+  const S2 = 'fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"';
+  switch (pat){
+    case 'moon': return '<path d="M15.2 4.6a7.6 7.6 0 1 0 0 14.8 6.2 6.2 0 0 1 0-14.8z" fill="currentColor"/>';
+    case 'penta': return `<g ${S2}><circle cx="12" cy="12" r="8.6"/><path d="M12 4.6l4.35 13.4L4.96 9.7h14.08L7.65 18z"/></g>`;
+    case 'eye': return `<g ${S2}><path d="M3.5 12c3.2-4.8 13.8-4.8 17 0-3.2 4.8-13.8 4.8-17 0z"/></g><circle cx="12" cy="12" r="2.6" fill="currentColor"/>`;
+    case 'algiz': return `<g ${S2} stroke-width="2"><path d="M12 4.5v15M12 11.5L6.8 5.8M12 11.5l5.2-5.7"/></g>`;
+    case 'rose': return '<g fill="currentColor">' + [0, 72, 144, 216, 288].map(a => { const r = a * Math.PI / 180; return `<circle cx="${(12 + 4.6 * Math.sin(r)).toFixed(2)}" cy="${(12 - 4.6 * Math.cos(r)).toFixed(2)}" r="3.2" opacity=".75"/>`; }).join('') + '<circle cx="12" cy="12" r="2.4"/></g>';
+    case 'triskele': return `<g transform="translate(-.6 .4) scale(.252)" ${S2} stroke-width="7.5">${triskeleParts().map(q => `<path d="${q.d}"/>`).join('')}</g>`;
+    default: return '<path d="M12 3.6l2 6.4 6.4 2-6.4 2-2 6.4-2-6.4-6.4-2 6.4-2z" fill="currentColor"/>';
+  }
+}
+const WAX_BLOB = (() => {
+  const n = 36, pts = [];
+  for (let i = 0; i < n; i++){
+    const a = i / n * Math.PI * 2;
+    let r = 20.6 + 1.1 * Math.sin(3 * a + .7) + .8 * Math.sin(5 * a + 2.1) + .5 * Math.sin(11 * a + 1.3);
+    for (const [a0, h] of [[.9, 2.1], [3.6, 1.6], [5.2, 1.2]]){ const d = Math.atan2(Math.sin(a - a0), Math.cos(a - a0)); r += h * Math.exp(-((d / .22) ** 2)); }   // respingos
+    pts.push([24 + r * Math.cos(a), 24 + r * Math.sin(a)]);
+  }
+  const mid = (p, q) => [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], f = v => v.toFixed(2);
+  let d = `M${mid(pts[n - 1], pts[0]).map(f).join(' ')}`;
+  for (let i = 0; i < n; i++){ const m = mid(pts[i], pts[(i + 1) % n]); d += ` Q${f(pts[i][0])} ${f(pts[i][1])} ${f(m[0])} ${f(m[1])}`; }
+  return d + 'Z';
+})();
+const mixHex = (hex, to, t) => '#' + hexToRgb(hex).map((v, i) => Math.round((v + (hexToRgb(to)[i] - v) * t) * 255).toString(16).padStart(2, '0')).join('');
+// conteúdo de um <svg viewBox="0 0 48 48">
+function waxSeal(color, pat, name){
+  const g = sealGlyph(pat, name), at = (dx, dy, c, o) => `<svg x="${14 + dx}" y="${14 + dy}" width="20" height="20" viewBox="0 0 24 24" color="${c}" opacity="${o}">${g}</svg>`;
+  return `<path d="${WAX_BLOB}" transform="translate(.8 1.6)" fill="#000" opacity=".35"/>`
+    + `<path d="${WAX_BLOB}" fill="${color}"/><path d="${WAX_BLOB}" fill="url(#waxLo)"/><path d="${WAX_BLOB}" fill="url(#waxHi)"/>`
+    + `<circle cx="24" cy="24" r="16" fill="none" stroke="url(#waxLip)" stroke-width="2.2"/>`
+    + `<circle cx="24" cy="24" r="14.4" fill="${mixHex(color, '#000000', .08)}"/><circle cx="24" cy="24" r="14.4" fill="url(#waxIn)"/>`
+    + `<circle cx="24" cy="24" r="14.4" fill="none" stroke="url(#waxRim)" stroke-width="1.3"/>`
+    + at(.55, .7, '#000', .45) + at(-.45, -.55, '#fff', .35) + at(0, 0, mixHex(color, '#ffffff', .12), 1);
+}
+const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]);
 const paperStr = pp => `v1|${pp.kind}|${pp.size}|${pp.tone}`;
 function parsePaper(t){
   const [v, kind, size, tone] = String(t || '').split('|');
@@ -1273,7 +1446,8 @@ function parsePaper(t){
 function paperOps(pp){
   const [, w, h] = PAPER_SIZES[pp.size], [, bg, line] = PAPER_TONES[pp.tone], f = v => +v.toFixed(2);
   const rgb = hex => hexToRgb(hex).map(v => +v.toFixed(3)).join(' ');
-  if (pp.kind === 'parchment') return `q 0.925 0.85 0.68 rg 0 0 ${f(w)} ${f(h)} re f Q\n`;
+  if (pp.kind === 'parchment') return isScroll(pp) ? `q 0.925 0.85 0.68 rg 0 -3 ${f(w)} ${f(h + 6)} re f Q\n` : `q 0.925 0.85 0.68 rg 0 0 ${f(w)} ${f(h)} re f Q\n`;
+  if (isScroll(pp)) return scrollOps(pp, w, h, bg, line, f, rgb);
   let o = pp.tone !== 'white' ? `q ${rgb(bg)} rg 0 0 ${f(w)} ${f(h)} re f Q\n` : '';
   const m = (pp.size === 'a5' ? 10 : 13) * MM;
   if (pp.kind === 'ruled'){
@@ -1305,6 +1479,73 @@ function paperOps(pp){
     }
   }
   return o;
+}
+// rolo: sem margem em cima/embaixo — a pauta/grade continua igualzinha no próximo pedaço
+function scrollOps(pp, w, h, bg, line, f, rgb){
+  let o = `q ${rgb(bg)} rg 0 -3 ${f(w)} ${f(h + 6)} re f Q\n`;
+  const m = 11 * MM, g = 5 * MM, nx = Math.floor((w - 2 * m) / g), x0 = (w - nx * g) / 2, ny = Math.round(h / g);
+  if (pp.kind === 'ruled'){
+    o += `q ${rgb(line)} RG 0.6 w\n`;
+    for (let k = 0; k < 20; k++){ const y = (4 + 8 * k) * MM; o += `${f(m)} ${f(y)} m ${f(w - m)} ${f(y)} l\n`; }
+    o += 'S Q\n';
+  } else if (pp.kind === 'grid'){
+    o += `q ${rgb(line)} RG 0.35 w\n`;
+    for (let i = 0; i <= nx; i++) o += `${f(x0 + i * g)} -2 m ${f(x0 + i * g)} ${f(h + 2)} l\n`;
+    for (let j = 0; j < ny; j++) o += `${f(x0)} ${f(j * g)} m ${f(x0 + nx * g)} ${f(j * g)} l\n`;
+    o += 'S Q\n';
+  } else if (pp.kind === 'dots'){
+    const dot = hexToRgb(line).map(v => +(v * .74).toFixed(3)).join(' '), r = .85, k = r * .5523;
+    o += `q ${dot} rg\n`;
+    for (let j = 0; j < ny; j++){
+      const y = g / 2 + j * g;
+      for (let i = 0; i <= nx; i++){
+        const x = x0 + i * g;
+        o += `${f(x + r)} ${f(y)} m ${f(x + r)} ${f(y + k)} ${f(x + k)} ${f(y + r)} ${f(x)} ${f(y + r)} c ${f(x - k)} ${f(y + r)} ${f(x - r)} ${f(y + k)} ${f(x - r)} ${f(y)} c `
+          + `${f(x - r)} ${f(y - k)} ${f(x - k)} ${f(y - r)} ${f(x)} ${f(y - r)} c ${f(x + k)} ${f(y - r)} ${f(x + r)} ${f(y - k)} ${f(x + r)} ${f(y)} c\n`;
+      }
+    }
+    o += 'f Q\n';
+  }
+  return o;
+}
+// textura do rolo: só as laterais são roídas; nas emendas tudo volta pro mesmo lugar (encaixa no vizinho)
+function scrollParchOps(w, h, seed){
+  let a = seed >>> 0;
+  const rnd = () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const f = v => +v.toFixed(1), K = .5523;
+  const ell = (cx, cy, rx, ry) => `${f(cx + rx)} ${f(cy)} m ${f(cx + rx)} ${f(cy + ry * K)} ${f(cx + rx * K)} ${f(cy + ry)} ${f(cx)} ${f(cy + ry)} c `
+    + `${f(cx - rx * K)} ${f(cy + ry)} ${f(cx - rx)} ${f(cy + ry * K)} ${f(cx - rx)} ${f(cy)} c ${f(cx - rx)} ${f(cy - ry * K)} ${f(cx - rx * K)} ${f(cy - ry)} ${f(cx)} ${f(cy - ry)} c `
+    + `${f(cx + rx * K)} ${f(cy - ry)} ${f(cx + rx)} ${f(cy - ry * K)} ${f(cx + rx)} ${f(cy)} c f\n`;
+  const sides = (base, vary) => {
+    let o = '';
+    for (const right of [false, true]){
+      const n = 48, pts = []; let d = 0;
+      for (let i = 0; i <= n; i++){
+        d += (rnd() - .5) * vary * (base > 10 ? .28 : .7); d = Math.max(-vary * .5, Math.min(vary, d));
+        const y = i / n * h, v = base + d * Math.sin(Math.PI * i / n);
+        pts.push(`${f(right ? w - v : v)} ${f(y)}`);
+      }
+      const ex = right ? f(w) : 0, [p0, p1] = [pts[0].split(' ')[0], pts[n].split(' ')[0]];
+      o += `${ex} -3 m ${p0} -3 l ${pts.map(q => q + ' l').join(' ')} ${p1} ${f(h + 3)} l ${ex} ${f(h + 3)} l h f\n`;   // passa 3pt da emenda: sem fresta de serrilhado
+    }
+    return o;
+  };
+  let o = `q /PA2 gs 0.42 0.27 0.1 rg ${sides(14, 20)}Q\nq /PA4 gs 0.3 0.18 0.06 rg ${sides(3, 8)}Q\n`;
+  o += 'q /PA5 gs 0.5 0.33 0.12 rg\n';
+  for (const k of [.05, .08, .11, .15, .2, .26]) o += sides(w * k, w * k * .9);
+  o += 'Q\nq /PA5 gs 0.62 0.46 0.24 rg\n';
+  for (let i = 0; i < 4; i++){
+    const r = 30 + rnd() * 60, e = .6 + rnd() * .5, cx = rnd() * w, cy = r + 4 + rnd() * (h - 2 * r - 8);
+    for (let j = 0; j < 5; j++) o += ell(cx, cy, r * (1 - j * .17), r * e * (1 - j * .17));
+  }
+  o += 'Q\nq /PA2 gs 0.5 0.34 0.16 rg\n';
+  for (let i = 0; i < 3; i++){ const r = 2 + rnd() * 6; o += ell(rnd() * w, 12 + rnd() * (h - 24), r, r * (.7 + rnd() * .5)); }
+  o += 'Q\nq /PA3 gs 0.45 0.32 0.15 RG 0.4 w 1 J\n';
+  for (let i = 0; i < 32; i++){
+    const x = rnd() * w, y = 30 + rnd() * (h - 60), l = 6 + rnd() * 20, ang = rnd() * Math.PI, dx = Math.cos(ang) * l, dy = Math.sin(ang) * l, bend = (rnd() - .5) * 8;
+    o += `${f(x)} ${f(y)} m ${f(x + dx / 2 - dy / l * bend)} ${f(y + dy / 2 + dx / l * bend)} ${f(x + dx)} ${f(y + dy)} v S\n`;
+  }
+  return o + 'Q\n';
 }
 // textura de pergaminho: bordas escurecidas, manchas e fibras (cada página sorteia as suas)
 function parchmentOps(w, h, seed){
@@ -1351,12 +1592,12 @@ const PARCH_GS = { PA1:{ Type:'ExtGState', ca:.045, CA:.045 }, PA2:{ Type:'ExtGS
 function addPaperPages(doc, pp, n){
   const [, w, h] = PAPER_SIZES[pp.size], ctx = doc.context;
   const parch = pp.kind === 'parchment', ops = paperOps(pp);
-  const form = body => ctx.register(ctx.flateStream(body, { Type:'XObject', Subtype:'Form', FormType:1, BBox:[0, 0, w, h], Resources:parch ? { ExtGState:PARCH_GS } : {} }));
+  const form = body => ctx.register(ctx.flateStream(body, { Type:'XObject', Subtype:'Form', FormType:1, BBox:isScroll(pp) ? [0, -3, w, h + 3] : [0, 0, w, h], Resources:parch ? { ExtGState:PARCH_GS } : {} }));
   const shared = parch ? null : form(ops);
   for (let i = 0; i < n; i++){
     const page = doc.addPage([w, h]);
     // no pergaminho a textura vem antes da pauta, pra pauta ficar por cima
-    const xo = shared || form(ops + parchmentOps(w, h, (Math.random() * 2 ** 32) ^ (doc.getPageCount() * 7919)));
+    const xo = shared || form(ops + (isScroll(pp) ? scrollParchOps : parchmentOps)(w, h, (Math.random() * 2 ** 32) ^ (doc.getPageCount() * 7919)));
     page.node.setXObject(PDFName.of('GrimPaper'), xo);
     page.node.addContentStream(ctx.register(ctx.flateStream('q /GrimPaper Do Q\n')));
   }
@@ -1421,6 +1662,18 @@ async function makeNotebook(pp, n, title, cover){
   addPaperPages(doc, pp, n);
   return doc.save();
 }
+async function makeScroll(pp, n, title, seal){
+  const doc = await PDFDocument.create();
+  doc.setTitle(title); doc.setCreator('Grimório'); doc.setProducer('Grimório');
+  doc.catalog.set(PDFName.of('GrimorioPaper'), PDFString.of(paperStr(pp)));
+  doc.catalog.set(PDFName.of('GrimorioSeal'), PDFString.of(seal));
+  addPaperPages(doc, pp, n);
+  return doc.save();
+}
+function readSeal(doc){
+  const v = doc.catalog.get(PDFName.of('GrimorioSeal'));
+  try { const t = v?.decodeText ? v.decodeText() : ''; return /^#[0-9a-f]{6}(\|[a-z]+)?$/i.test(t) ? t : null; } catch { return null; }
+}
 function readPaper(doc){
   const v = doc.catalog.get(PDFName.of('GrimorioPaper'));
   try { return parsePaper(v?.decodeText ? v.decodeText() : null); } catch { return null; }
@@ -1447,7 +1700,7 @@ function renderNbModal(){
   $('#nbPapers').innerHTML = Object.entries(PAPERS).map(([k, nm]) => `<button class="nb-paper${NB.kind === k ? ' on' : ''}" data-k="${k}">${paperThumb(k, NB.tone)}${nm}</button>`).join('');
   $('#nbTones').hidden = $('#nbTones').previousElementSibling.hidden = NB.kind === 'parchment';
   $('#nbTones').innerHTML = Object.entries(PAPER_TONES).map(([k, [nm, bg]]) => `<button class="${NB.tone === k ? 'on' : ''}" data-k="${k}"><span class="nb-tone" style="background:${bg}"></span>${nm}</button>`).join('');
-  $('#nbSizes').innerHTML = Object.entries(PAPER_SIZES).map(([k, [nm]]) => `<button class="${NB.size === k ? 'on' : ''}" data-k="${k}">${nm}</button>`).join('');
+  $('#nbSizes').innerHTML = Object.entries(PAPER_SIZES).filter(([k]) => k !== 'scroll').map(([k, [nm]]) => `<button class="${NB.size === k ? 'on' : ''}" data-k="${k}">${nm}</button>`).join('');
   $('#nbCount').innerHTML = [1, 5, 10, 30].map(n => `<button class="${NB.n === n ? 'on' : ''}" data-k="${n}">${n}</button>`).join('');
 }
 function nbModal(open){
@@ -1489,16 +1742,24 @@ $('#nbOk').onclick = async () => {
 const addPageBtn = document.createElement('button');
 addPageBtn.className = 'add-page'; addPageBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nova página';
 addPageBtn.onclick = () => appendPages(1);
+function sizeAddPage(){
+  const last = S.pages[S.pages.length - 1];
+  addPageBtn.style.width = !last ? '' : isScroll(S.paper) ? (parseFloat(last.el.style.width) + 36) + 'px' : last.el.style.width;
+}
 function placeAddPage(){
   if (S.paper && S.editable){
+    const sc = isScroll(S.paper), end = sc && S.pages.length >= SCROLL_MAX;
+    addPageBtn.innerHTML = end ? '<span>✦</span>' : sc ? `<span>Desenrolar mais · ${S.pages.length}/${SCROLL_MAX}</span>` : '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nova página';
+    addPageBtn.title = end ? 'Fim do pergaminho' : sc ? 'Desenrolar mais pergaminho' : '';
+    addPageBtn.disabled = end; addPageBtn.classList.toggle('end', end);
     pagesEl.appendChild(addPageBtn);
-    const last = S.pages[S.pages.length - 1];
-    addPageBtn.style.width = last ? last.el.style.width : '';
+    sizeAddPage();
   } else addPageBtn.remove();
 }
 let appending = false;
 async function appendPages(n){
   if (!S.paper || appending) return;
+  if (isScroll(S.paper) && S.pages.length + n > SCROLL_MAX) return toast(`O pergaminho vai até ${SCROLL_MAX} folhas ✦`);
   if (editing) finishEdit();
   appending = true;
   try {
@@ -1513,13 +1774,138 @@ async function appendPages(n){
     const first = S.pages.length + 1;
     for (let i = first; i <= pdf.numPages; i++){ const pg = makePage(i, await pdf.getPage(i), []); groupPage(pg); }
     layout(); placeAddPage(); scheduleVisible();
-    S.pages[first - 1].el.scrollIntoView({ behavior:'smooth', block:'start' });
+    if (isScroll(S.paper)) viewer.scrollBy({ top:S.pages[first - 1].el.offsetHeight * .6, behavior:'smooth' });
+    else S.pages[first - 1].el.scrollIntoView({ behavior:'smooth', block:'start' });
     S.dirty = true; refreshButtons();
     await Store.setFile(S.sessionId, base); saveSession();
-    toast(n > 1 ? `+${n} páginas ✦` : 'Página nova ✦');
+    toast(isScroll(S.paper) ? 'Desenrolou mais um pedaço ✦' : n > 1 ? `+${n} páginas ✦` : 'Página nova ✦');
   } catch (err){ console.error(err); toast('Não consegui adicionar a página 😕'); }
   appending = false;
 }
+
+/* ---------- pergaminhos em rolo + estante de feitiços ---------- */
+const SCROLL_PAPERS = ['parchment', 'blank', 'ruled', 'dots', 'grid'];
+const SC = (() => { const d = { kind:'parchment', tone:'cream', seal:SEALS[0], pat:'star', len:1 }; try { return { ...d, ...JSON.parse(localStorage.getItem('grimorio.sc') || '{}') }; } catch { return d; } })();
+if (!SEAL_PATS[SC.pat]) SC.pat = 'star';
+const scrollBg = pp => !pp || pp.kind === 'parchment' ? '#ecd9ad' : PAPER_TONES[pp.tone][1];
+function scrollThumb(pp, sealV, name){
+  const bg = scrollBg(pp), { color:seal, pat } = sealOf(sealV);
+  return `<svg viewBox="0 0 96 44" aria-hidden="true"><ellipse cx="48" cy="40.5" rx="40" ry="2.6" fill="#000" opacity=".35"/>`
+    + `<ellipse cx="10" cy="22" rx="5" ry="14" fill="${bg}"/><ellipse cx="10" cy="22" rx="5" ry="14" fill="#000" opacity=".22"/>`
+    + `<rect x="10" y="8" width="76" height="28" fill="${bg}"/><rect x="10" y="8" width="76" height="28" fill="url(#shShade)"/>`
+    + `<ellipse cx="86" cy="22" rx="5" ry="14" fill="${bg}"/><ellipse cx="86" cy="22" rx="5" ry="14" fill="#000" opacity=".08"/>`
+    + `<path d="M86 12.5c2.2 0 3.4 4.3 3.4 9.5s-1.2 9.5-3.4 9.5-2.8-3.8-2.8-7.6 1.1-6 2.6-6 1.9 2.1 1.9 4.6" fill="none" stroke="#7a5a2c" stroke-width="1" opacity=".75"/>`
+    + `<rect x="44" y="7.4" width="8" height="29.2" fill="${seal}"/><rect x="44" y="7.4" width="8" height="29.2" fill="url(#shShade)"/>`
+    + `<svg x="38.5" y="12.5" width="19" height="19" viewBox="0 0 48 48">${waxSeal(seal, pat, name)}</svg></svg>`;
+}
+async function renderShelf(list){
+  if (!list) list = ((await Store.list()) || []).filter(it => isScroll(parsePaper(it.paper)));
+  $('#shelfCount').textContent = list.length || '';
+  const box = $('#shelfList'); box.innerHTML = '';
+  for (const it of list){
+    const pp = parsePaper(it.paper), d = document.createElement('div');
+    d.className = 'sh-item' + (it.id === S.sessionId && S.doc ? ' cur' : '');
+    d.innerHTML = `<button class="sh-open">${scrollThumb(pp, it.seal, it.name)}<span class="sh-name"></span><span class="sh-meta"></span></button><button class="sh-x" title="Queimar pergaminho" aria-label="Queimar pergaminho">✕</button>`;
+    d.querySelector('.sh-name').textContent = it.name.replace(/\.pdf$/i, '');
+    d.querySelector('.sh-open').title = it.name.replace(/\.pdf$/i, '');
+    d.querySelector('.sh-meta').textContent = ago(it.updated) + (!it.drive ? '' : it.sig === it.drive.sig ? ' · ☁ no Drive' : ' · ☁ a enviar');
+    d.querySelector('.sh-open').onclick = () => {
+      shelfModal(false);
+      if (it.id === S.sessionId && S.doc){ unroll(); return; }
+      if (editing) finishEdit();
+      saveSession(); openSession(it.id);
+    };
+    const x = d.querySelector('.sh-x');
+    x.onclick = async () => {
+      const open = it.id === S.sessionId && S.doc;
+      if (!x.classList.contains('armed')){ x.classList.add('armed'); toast(it.drive ? 'Toque de novo no ✕ pra queimar (o do Drive vai pra lixeira de lá) 🔥' : 'Toque de novo no ✕ pra queimar o pergaminho 🔥', 3500); setTimeout(() => x.classList.remove('armed'), 3500); return; }
+      await Store.remove(it.id);
+      if (it.drive?.id && DRIVE){
+        const burned = lsJSON('grimorio.burned', []); burned.push(it.drive.id); lsSet('grimorio.burned', burned);
+        if (tokenFresh()) trashFile(it.drive.id).then(() => lsSet('grimorio.burned', lsJSON('grimorio.burned', []).filter(v => v !== it.drive.id))).catch(() => {});
+      }
+      if (open){ S.sessionId = null; try { sessionStorage.setItem('grimorio.burnt', '1'); } catch {} location.reload(); return; }   // era o aberto: volta pro início
+      toast('Virou cinzas ✦'); renderShelf();
+    };
+    box.appendChild(d);
+  }
+  const nw = document.createElement('div'); nw.className = 'sh-item sh-new';
+  nw.innerHTML = `<button class="sh-open">${scrollThumb({ kind:'parchment' }, '#3a3a3a').replace('<svg ', '<svg style="filter:grayscale(1) opacity(.5)" ')}<span class="sh-name">+ Novo</span><span class="sh-meta">pergaminho</span></button>`;
+  nw.querySelector('.sh-open').onclick = () => { shelfModal(false); scModal(true); };
+  box.appendChild(nw);
+  if (!list.length){ const e = document.createElement('div'); e.className = 'sh-empty'; e.textContent = 'A estante ainda está vazia. Que tal desenrolar o primeiro pergaminho?'; box.appendChild(e); }
+}
+function shelfModal(open){
+  $('#shelfModal').hidden = !open;
+  if (open){
+    openDrawer(false); drivePanel?.(false); renderShelf(); paintSync();
+    if (DRIVE && driveKnown() && tokenFresh()) syncShelf();   // já liberado nesta visita: sincroniza sozinho
+    else if (DRIVE && driveKnown()){ gLoading = !GD.tc; paintSync(); driveLoad().then(() => { gLoading = false; paintSync(); }).catch(() => { gLoading = false; paintSync(); }); }
+  }
+}
+function renderScModal(){
+  $('#scPapers').innerHTML = SCROLL_PAPERS.map(k => `<button class="nb-paper${SC.kind === k ? ' on' : ''}" data-k="${k}">${paperThumb(k, SC.tone)}${PAPERS[k]}</button>`).join('');
+  $('#scTones').hidden = $('#scTones').previousElementSibling.hidden = SC.kind === 'parchment';
+  $('#scTones').innerHTML = Object.entries(PAPER_TONES).map(([k, [nm, bg]]) => `<button class="${SC.tone === k ? 'on' : ''}" data-k="${k}"><span class="nb-tone" style="background:${bg}"></span>${nm}</button>`).join('');
+  $('#scSeals').innerHTML = SEALS.map(c => `<button class="sc-seal${SC.seal === c ? ' on' : ''}" data-k="${c}" style="--cv:${c}" title="Cor do selo"><svg viewBox="0 0 48 48">${waxSeal(c, SC.pat)}</svg></button>`).join('');
+  $('#scPats').innerHTML = Object.entries(SEAL_PATS).map(([k, nm]) => `<button class="sc-seal${SC.pat === k ? ' on' : ''}" data-k="${k}" style="--cv:${SC.seal}" title="${nm}"><svg viewBox="0 0 48 48">${waxSeal(SC.seal, k)}</svg></button>`).join('');
+  $('#scLen').innerHTML = [1, 2, 3].map(n => `<button class="${SC.len === n ? 'on' : ''}" data-k="${n}">${n} folha${n > 1 ? 's' : ''}</button>`).join('');
+}
+function scModal(open){
+  $('#scModal').hidden = !open;
+  if (!open) return;
+  openDrawer(false); drivePanel?.(false);
+  const d = new Date();
+  $('#scName').value = `Pergaminho ${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+  renderScModal();
+}
+$('#btnShelf').onclick = $('#btnShelf2').onclick = () => { if (editing) finishEdit(); shelfModal(true); };
+$('#shelfClose').onclick = () => shelfModal(false);
+$('#shSyncBtn').onclick = () => shelfConnect();
+$('#shelfNew').onclick = () => { shelfModal(false); scModal(true); };
+$('#shelfModal').addEventListener('pointerdown', e => { if (e.target.id === 'shelfModal') shelfModal(false); });
+$('#scName').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); e.target.blur(); } });
+$('#scPapers').onclick = e => { const b = e.target.closest('button'); if (b){ SC.kind = b.dataset.k; renderScModal(); } };
+$('#scTones').onclick = e => { const b = e.target.closest('button'); if (b){ SC.tone = b.dataset.k; renderScModal(); } };
+$('#scSeals').onclick = e => { const b = e.target.closest('button'); if (b){ SC.seal = b.dataset.k; renderScModal(); } };
+$('#scPats').onclick = e => { const b = e.target.closest('button'); if (b){ SC.pat = b.dataset.k; renderScModal(); } };
+$('#scLen').onclick = e => { const b = e.target.closest('button'); if (b){ SC.len = +b.dataset.k; renderScModal(); } };
+$('#scCancel').onclick = () => scModal(false);
+$('#scModal').addEventListener('pointerdown', e => { if (e.target.id === 'scModal') scModal(false); });
+$('#scOk').onclick = async () => {
+  const title = ($('#scName').value.trim() || 'Pergaminho').replace(/[\\/:*?"<>|]+/g, '-').slice(0, 80);
+  try { localStorage.setItem('grimorio.sc', JSON.stringify(SC)); } catch {}
+  scModal(false); saveSession();
+  toast('Escrevendo o pergaminho…', 60000);
+  try {
+    const pp = { kind:SC.kind, size:'scroll', tone:SC.tone };
+    const seal = SC.seal + '|' + SC.pat, bytes = await makeScroll(pp, Math.min(SCROLL_MAX, Math.max(1, SC.len || 1)), title, seal);
+    await loadDoc({ id:fileId(bytes), base:bytes, marks:new Map(), editable:true, name:title + '.pdf', restored:false, drive:null, bookmarks:new Map(), paper:pp, seal });
+    toast('Pergaminho guardado na estante ✦');
+  } catch (err){ console.error(err); toast('Não consegui criar o pergaminho 😕'); }
+  refreshButtons();
+};
+// abertura: o selo treme, quebra, a fita cai e o rolo desenrola
+let urT = [];
+function unroll(){
+  const box = $('#unroll'), ur = box.querySelector('.ur'), sheet = box.querySelector('.ur-sheet');
+  urT.forEach(clearTimeout); urT = [];
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const pp = S.paper || {}, line = pp.kind === 'parchment' ? 'transparent' : PAPER_TONES[pp.tone]?.[2] || '#ccc';
+  const sl = sealOf(S.seal); ur.style.setProperty('--seal', sl.color);
+  box.querySelectorAll('.ur-seal b').forEach(b => { b.innerHTML = `<svg viewBox="0 0 48 48">${waxSeal(sl.color, sl.pat)}</svg>`; }); ur.style.setProperty('--paper', scrollBg(pp)); ur.style.setProperty('--line', line);
+  sheet.className = 'ur-sheet ' + (pp.kind === 'parchment' ? 'parch' : pp.kind || '');
+  box.querySelector('.ur-name').textContent = (S.fileName || '').replace(/\.pdf$/i, '');
+  ur.className = 'ur'; box.classList.remove('bye'); box.hidden = false;
+  void ur.offsetWidth;
+  const at = (ms, f) => urT.push(setTimeout(f, ms));
+  at(80, () => ur.classList.add('wob'));
+  at(700, () => ur.classList.add('crack'));
+  at(1050, () => ur.classList.add('open'));
+  at(2350, () => box.classList.add('bye'));
+  at(2800, () => { box.hidden = true; });
+}
+$('#unroll').onclick = () => { urT.forEach(clearTimeout); urT = []; $('#unroll').classList.add('bye'); setTimeout(() => { $('#unroll').hidden = true; }, 450); };
 
 /* ---------- sessões: tudo fica no aparelho (IndexedDB) ---------- */
 // Identidade do arquivo: tamanho + amostras do conteúdo (rápido mesmo em PDF grande).
@@ -1555,17 +1941,28 @@ const Store = (() => {
 const MAX_SESSIONS = 8;
 let saveT = null;
 function scheduleSave(){ clearTimeout(saveT); saveT = setTimeout(saveSession, 500); }
+const plainMark = m => Object.fromEntries(Object.entries(m).filter(([k]) => k[0] !== '_'));
+function curMarks(){ const marks = []; S.pages.forEach((pg, i) => { if (pg.strokes.length) marks.push([i, pg.strokes.map(plainMark)]); }); return marks; }
+const curBookmarks = () => S.pages.filter(q => q.bm).map(q => [q.i - 1, q.bm]);
+// "assinatura" do conteúdo: muda quando muda traço, fita ou nº de folhas (não liga pro agrupamento interno)
+function sigOf(marks, bookmarks, pages){
+  const t = JSON.stringify([pages, bookmarks || [], (marks || []).map(([i, l]) => [i, l.map(({ gid, ...m }) => m)])]);
+  let h = 2166136261 >>> 0; for (let i = 0; i < t.length; i++){ h ^= t.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return t.length.toString(36) + '-' + h.toString(36);
+}
+const curSig = () => sigOf(curMarks(), curBookmarks(), S.pages.length);
 async function saveSession(){
   clearTimeout(saveT); saveT = null;
   if (!S.doc || !S.sessionId) return;
-  const marks = [];
-  S.pages.forEach((pg, i) => { if (pg.strokes.length) marks.push([i, pg.strokes.map(m => Object.fromEntries(Object.entries(m).filter(([k]) => k[0] !== '_')))]); });
+  const marks = curMarks(), bookmarks = curBookmarks(), sig = sigOf(marks, bookmarks, S.pages.length);
   const frac = viewer.scrollHeight > viewer.clientHeight ? viewer.scrollTop / (viewer.scrollHeight - viewer.clientHeight) : 0;
   await Store.putSession({ id:S.sessionId, name:S.fileName, pages:S.pages.length, editable:S.editable,
-    count:marks.reduce((a, [, m]) => a + m.length, 0), marks, bookmarks:S.pages.filter(q => q.bm).map(q => [q.i - 1, q.bm]), updated:Date.now(), drive:S.driveFile || null, paper:S.paper ? paperStr(S.paper) : null, view:{ zoom:S.zoom, frac } });
-  // poda as mais antigas
-  const all = await Store.list();
-  if (all && all.length > MAX_SESSIONS) for (const old of all.slice(MAX_SESSIONS)) await Store.remove(old.id);
+    count:marks.reduce((a, [, m]) => a + m.length, 0), marks, bookmarks, sig, updated:Date.now(), drive:S.driveFile || null, paper:S.paper ? paperStr(S.paper) : null, seal:S.seal || null, view:{ zoom:S.zoom, frac } });
+  if (isScroll(S.paper)) autoSync(sig);
+  // poda as mais antigas (os pergaminhos da estante nunca somem sozinhos)
+  const all = ((await Store.list()) || []).filter(it => !isScroll(parsePaper(it.paper)));
+  if (all.length > MAX_SESSIONS) for (const old of all.slice(MAX_SESSIONS)) await Store.remove(old.id);
+  if (isScroll(S.paper)) renderShelf();
 }
 // fechando / trocando de app: salva já
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden'){ if (editing) finishEdit(); saveSession(); } });
@@ -1581,7 +1978,8 @@ function ago(t){
   const d = Math.round(h / 24); return d === 1 ? 'ontem' : `há ${d} dias`;
 }
 async function renderRecent(){
-  const box = $('#recent'), list = (await Store.list()) || [];
+  const box = $('#recent'), all = (await Store.list()) || [], list = all.filter(it => !isScroll(parsePaper(it.paper)));
+  renderShelf(all.filter(it => isScroll(parsePaper(it.paper))));
   box.hidden = !list.length; box.querySelector('ul').innerHTML = '';
   for (const it of list){
     const li = document.createElement('li');
@@ -1594,6 +1992,7 @@ async function renderRecent(){
   }
 }
 renderRecent();
+try { if (sessionStorage.getItem('grimorio.burnt')){ sessionStorage.removeItem('grimorio.burnt'); setTimeout(() => toast('Virou cinzas ✦'), 900); } } catch {}
 
 /* Tira /Ink e /Highlight do arquivo (viram marcações editáveis) e devolve o PDF "limpo". */
 async function extractMarks(bytes){
@@ -1611,6 +2010,7 @@ async function extractMarks(bytes){
       for (let j = 0; j < annots.size(); j++){
         const ref = annots.get(j), d = doc.context.lookup(ref);
         if (d instanceof PDFDict){
+          if (d.get(PDFName.of('GrimorioGhost'))){ changed = true; continue; }   // pedaço de traço que vazou da emenda do rolo: o original está na página vizinha
           const sub = d.get(SUB);
           const got = sub === INK ? inkToStrokes(doc, d) : sub === HIL ? highlightToMark(doc, d)
                     : sub === FT ? boxFromFreeText(doc, d) : sub === TXT ? noteFromText(doc, d) : sub === STP ? stampFromAnnot(doc, d) : [];
@@ -1623,11 +2023,11 @@ async function extractMarks(bytes){
         keep.push(ref);
       }
       if (popups.size) for (let k = keep.length - 1; k >= 0; k--) if (popups.has(String(keep[k]))) keep.splice(k, 1);
-      if (marks.length){ imported.set(i, marks); page.node.set(PDFName.of('Annots'), doc.context.obj(keep)); changed = true; }
+      if (marks.length || keep.length < annots.size()){ if (marks.length) imported.set(i, marks); page.node.set(PDFName.of('Annots'), doc.context.obj(keep)); changed = true; }
     });
     if (takeBookmarks(doc, bookmarks)) changed = true;
     paper = readPaper(doc);
-    return { base: changed ? await doc.save() : bytes, imported, editable:true, bookmarks, paper };
+    return { base: changed ? await doc.save() : bytes, imported, editable:true, bookmarks, paper, seal:readSeal(doc), pages:doc.getPageCount() };
   } catch (e){
     console.warn('pdf-lib não leu o arquivo; só leitura', e);
     return { base: bytes, imported, editable:false };
@@ -1742,7 +2142,7 @@ function makePage(i, pdfPage, strokes){
   el._pg = pg; S.pages.push(pg);
   return pg;
 }
-function computeFit(){ S.fit = Math.min(viewer.clientWidth - 32, 1100) / S.maxW; }
+function computeFit(){ S.fit = (isScroll(S.paper) ? Math.min(viewer.clientWidth - 100, 680) : Math.min(viewer.clientWidth - 32, 1100)) / S.maxW; }
 const scale = () => S.fit * S.zoom;
 
 function layout(){
@@ -1750,12 +2150,12 @@ function layout(){
   for (const pg of S.pages){
     pg.vp = pg.pdfPage.getViewport({ scale: sc });
     pg.el.style.width = Math.floor(pg.vp.width) + 'px';
-    pg.el.style.height = Math.floor(pg.vp.height) + 'px';
+    pg.el.style.height = (isScroll(S.paper) ? pg.vp.height : Math.floor(pg.vp.height)) + 'px';   // rolo: altura exata, senão a emenda desalinha
     pg.gen++;
     if (pg.task){ pg.task.cancel(); pg.task = null; }
     renderOverlays(pg);
   }
-  if (addPageBtn.parentNode) addPageBtn.style.width = S.pages.length ? S.pages[S.pages.length - 1].el.style.width : '';
+  if (addPageBtn.parentNode) sizeAddPage();
   refreshButtons();
 }
 
@@ -1780,7 +2180,7 @@ async function renderPage(pg){
   }
   pg.inkCanvas.width = pg.hlCanvas.width = c.width; pg.inkCanvas.height = pg.hlCanvas.height = c.height; pg.dpr = dpr;
   pg.shown = gen;
-  drawInk(pg);
+  drawInk(pg, true);
   loadText(pg);
 }
 function unloadPage(pg){
@@ -1943,26 +2343,41 @@ function paintShape(ctx, pg, st){
   ctx.fill('nonzero');
 }
 let scratch = null;
-function drawInk(pg){
+// rolo: a página "vista" de um vizinho (mesmo desenho, deslocado de uma altura de pedaço)
+function shiftedPg(pg, dy){ const vp = pg.vp; return { ...pg, vp:{ scale:vp.scale, width:vp.width, height:vp.height, convertToViewportPoint:(x, y) => vp.convertToViewportPoint(x, y + dy) } }; }
+// traços dos pedaços vizinhos que passam da emenda e invadem esta página
+function seamItems(pg){
+  if (!isScroll(S.paper)) return [];
+  const H = PAPER_SIZES.scroll[2], out = [], up = S.pages[pg.i - 2], dn = S.pages[pg.i];
+  if (up){ let p; for (const st of up.strokes) if (!isOv(st) && markBounds(st)[1] < 0) out.push([st, p || (p = shiftedPg(pg, H))]); }
+  if (dn){ let p; for (const st of dn.strokes) if (!isOv(st) && markBounds(st)[3] > H) out.push([st, p || (p = shiftedPg(pg, -H))]); }
+  return out;
+}
+function drawInk(pg, solo){
+  drawInkOne(pg);
+  if (!solo && isScroll(S.paper)) for (const n of [S.pages[pg.i - 2], S.pages[pg.i]]) if (n?.inkCanvas) drawInkOne(n);
+}
+function drawInkOne(pg){
   renderOverlays(pg);
   const c = pg.inkCanvas; if (!c) return;
   drawMagic(pg);
   const top = c.getContext('2d'), hl = pg.hlCanvas.getContext('2d');
   for (const x of [top, hl]){ x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, c.width, c.height); }
-  for (const st of pg.strokes){
+  const items = pg.strokes.map(st => [st, pg]); items.push(...seamItems(pg));
+  for (const [st, p] of items){
     if (isOv(st) || st.tool === 'magic') continue;   // tinta mágica: só na camada da vela misteriosa
     const ctx = st.alpha < 1 ? hl : top;
-    if (st.kind === 'stamp'){ drawStamp(top, pg, st); continue; }
+    if (st.kind === 'stamp'){ drawStamp(top, p, st); continue; }
     if (st.alpha >= 1 && st.tool !== 'pencil'){
-      ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, 0); paintShape(ctx, pg, st);
+      ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, 0); paintShape(ctx, p, st);
       continue;
     }
-    const r = boxPx(pg, st, c); if (!r) continue;
+    const r = boxPx(p, st, c); if (!r) continue;
     if (!scratch) scratch = document.createElement('canvas');
     if (scratch.width < r.w || scratch.height < r.h){ scratch.width = Math.max(scratch.width, r.w); scratch.height = Math.max(scratch.height, r.h); }
     const sx = scratch.getContext('2d');
     sx.setTransform(1, 0, 0, 1, 0, 0); sx.clearRect(0, 0, r.w, r.h);
-    sx.setTransform(pg.dpr, 0, 0, pg.dpr, -r.x, -r.y); paintShape(sx, pg, st);
+    sx.setTransform(pg.dpr, 0, 0, pg.dpr, -r.x, -r.y); paintShape(sx, p, st);
     if (st.tool === 'pencil') applyGrain(sx, [0, 0, r.w, r.h], r.x, r.y);
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = st.alpha; ctx.drawImage(scratch, 0, 0, r.w, r.h, r.x, r.y, r.w, r.h); ctx.globalAlpha = 1;
   }
@@ -1978,13 +2393,17 @@ function boxPx(pg, st, c){
 
 // canvas "ao vivo" compartilhado: só existe na página onde se está desenhando
 const live = document.createElement('canvas'); live.className = 'live'; live.style.pointerEvents = 'none';
+let liveOY = 0;   // no rolo o canvas ao vivo passa um pouco das emendas (dá pra escrever por cima delas)
 function attachLive(pg, alpha){
   if (!pg.inkCanvas) return false;
   if (live.parentNode !== pg.el) pg.el.appendChild(live);
-  if (live.width !== pg.inkCanvas.width || live.height !== pg.inkCanvas.height){ live.width = pg.inkCanvas.width; live.height = pg.inkCanvas.height; }
-  live.style.opacity = alpha; live.classList.toggle('hl', alpha < 1); live.style.zIndex = '';
+  liveOY = isScroll(S.paper) ? Math.round(pg.vp.height * .35 * pg.dpr) : 0;
+  const H = pg.inkCanvas.height + 2 * liveOY;
+  if (live.width !== pg.inkCanvas.width || live.height !== H){ live.width = pg.inkCanvas.width; live.height = H; }
+  live.style.top = liveOY ? -liveOY / pg.dpr + 'px' : ''; live.style.height = liveOY ? `calc(100% + ${2 * liveOY / pg.dpr}px)` : '';
+  live.style.opacity = alpha; live.classList.toggle('hl', alpha < 1); live.style.zIndex = liveOY ? 2 : '';
   const ctx = live.getContext('2d'); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, live.width, live.height);
-  ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, 0);
+  ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, liveOY);
   return true;
 }
 function clearLive(){ const ctx = live.getContext('2d'); ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, live.width, live.height); ctx.restore(); }
@@ -2548,8 +2967,8 @@ function takeBookmarks(doc, into){
   return true;
 }
 // fitas → PDF: vão pro fim do sumário, com a cor da fita
-function putBookmarks(doc, pages){
-  const list = S.pages.filter(pg => pg.bm); if (!list.length) return;
+function putBookmarks(doc, pages, src = S.pages){
+  const list = src.filter(pg => pg.bm); if (!list.length) return;
   const ctx = doc.context, O = PDFName.of('Outlines');
   let outl = ctx.lookup(doc.catalog.get(O));
   if (!(outl instanceof PDFDict)){ outl = ctx.obj({ Type:'Outlines' }); doc.catalog.set(O, ctx.register(outl)); }
@@ -2769,7 +3188,7 @@ function moveLasso(e){
   if (Math.hypot(x - last[0], y - last[1]) * pg.vp.scale < 2) return;
   a.poly.push([x, y]);
   clearLive();
-  const ctx = live.getContext('2d'); ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, 0);
+  const ctx = live.getContext('2d'); ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, liveOY);
   ctx.beginPath();
   a.poly.forEach(([px, py], i) => { const [vx, vy] = pg.vp.convertToViewportPoint(px, py); i ? ctx.lineTo(vx, vy) : ctx.moveTo(vx, vy); });
   ctx.fillStyle = 'rgba(139,92,246,.08)'; ctx.fill();
@@ -2864,7 +3283,7 @@ function addPoint(e, force){
   if (a.tool === 'magic') ctx.shadowBlur = 0;
   if (a.tool === 'pencil'){
     // aplica o grão só na região do último pedaço
-    const q = P.slice(-2).map(([px, py, pw]) => { const [vx, vy] = pg.vp.convertToViewportPoint(px, py); return [vx * pg.dpr, vy * pg.dpr, (pw * pg.vp.scale / 2 + 2) * pg.dpr]; });
+    const q = P.slice(-2).map(([px, py, pw]) => { const [vx, vy] = pg.vp.convertToViewportPoint(px, py); return [vx * pg.dpr, vy * pg.dpr + liveOY, (pw * pg.vp.scale / 2 + 2) * pg.dpr]; });
     const x0 = Math.min(...q.map(v => v[0] - v[2])), y0 = Math.min(...q.map(v => v[1] - v[2]));
     const x1 = Math.max(...q.map(v => v[0] + v[2])), y1 = Math.max(...q.map(v => v[1] + v[2]));
     applyGrain(ctx, [x0, y0, x1, y1]);
@@ -2875,7 +3294,7 @@ function moveText(e){
   const end = textAt(pg.text, x, y, false) || a.start;
   a.sel = textSelection(pg.text, a.start, end);
   clearLive();
-  const ctx = live.getContext('2d'); ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, 0);
+  const ctx = live.getContext('2d'); ctx.setTransform(pg.dpr, 0, 0, pg.dpr, 0, liveOY);
   ctx.fillStyle = a.color; ctx.beginPath(); traceRects(ctx, pg, a.sel.rects); ctx.fill();
 }
 function commit(pg, mark){
@@ -3121,6 +3540,8 @@ addEventListener('keydown', e => {
   if (!k || e.isComposing) return;   // o iPad (Rabiscar, ditado) manda eventos de teclado sem tecla
   if (!$('#potionModal').hidden && (k === 'escape' || (k === 'enter' && !mod))){ e.preventDefault(); closePotion(); return; }
   if (!$('#nbModal').hidden){ if (k === 'escape'){ e.preventDefault(); nbModal(false); } return; }
+  if (!$('#scModal').hidden){ if (k === 'escape'){ e.preventDefault(); scModal(false); } return; }
+  if (!$('#shelfModal').hidden){ if (k === 'escape'){ e.preventDefault(); shelfModal(false); } return; }
   if (editing && k === 'escape'){ e.preventDefault(); finishEdit(); return; }
   if (editing && !mod) return;   // escrevendo: letras não trocam de ferramenta
   if (e.target.closest?.('input,textarea')) return;
@@ -3186,7 +3607,7 @@ function commonFields(st, page, idx){
   };
 }
 
-function addInk(doc, page, list, idx){
+function addInk(doc, page, list, idx, ghost){
   if (!Array.isArray(list)) list = [list];
   const ctx = doc.context, st = list[0];
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, wsum = 0, n = 0;
@@ -3202,6 +3623,7 @@ function addInk(doc, page, list, idx){
     [INK_KEY]:PDFString.of(data),
     ...(st.tool === 'magic' ? { F:2 } : {}),   // tinta mágica: escondida em qualquer leitor
     ...(st.gid ? { GrimorioGroup:PDFString.of(st.gid) } : {}),
+    ...(ghost ? { GrimorioGhost:true, NM:PDFString.of(`grimorio-ghost-${Date.now().toString(36)}-${idx}`) } : {}),
   });
   page.node.addAnnot(ctx.register(annot));
 }
@@ -3267,10 +3689,19 @@ function addNote(doc, page, st, idx){
 }
 function pdfDate(){ const d = new Date(), z = n => String(n).padStart(2, '0'); return `D:${d.getUTCFullYear()}${z(d.getUTCMonth() + 1)}${z(d.getUTCDate())}${z(d.getUTCHours())}${z(d.getUTCMinutes())}${z(d.getUTCSeconds())}Z`; }
 
-async function buildPdf(){
-    const doc = await PDFDocument.load(S.baseBytes, { updateMetadata:false });
-    const pages = doc.getPages(); let idx = 0, font = null, charset = null;
-    for (const pg of S.pages){
+let ghostN = 0;
+function seamGhosts(doc, pages, pg, list, idx){
+  const H = PAPER_SIZES.scroll[2], b = list.map(markBounds);
+  const go = (pi, dy) => { if (pages[pi]) ghostN++, addInk(doc, pages[pi], list.map(m => ({ ...m, pts:m.pts.map(([x, y, w]) => [x, y + dy, w]), _sm:null, _bb:null })), idx++, true); };
+  if (b.some(q => q[1] < 0)) go(pg.i, H);        // vazou pra baixo → próximo pedaço
+  if (b.some(q => q[3] > H)) go(pg.i - 2, -H);   // vazou pra cima → pedaço anterior
+  return idx;
+}
+// src: o documento aberto (padrão) ou uma sessão guardada { base, pages:[{ i, strokes, bm }], scroll }
+async function buildPdf(src = { base:S.baseBytes, pages:S.pages, scroll:isScroll(S.paper) }){
+    const doc = await PDFDocument.load(src.base, { updateMetadata:false });
+    const pages = doc.getPages(); let idx = 0, font = null, charset = null; ghostN = 0;
+    for (const pg of src.pages){
       // traços do mesmo objeto e com o mesmo estilo saem numa anotação só
       const groups = new Map();
       for (const st of pg.strokes) if (groupable(st)){
@@ -3286,6 +3717,7 @@ async function buildPdf(){
         const key = [...groups.keys()].find(k => groups.get(k).includes(st));
         const list = groups.get(key); list.forEach(m => done.add(m));
         addInk(doc, page, list, idx++);
+        if (src.scroll) idx = seamGhosts(doc, pages, pg, list, idx);
         continue;
       }
       if (st.kind === 'box'){
@@ -3293,11 +3725,12 @@ async function buildPdf(){
         addBox(doc, page, st, idx++, font, charset);
       } else if (st.kind === 'note') addNote(doc, page, st, idx++);
       else if (st.kind === 'stamp') addStamp(doc, page, st, idx++);
-      else (st.kind === 'text' ? addHighlight : addInk)(doc, page, st, idx++);
+      else if (st.kind === 'text') addHighlight(doc, page, st, idx++);
+      else { addInk(doc, page, st, idx++); if (src.scroll) idx = seamGhosts(doc, pages, pg, [st], idx); }
       }
     }
-    putBookmarks(doc, pages);
-    return { out: await doc.save(), n: idx };
+    putBookmarks(doc, pages, src.pages);
+    return { out: await doc.save(), n: idx - ghostN };
 }
 const savedMsg = n => `${n} anotaç${n === 1 ? 'ão editável' : 'ões editáveis'}`;
 let saving = false;
@@ -3401,49 +3834,176 @@ async function driveOpen(){
 async function driveFolder(){
   let id = null; try { id = localStorage.getItem('grimorio.driveFolder'); } catch {}
   if (id){ try { if (!(await metaOf(id)).trashed) return id; } catch (e){ if (e.status !== 404) throw e; } }
-  const r = await gfetch('/drive/v3/files?fields=id', { method:'POST', headers:{ 'Content-Type':'application/json' },
-    body:JSON.stringify({ name:'Grimório', mimeType:'application/vnd.google-apps.folder' }) });
-  id = (await r.json()).id; try { localStorage.setItem('grimorio.driveFolder', id); } catch {}
+  id = await findFolder('Grimório', 'root') || await makeFolder('Grimório');   // outro aparelho já pode ter criado
+  try { localStorage.setItem('grimorio.driveFolder', id); } catch {}
   return id;
 }
-async function driveCreate(name, out){
-  const parent = await driveFolder(), b = 'grimorio' + Math.random().toString(36).slice(2);
+const FOLDER = 'application/vnd.google-apps.folder';
+async function findFolder(name, parent){
+  const q = encodeURIComponent(`name='${name}' and mimeType='${FOLDER}' and '${parent}' in parents and trashed=false`);
+  return (await (await gfetch(`/drive/v3/files?q=${q}&fields=files(id)&pageSize=5`)).json()).files?.[0]?.id || null;
+}
+async function makeFolder(name, parent){
+  return (await (await gfetch('/drive/v3/files?fields=id', { method:'POST', headers:{ 'Content-Type':'application/json' },
+    body:JSON.stringify({ name, mimeType:FOLDER, ...(parent ? { parents:[parent] } : {}) }) })).json()).id;
+}
+// Grimório/Estante: onde moram os pergaminhos no Drive
+async function shelfFolder(){
+  let id = null; try { id = localStorage.getItem('grimorio.shelfFolder'); } catch {}
+  if (id){ try { if (!(await metaOf(id)).trashed) return id; } catch (e){ if (e.status !== 404) throw e; } }
+  const parent = await driveFolder();
+  id = await findFolder('Estante', parent) || await makeFolder('Estante', parent);
+  try { localStorage.setItem('grimorio.shelfFolder', id); } catch {}
+  return id;
+}
+async function driveCreate(name, out, folder){
+  const parent = folder || await driveFolder(), b = 'grimorio' + Math.random().toString(36).slice(2);
   const body = new Blob([`--${b}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({ name, mimeType:'application/pdf', parents:[parent] })}\r\n--${b}\r\nContent-Type: application/pdf\r\n\r\n`, out, `\r\n--${b}--`]);
   return (await gfetch('/upload/drive/v3/files?uploadType=multipart&fields=id,name,headRevisionId,modifiedTime', { method:'POST', headers:{ 'Content-Type':`multipart/related; boundary=${b}` }, body })).json();
 }
-async function driveSave(){
-  if (editing) finishEdit();
+async function driveSave(quiet){
+  if (editing && !quiet) finishEdit();
   if (!S.doc || !S.editable || saving) return;
   const tokP = driveToken();   // primeiro, ainda dentro do toque
-  saving = true; toast('Salvando no Drive…', 60000);
+  saving = true; if (!quiet) toast('Salvando no Drive…', 60000);
+  const say = (m, ms) => { if (!quiet) toast(m, ms); };
   try {
     await tokP;
+    const sig = curSig(), shelf = isScroll(S.paper) ? await shelfFolder() : undefined;
     const { out, n } = await buildPdf();
     const name = /\.pdf$/i.test(S.fileName) ? S.fileName : S.fileName + '.pdf';
     let res = null, f = S.driveFile, note = '';
     const copyName = name.replace(/\.pdf$/i, ' (anotado).pdf');
-    if (f?.readOnly){ res = await driveCreate(copyName, out); note = ' · cópia na pasta Grimório (o original é só leitura)'; f = null; }
+    if (f?.readOnly){ res = await driveCreate(copyName, out, shelf); note = ' · cópia na pasta Grimório (o original é só leitura)'; f = null; }
     if (f){
       let meta = null;
       try { meta = await metaOf(f.id); } catch (e){ if (e.status !== 404) throw e; }
-      if (!meta || meta.trashed){ toast('O arquivo sumiu do Drive — salvando um novo na pasta Grimório', 4000); f = null; }
+      if (!meta || meta.trashed){ say('O arquivo sumiu do Drive — salvando um novo na pasta Grimório', 4000); f = null; }
+      else if (f.rev && (meta.headRevisionId || meta.modifiedTime) !== f.rev && quiet){ syncWarn(); saving = false; return; }
       else if (f.rev && (meta.headRevisionId || meta.modifiedTime) !== f.rev && !confirm('Esse arquivo mudou no Drive depois que você abriu (talvez em outro aparelho).\n\nOK = substituir pelo que está aqui\nCancelar = salvar como cópia')){
-        res = await driveCreate(name.replace(/\.pdf$/i, ' (cópia).pdf'), out);
+        res = await driveCreate(name.replace(/\.pdf$/i, ' (cópia).pdf'), out, shelf);
       }
       if (f && !res){
         try { res = await (await gfetch(`/upload/drive/v3/files/${f.id}?uploadType=media&fields=id,name,headRevisionId,modifiedTime&supportsAllDrives=true`, { method:'PATCH', headers:{ 'Content-Type':'application/pdf' }, body:out })).json(); }
         catch (e){
           if (e.status !== 403 || /rateLimit|quota/i.test(e.why)) throw e;
-          res = await driveCreate(copyName, out); note = ' · cópia na pasta Grimório (sem permissão pra editar o original)';
+          res = await driveCreate(copyName, out, shelf); note = ' · cópia na pasta Grimório (sem permissão pra editar o original)';
         }
       }
     }
-    if (!res) res = await driveCreate(name, out);
-    S.driveFile = { id:res.id, name:res.name, rev:res.headRevisionId || res.modifiedTime };
+    if (!res) res = await driveCreate(name, out, shelf);
+    S.driveFile = { id:res.id, name:res.name, rev:res.headRevisionId || res.modifiedTime, sig };
     S.dirty = false; refreshButtons(); renderDrivePanel(); saveSession();
-    toast(`Salvo no Drive ✦ ${savedMsg(n)}${note}`, note ? 6000 : 4500);
-  } catch (e){ console.error(e); toast('Não salvei no Drive: ' + e.message); }
+    say(shelf ? `Guardado na Estante do Drive ✦ ${savedMsg(n)}` : `Salvo no Drive ✦ ${savedMsg(n)}${note}`, note ? 6000 : 4500);
+  } catch (e){ console.error(e); toast((quiet ? 'Não sincronizei o pergaminho: ' : 'Não salvei no Drive: ') + e.message); }
   saving = false;
+}
+/* ---------- estante ↔ Drive ----------
+   Pergaminhos ficam no aparelho e numa pasta Grimório/Estante do Drive. Ao sincronizar:
+   o que mudou no Drive desce, o que mudou aqui sobe; se mudou nos dois, os dois ficam
+   (o daqui sobe como cópia). Queimar aqui manda o do Drive pra lixeira de lá. */
+const tokenFresh = () => !!window.__driveMock || (!!GD.token && Date.now() < GD.exp);
+const lsJSON = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+let autoT = null, syncing = false, warned = false;
+function autoSync(sig){   // pergaminho aberto + Drive já liberado nesta visita → sobe sozinho depois de uns segundos parado
+  clearTimeout(autoT);
+  if (!DRIVE || !driveKnown() || !tokenFresh() || !S.editable || syncing || S.driveFile?.sig === sig) return;
+  autoT = setTimeout(() => { if (isScroll(S.paper) && !editing && !active) driveSave(true); }, 4000);
+}
+function syncWarn(){ if (!warned){ warned = true; toast('Esse pergaminho mudou no Drive — abra a estante e toque em Sincronizar', 5000); } }
+const revOf = f => f.headRevisionId || f.modifiedTime;
+function sessionPages(sess){
+  const marks = new Map(sess.marks || []), bms = new Map(sess.bookmarks || []);
+  return Array.from({ length:sess.pages || 1 }, (_, k) => ({ i:k + 1, strokes:marks.get(k) || [], bm:bms.get(k) || null }));
+}
+async function pushSession(sess, folder, remoteIds, asCopy){
+  const base = await Store.getFile(sess.id); if (!base) return null;
+  const { out } = await buildPdf({ base, pages:sessionPages(sess), scroll:true });
+  let res;
+  if (!asCopy && sess.drive?.id && remoteIds.has(sess.drive.id))
+    res = await (await gfetch(`/upload/drive/v3/files/${sess.drive.id}?uploadType=media&fields=id,name,headRevisionId,modifiedTime`, { method:'PATCH', headers:{ 'Content-Type':'application/pdf' }, body:out })).json();
+  else res = await driveCreate(asCopy ? sess.name.replace(/\.pdf$/i, '') + ' (deste aparelho).pdf' : sess.name, out, folder);
+  if (asCopy) return res;
+  sess.drive = { id:res.id, name:res.name || sess.name, rev:revOf(res), sig:sess.sig };
+  await Store.putSession(sess);
+  if (sess.id === S.sessionId) S.driveFile = sess.drive;
+  return res;
+}
+async function pullFile(f, sess){
+  const bytes = new Uint8Array(await (await gfetch(`/drive/v3/files/${f.id}?alt=media`)).arrayBuffer());
+  const x = await extractMarks(bytes);
+  if (!isScroll(x.paper)) return false;   // não é pergaminho do Grimório
+  const id = sess?.id || fileId(bytes), marks = [...x.imported].map(([i, l]) => [i, l.map(plainMark)]), bookmarks = [...(x.bookmarks || new Map())];
+  const sig = sigOf(marks, bookmarks, x.pages);
+  await Store.setFile(id, x.base);
+  await Store.putSession({ id, name:f.name, pages:x.pages, editable:x.editable, count:marks.reduce((a, [, m]) => a + m.length, 0), marks, bookmarks, sig,
+    updated:Date.now(), drive:{ id:f.id, name:f.name, rev:revOf(f), sig }, paper:paperStr(x.paper), seal:x.seal || sess?.seal || null, view:sess?.view || null });
+  return true;
+}
+async function syncShelf(){
+  if (!DRIVE || syncing) return;
+  const tokP = driveToken();   // ainda dentro do toque
+  syncing = true; paintSync();
+  let up = 0, down = 0, gone = 0, reopen = false;
+  try {
+    await tokP;
+    clearTimeout(autoT);
+    if (S.doc){ if (editing) finishEdit(); await saveSession(); clearTimeout(autoT); }
+    const folder = await shelfFolder();
+    // o que foi queimado aqui e ainda não foi pra lixeira do Drive
+    const burned = lsJSON('grimorio.burned', []);
+    for (const id of [...burned]){
+      try { await trashFile(id); } catch (e){ if (e.status !== 404) continue; }
+      burned.splice(burned.indexOf(id), 1);
+    }
+    lsSet('grimorio.burned', burned);
+    const q = encodeURIComponent(`'${folder}' in parents and mimeType='application/pdf' and trashed=false`);
+    const remote = ((await (await gfetch(`/drive/v3/files?q=${q}&fields=files(id,name,headRevisionId,modifiedTime)&pageSize=200`)).json()).files || []).filter(f => !burned.includes(f.id));
+    const remoteIds = new Set(remote.map(f => f.id));
+    const scrolls = async () => ((await Store.list()) || []).filter(it => isScroll(parsePaper(it.paper)));
+    const byDrive = new Map((await scrolls()).filter(it => it.drive?.id).map(it => [it.drive.id, it]));
+    // 1) Drive → aparelho
+    for (const f of remote){
+      const it = byDrive.get(f.id);
+      if (it && it.drive.rev === revOf(f)) continue;
+      if (it && it.sig !== it.drive.sig){ await pushSession(it, folder, remoteIds, true); up++; }   // mudou nos dois lados
+      if (await pullFile(f, it)){ down++; if (it && it.id === S.sessionId) reopen = true; }
+    }
+    // 2) aparelho → Drive
+    for (const it of await scrolls()){
+      const linked = it.drive?.id && remoteIds.has(it.drive.id);
+      if (linked && it.sig === it.drive.sig) continue;
+      if (it.drive?.id && !linked && it.sig === it.drive.sig && it.id !== S.sessionId){ await Store.remove(it.id); gone++; continue; }   // apagado no Drive por outro aparelho
+      if (!linked && it.drive) it.drive = null;
+      await pushSession(it, folder, remoteIds); up++;
+    }
+    lsSet('grimorio.lastSync', Date.now());
+    toast(up || down || gone ? `Estante sincronizada ✦ ${[down && `${down} desceu`, up && `${up} subiu`, gone && `${gone} saiu`].filter(Boolean).join(' · ')}` : 'Estante em dia com o Drive ✦');
+    warned = false;
+    if (reopen) await openSession(S.sessionId, true);
+  } catch (e){ console.error(e); toast('Não sincronizei: ' + e.message); }
+  syncing = false; paintSync(); renderShelf();
+}
+async function trashFile(id){
+  await gfetch(`/drive/v3/files/${id}?fields=id`, { method:'PATCH', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ trashed:true }) });
+}
+let gLoading = false;
+function paintSync(){
+  const bar = $('#shSync'); if (!bar) return;
+  bar.hidden = !DRIVE; if (!DRIVE) return;
+  const t = lsJSON('grimorio.lastSync', 0), ready = !!window.__driveMock || !!GD.tc, inn = tokenFresh() || driveKnown();
+  $('#shSyncTxt').textContent = syncing ? 'Sincronizando…' : gLoading ? 'Chamando o Google…' : t ? `Drive: sincronizado ${ago(t)}` : 'Guarde a estante no seu Drive (pasta Grimório/Estante)';
+  $('#shSyncBtn span').textContent = gLoading ? 'Carregando…' : !ready ? (inn ? 'Sincronizar' : 'Conectar ao Drive') : inn ? 'Sincronizar' : 'Entrar com o Google';
+  $('#shSyncBtn').disabled = syncing || gLoading;
+  $('#shOff').hidden = !(GD.token || driveKnown()) || !!window.__driveMock;
+}
+// o Google só é carregado quando a pessoa pede (privacidade); o login precisa de um toque depois de carregar
+function shelfConnect(){
+  if (window.__driveMock || GD.tc) return syncShelf();
+  gLoading = true; paintSync();
+  driveLoad().then(() => { gLoading = false; paintSync(); toast('Google pronto ✦ toque de novo pra entrar'); })
+    .catch(e => { gLoading = false; paintSync(); toast('Não conectou: ' + e.message); });
 }
 function renderDrivePanel(){
   if (!DRIVE) return;
@@ -3466,10 +4026,11 @@ if (DRIVE){
   $('#dpOpen').onclick = driveOpen;
   $('#dpSave').onclick = () => { drivePanel(false); driveSave(); };
   $('#dpDownload').onclick = () => { drivePanel(false); download(); };
-  $('#dpOff').onclick = () => {
+  $('#dpOff').onclick = $('#shOff').onclick = () => {
     if (GD.token && window.google?.accounts) google.accounts.oauth2.revoke(GD.token, () => {});
-    GD.token = null; try { localStorage.removeItem('grimorio.drive'); } catch {}
-    renderDrivePanel(); toast('Desconectado do Drive');
+    GD.token = null; GD.exp = 0; clearTimeout(autoT);
+    try { for (const k of ['grimorio.drive', 'grimorio.lastSync']) localStorage.removeItem(k); } catch {}
+    renderDrivePanel(); paintSync(); toast('Desconectado do Drive ✦ seus pergaminhos continuam aqui no aparelho', 4000);
   };
   addEventListener('pointerdown', e => { if (!$('#drivePanel').hidden && !e.target.closest('#drivePanel,#btnDrive,#btnDrive2')) drivePanel(false); }, true);
   // beta: se a segurança da página barrar algo do Google, mostra o quê (ajuda a depurar pelo celular)

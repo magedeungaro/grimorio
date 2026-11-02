@@ -14,6 +14,7 @@ Leitor de PDF com caneta, feito pra iPad/Safari (e qualquer navegador). Tudo rod
 - **Tema**: automático (segue o aparelho), claro ou escuro, num botão na barra
 - **Luz de vela**: tom âmbar por cima das páginas (suave ou forte), uma vela num castiçal de prata que você arrasta pela página, e a **vela misteriosa** de chama roxa
 - **Pena mágica**: tinta invisível que só aparece, brilhando, à luz da vela misteriosa (no PDF vai como anotação escondida)
+- **Pergaminhos e Estante de feitiços**: rolos de até 3 folhas pra poemas e feitiços, com selo de cera (cor + símbolo) que quebra na abertura; ficam na estante do aparelho e sincronizam com a pasta Grimório/Estante do Drive
 - **Borracha** (apaga traço por traço), desfazer/refazer
 - **Marca-páginas**: fita colorida no canto de cada página, com nome; painel **Marcadores** com as fitas e o sumário do PDF
 - Dedo rola e dá zoom com pinça; botão pra alternar pro "dedo desenha"
